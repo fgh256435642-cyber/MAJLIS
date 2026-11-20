@@ -1,7 +1,7 @@
 {
   "name": "majlis",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Majlis - مجتمعات الدردشة والمحادثات الصوتية",
   "author": "Majlis",
   "repository": {
