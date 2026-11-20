@@ -12,32 +12,28 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="majlis-grad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#7C5CFF" />
-          <stop offset="100%" stopColor="#38BDF8" />
+        <linearGradient id="majlis-head-grad" x1="13" y1="8" x2="54" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#A78BFA" />
+          <stop offset="0.45" stopColor="#7456E8" />
+          <stop offset="1" stopColor="#30266B" />
         </linearGradient>
-        <filter id="majlis-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
+        <linearGradient id="majlis-headband-grad" x1="8" y1="22" x2="56" y2="42" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#C4B5FD" />
+          <stop offset="0.5" stopColor="#7C6BE7" />
+          <stop offset="1" stopColor="#4C3AA7" />
+        </linearGradient>
       </defs>
-
-      {/* 4 sitting people dots around the circle */}
-      <circle cx="32" cy="12" r="3.5" fill="url(#majlis-grad)" filter="url(#majlis-glow)" />
-      <circle cx="52" cy="32" r="3.5" fill="url(#majlis-grad)" filter="url(#majlis-glow)" />
-      <circle cx="32" cy="52" r="3.5" fill="url(#majlis-grad)" filter="url(#majlis-glow)" />
-      <circle cx="12" cy="32" r="3.5" fill="url(#majlis-grad)" filter="url(#majlis-glow)" />
-
-      {/* Central Arabic Meem 'م' styled with speech bubble tail */}
       <path
-        d="M32 20C26.4772 20 22 24.4772 22 30C22 35.5228 26.4772 40 32 40C34.5 40 36.8 39.1 38.6 37.6L43 41.5V37C45.2 35.1 46.5 32.7 46.5 30C46.5 24.4772 42.0228 20 36.5 20H32Z"
-        fill="url(#majlis-grad)"
-        stroke="url(#majlis-grad)"
-        strokeWidth="1.5"
+        d="M17 34C17 19.7 23.7 10 32 10C40.3 10 47 19.7 47 34C47 44.5 40.7 51 32 51C23.3 51 17 44.5 17 34Z"
+        fill="url(#majlis-head-grad)"
+        stroke="#261E61"
+        strokeWidth="2"
         strokeLinejoin="round"
       />
-      {/* Inner loop of Meem */}
-      <circle cx="32" cy="28" r="3" fill="white" />
+      <path d="M17 31C17 18.9 23.2 8 32 8C40.8 8 47 18.9 47 31" stroke="url(#majlis-headband-grad)" strokeWidth="5" strokeLinecap="round" />
+      <rect x="9" y="27" width="11" height="17" rx="5.5" fill="#5141A8" stroke="#2D246B" strokeWidth="2" />
+      <rect x="44" y="27" width="11" height="17" rx="5.5" fill="#5141A8" stroke="#2D246B" strokeWidth="2" />
+      <path d="M14.5 43C18.5 48 22.5 50.5 27 51.5" stroke="#5141A8" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
 }
@@ -196,9 +192,7 @@ export function UserAvatar({
   return (
     <div
       className={`relative shrink-0 inline-flex items-center justify-center rounded-full nexus-avatar-shape select-none transition-all duration-150 ${
-        speaking
-          ? 'ring-[3px] ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-[#2B2D31] shadow-[0_0_0_4px_rgba(16,185,129,0.22)]'
-          : ''
+        speaking ? 'brightness-105' : ''
       }`}
     >
       {src && !imgError ? (
@@ -220,7 +214,7 @@ export function UserAvatar({
       )}
       {showStatus && status && (
         <span
-          className={`absolute -bottom-0.5 -end-0.5 ${dotClass} rounded-full border-white dark:border-[#232428] ring-1 ring-black/10 dark:ring-black/30 inline-flex items-center justify-center overflow-hidden ${getStatusDotClass(
+          className={`absolute -bottom-0.5 -end-0.5 ${dotClass} rounded-full border-white dark:border-[#232428] inline-flex items-center justify-center overflow-hidden ${getStatusDotClass(
             status
           )}`}
         >

@@ -281,7 +281,7 @@ export function ServerRail({
                     aria-label={gLabel}
                     className={`relative rounded-full transition-all duration-150 ${
                       isActive
-                        ? 'ring-2 ring-nexus ring-offset-2 ring-offset-slate-200 dark:ring-offset-[#1E1F22]'
+                        ? 'bg-nexus/15'
                         : 'hover:scale-105'
                     }`}
                   >
@@ -335,7 +335,7 @@ export function ServerRail({
                   aria-label={dmLabel}
                   className={`relative rounded-full transition-all duration-150 ${
                     isActive
-                      ? 'ring-2 ring-nexus ring-offset-2 ring-offset-slate-200 dark:ring-offset-[#1E1F22]'
+                      ? 'bg-nexus/15'
                       : 'hover:scale-105'
                   }`}
                 >
@@ -443,7 +443,7 @@ export function ServerRail({
                       isDragging ? 'opacity-45 scale-95' : ''
                     } ${
                       isActive
-                        ? 'rounded-2xl ring-2 ring-nexus ring-offset-2 ring-offset-slate-200 dark:ring-offset-[#1E1F22]'
+                        ? 'rounded-2xl bg-nexus/15'
                         : 'rounded-3xl hover:rounded-2xl'
                     }`}
                   >

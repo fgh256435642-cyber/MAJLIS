@@ -314,7 +314,7 @@ export function MembersSidebar({
             />
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end justify-between">
-                <div className="rounded-full ring-4 ring-white dark:ring-[#111214] bg-white dark:bg-[#111214]">
+                <div className="rounded-full bg-transparent">
                   <UserAvatar
                     src={selectedPub?.avatarUrl ?? selectedMember.avatarUrl}
                     name={selectedPub?.displayName || selectedMember.displayName}

@@ -909,12 +909,12 @@ export function ChatArea({
                               src={reader.avatarUrl}
                               alt={reader.displayName}
                               referrerPolicy="no-referrer"
-                              className="w-4 h-4 rounded-full object-cover ring-1 ring-white dark:ring-[#313338] shadow-xs"
+                              className="w-4 h-4 rounded-full object-cover shadow-xs"
                             />
                           ) : (
                             <span
                               key={reader.uid}
-                              className="w-4 h-4 rounded-full bg-nexus text-[9px] font-bold text-white flex items-center justify-center ring-1 ring-white dark:ring-[#313338] shadow-xs uppercase"
+                              className="w-4 h-4 rounded-full bg-nexus text-[9px] font-bold text-white flex items-center justify-center shadow-xs uppercase"
                             >
                               {reader.displayName.charAt(0)}
                             </span>

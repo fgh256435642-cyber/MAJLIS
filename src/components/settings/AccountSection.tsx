@@ -548,7 +548,7 @@ export function AccountSection({
 
         <div className="px-5 pb-5">
           <div className="-mt-10 mb-5 flex flex-wrap items-end justify-between gap-4">
-            <label className="relative cursor-pointer group rounded-full ring-4 ring-white dark:ring-[#2B2D31]">
+            <label className="relative cursor-pointer group rounded-full">
               <UserAvatar
                 src={previewAvatar}
                 name={

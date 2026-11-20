@@ -358,7 +358,7 @@ export function ProfileStatusSection({
             />
             <div className="px-4 pb-4">
               <div className="-mt-9 mb-3 flex items-end justify-between gap-2">
-                <div className="rounded-full ring-4 ring-white dark:ring-[#111214]">
+                <div className="rounded-full">
                   <UserAvatar
                     src={publicUser?.avatarUrl}
                     name={

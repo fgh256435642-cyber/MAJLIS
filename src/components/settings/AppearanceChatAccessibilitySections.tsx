@@ -212,7 +212,7 @@ export function AppearanceSection() {
             {settings.messageStyle === 'compact' ? (
               <div className="flex items-baseline gap-2">
                 <span className="text-[10px] text-slate-400 tabular-nums">12:30</span>
-                <span className="font-semibold text-nexus">Nora</span>
+                <span className="font-semibold text-nexus">Majlis</span>
                 <span className="text-slate-700 dark:text-zinc-200">
                   {t(language, 'messageStylePreviewText')}
                 </span>
@@ -220,11 +220,11 @@ export function AppearanceSection() {
             ) : (
               <div className="flex items-start gap-2.5">
                 <div className="w-7 h-7 nexus-avatar-shape bg-nexus text-white font-bold flex items-center justify-center shrink-0">
-                  N
+                  M
                 </div>
                 <div>
                   <div className="flex items-baseline gap-2">
-                    <span className="font-semibold text-slate-900 dark:text-white">Nora</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">Majlis</span>
                     <span className="text-[10px] text-slate-400">12:30</span>
                   </div>
                   <div className="text-slate-700 dark:text-zinc-200 mt-0.5">
