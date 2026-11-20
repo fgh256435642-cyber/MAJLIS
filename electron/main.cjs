@@ -8,6 +8,26 @@ dotenv.config();
 let server;
 let mainWindow;
 
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+
+if (!gotSingleInstanceLock) {
+  app.quit();
+}
+
+function configurePermissions() {
+  session.defaultSession.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      const allowedPermissions = new Set([
+        'media',
+        'notifications',
+        'clipboard-read',
+        'fullscreen',
+      ]);
+      callback(allowedPermissions.has(permission));
+    }
+  );
+}
+
 function checkForUpdates() {
   if (!app.isPackaged) {
     return;
@@ -87,12 +107,48 @@ async function createWindow() {
     minHeight: 640,
     backgroundColor: '#1E1F22',
     autoHideMenuBar: true,
+    menuBarVisible: false,
+    show: false,
+    title: 'Majlis',
     icon: path.join(__dirname, '..', 'majlis.ico'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
     },
+  });
+
+  mainWindow.setMenu(null);
+  mainWindow.removeMenu();
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.focus();
+  });
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    const allowedAuthUrls = [
+      'https://accounts.google.com/',
+      'https://stalwart-surface-46tvw.firebaseapp.com/',
+      'https://stalwart-surface-46tvw.web.app/',
+    ];
+    if (allowedAuthUrls.some((allowedUrl) => url.startsWith(allowedUrl))) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 520,
+          height: 680,
+          autoHideMenuBar: true,
+          menuBarVisible: false,
+          backgroundColor: '#1E1F22',
+        },
+      };
+    }
+    require('electron').shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (!url.startsWith('http://127.0.0.1:')) {
+      event.preventDefault();
+    }
   });
 
   await mainWindow.loadURL(`http://127.0.0.1:${port}`);
@@ -102,12 +158,11 @@ async function createWindow() {
 }
 
 app.whenReady().then(() => {
+  if (!gotSingleInstanceLock) {
+    return;
+  }
   Menu.setApplicationMenu(null);
-  session.defaultSession.setPermissionRequestHandler(
-    (_webContents, permission, callback) => {
-      callback(permission === 'media' || permission === 'notifications');
-    }
-  );
+  configurePermissions();
 
   createWindow().catch((error) => {
     console.error('Failed to start Majlis:', error);
@@ -120,6 +175,18 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+});
+
+app.on('second-instance', () => {
+  if (!mainWindow) {
+    createWindow();
+    return;
+  }
+  if (mainWindow.isMinimized()) {
+    mainWindow.restore();
+  }
+  mainWindow.show();
+  mainWindow.focus();
 });
 
 app.on('window-all-closed', () => {
