@@ -7,6 +7,7 @@ dotenv.config();
 
 let server;
 let mainWindow;
+const LOCAL_APP_PORT = 48123;
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 
@@ -91,8 +92,8 @@ async function startServer() {
   });
 
   return new Promise((resolve, reject) => {
-    server = expressApp.listen(0, '127.0.0.1', () => {
-      resolve(server.address().port);
+    server = expressApp.listen(LOCAL_APP_PORT, '127.0.0.1', () => {
+      resolve(LOCAL_APP_PORT);
     });
     server.on('error', reject);
   });

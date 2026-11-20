@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   browserLocalPersistence,
-  browserSessionPersistence,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   setPersistence,
@@ -62,9 +61,11 @@ export function AuthScreen() {
   const [displayName, setDisplayName] = useState('');
   
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true;
-    return localStorage.getItem('nexus_remember_me') !== 'false';
+  const [rememberMe] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('nexus_remember_me', 'true');
+    }
+    return true;
   });
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -160,8 +161,8 @@ export function AuthScreen() {
   const pwdStrength = getPasswordStrength(password);
 
   const applySessionPersistence = async () => {
-    localStorage.setItem('nexus_remember_me', String(rememberMe));
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    localStorage.setItem('nexus_remember_me', 'true');
+    await setPersistence(auth, browserLocalPersistence);
   };
 
   const handleGoogleSignIn = async () => {
@@ -726,18 +727,15 @@ export function AuthScreen() {
                       </p>
                     )}
 
-                    {/* Remember Me Checkbox (controls Firebase auth persistence) */}
+                    {/* Keep the account signed in on this device. */}
                     <div className="pt-2.5">
-                      <label className="inline-flex items-center gap-2.5 cursor-pointer select-none group">
+                      <label className="inline-flex items-center gap-2.5 select-none">
                         <input
                           type="checkbox"
                           checked={rememberMe}
-                          onChange={(e) => {
-                            const next = e.target.checked;
-                            setRememberMe(next);
-                            localStorage.setItem('nexus_remember_me', String(next));
-                          }}
-                          className="w-4 h-4 rounded border-slate-400 dark:border-white/30 bg-white/80 dark:bg-slate-950/60 text-indigo-600 dark:text-sky-400 accent-indigo-600 dark:accent-sky-400 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-sky-400 cursor-pointer"
+                          readOnly
+                          onChange={() => undefined}
+                          className="w-4 h-4 rounded border-slate-400 dark:border-white/30 bg-white/80 dark:bg-slate-950/60 text-indigo-600 dark:text-sky-400 accent-indigo-600 dark:accent-sky-400"
                         />
                         <span className="text-[13px] sm:text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                           {t(language, 'rememberMe')}
