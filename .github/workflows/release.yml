@@ -16,9 +16,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -29,8 +29,8 @@ jobs:
         run: |
           npm run build
           npx electron-builder --win nsis --publish never
-          $exe = Get-ChildItem release -Filter "*.exe" | Where-Object { $_.Name -notlike "*setup*blockmap*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-          if (-not $exe) { throw "Windows EXE was not generated" }
+          $exe = Get-ChildItem release -Filter "Majlis Setup *.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $exe) { throw "Majlis Windows EXE was not generated" }
           $files = @($exe.FullName)
           Get-ChildItem release -Filter "*.blockmap" -ErrorAction SilentlyContinue | ForEach-Object { $files += $_.FullName }
           Get-ChildItem release -Filter "*.yml" -ErrorAction SilentlyContinue | ForEach-Object { $files += $_.FullName }
@@ -45,9 +45,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Set up Java
