@@ -24,21 +24,30 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Publish release
+      - name: Build Windows installer
         shell: pwsh
         run: |
           npm run build
           npx electron-builder --win nsis --publish never
           $exe = Get-ChildItem release -Filter "Majlis Setup *.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
           if (-not $exe) { throw "Majlis Windows EXE was not generated" }
-          $files = @($exe.FullName)
-          Get-ChildItem release -Filter "*.blockmap" -ErrorAction SilentlyContinue | ForEach-Object { $files += $_.FullName }
-          Get-ChildItem release -Filter "*.yml" -ErrorAction SilentlyContinue | ForEach-Object { $files += $_.FullName }
-          gh release upload "$env:GITHUB_REF_NAME" $files --clobber
+          Copy-Item $exe.FullName "release\Majlis-${env:GITHUB_REF_NAME}.exe"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Upload Windows assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            release/Majlis-${{ github.ref_name }}.exe
+            release/*.blockmap
+            release/*.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   android:
+    needs: windows
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -69,7 +78,10 @@ jobs:
           android/gradlew -p android assembleDebug
           cp android/app/build/outputs/apk/debug/app-debug.apk "Majlis-${GITHUB_REF_NAME}.apk"
 
-      - name: Upload APK to GitHub release
-        run: gh release upload "$GITHUB_REF_NAME" "Majlis-${GITHUB_REF_NAME}.apk" --clobber
+      - name: Upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: Majlis-${{ github.ref_name }}.apk
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
