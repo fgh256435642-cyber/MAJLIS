@@ -79,11 +79,14 @@ export async function testConnection(): Promise<boolean> {
     await getDocFromServer(doc(db, 'test', 'connection'));
     return true;
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes('the client is offline')) {
+      console.warn('Firebase connection is unavailable: the client is offline.');
       return false;
     }
-    return true;
+
+    console.error('Firebase connection test failed:', error);
+    return false;
   }
 }
 
