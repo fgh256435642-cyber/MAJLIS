@@ -33,7 +33,7 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
       <path d="M17 31C17 18.9 23.2 8 32 8C40.8 8 47 18.9 47 31" stroke="url(#majlis-headband-grad)" strokeWidth="5" strokeLinecap="round" />
       <rect x="9" y="27" width="11" height="17" rx="5.5" fill="#5141A8" stroke="#2D246B" strokeWidth="2" />
       <rect x="44" y="27" width="11" height="17" rx="5.5" fill="#5141A8" stroke="#2D246B" strokeWidth="2" />
-      <path d="M14.5 43C18.5 48 22.5 50.5 27 51.5" stroke="#5141A8" strokeWidth="3" strokeLinecap="round" />
+      <path d="M49.5 43C45.5 48 41.5 50.5 37 51.5" stroke="#5141A8" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
 }
