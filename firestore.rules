@@ -168,7 +168,7 @@ service cloud.firestore {
       return data.keys().hasAll(['uid', 'username', 'usernameLower', 'displayName', 'status', 'isDiscoverable', 'lastSeen', 'updatedAt'])
         && data.keys().hasOnly([
           'uid', 'username', 'usernameLower', 'displayName', 'avatarUrl', 'bannerUrl', 'profileColor', 'bio',
-          'customStatusText', 'customStatusEmoji', 'customStatusExpiresAtMs', 'hideOnlineStatus',
+          'customStatusText', 'customStatusEmoji', 'customStatusExpiresAtMs', 'hideOnlineStatus', 'profileVisible',
           'friendRequestPermission', 'dmPermission', 'status', 'isDiscoverable', 'lastSeen', 'updatedAt'
         ])
         && data.uid == userId
@@ -183,6 +183,7 @@ service cloud.firestore {
         && (!('customStatusEmoji' in data) || (data.customStatusEmoji is string && data.customStatusEmoji.size() <= 16))
         && (!('customStatusExpiresAtMs' in data) || (data.customStatusExpiresAtMs is int && data.customStatusExpiresAtMs >= 0))
         && (!('hideOnlineStatus' in data) || data.hideOnlineStatus is bool)
+        && (!('profileVisible' in data) || data.profileVisible is bool)
         && (!('friendRequestPermission' in data) || (data.friendRequestPermission == 'everyone' || data.friendRequestPermission == 'friends_of_friends' || data.friendRequestPermission == 'nobody'))
         && (!('dmPermission' in data) || (data.dmPermission == 'server_members' || data.dmPermission == 'friends_only'))
         && (data.status == 'online' || data.status == 'idle' || data.status == 'dnd' || data.status == 'offline')
@@ -201,7 +202,7 @@ service cloud.firestore {
           'videoInputId', 'voiceSensitivityAuto', 'voiceSensitivityThreshold', 'noiseSuppression',
           'echoCancellation', 'autoGainControl', 'outputVolume', 'cameraQuality',
           'pushToTalkEnabled', 'pushToTalkKey', 'friendRequestPermission', 'dmPermission',
-          'hideOnlineStatus', 'language', 'timeFormat', 'timezone', 'calendar',
+          'hideOnlineStatus', 'profileVisible', 'language', 'timeFormat', 'timezone', 'calendar',
           'autoPreviewLinks', 'autoEmoji', 'showQuickReply', 'showTypingIndicators',
           'confirmExternalLinks', 'highContrast', 'reduceTransparency', 'largeControls',
           'shortcuts', 'vpnCompatibilityMode', 'sessionRevokedBeforeMs', 'updatedAt'
@@ -240,6 +241,7 @@ service cloud.firestore {
         && (!('friendRequestPermission' in data) || data.friendRequestPermission in ['everyone', 'friends_of_friends', 'nobody'])
         && (!('dmPermission' in data) || data.dmPermission in ['server_members', 'friends_only'])
         && (!('hideOnlineStatus' in data) || data.hideOnlineStatus is bool)
+        && (!('profileVisible' in data) || data.profileVisible is bool)
         && (!('language' in data) || data.language in ['en', 'ar'])
         && (!('timeFormat' in data) || data.timeFormat in ['12h', '24h'])
         && (!('timezone' in data) || (data.timezone is string && data.timezone.size() <= 64))
