@@ -363,11 +363,13 @@ export function GroupMembersSidebar({
             }}
           />
           <div className="fixed bottom-4 end-4 sm:absolute sm:top-4 sm:bottom-auto sm:end-64 z-40 w-68 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] shadow-2xl overflow-hidden">
-            <ProfileBanner
-              bannerUrl={selectedPub?.bannerUrl}
-              profileColor={selectedPub?.profileColor}
-              className="h-14"
-            />
+            {selectedPub?.profileVisible !== false && (
+              <ProfileBanner
+                bannerUrl={selectedPub?.bannerUrl}
+                profileColor={selectedPub?.profileColor}
+                className="h-14"
+              />
+            )}
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end">
                 <div className="rounded-full bg-transparent">
@@ -411,6 +413,7 @@ export function GroupMembersSidebar({
                   </span>
                 </div>
                 {(() => {
+                  if (selectedPub?.profileVisible === false) return null;
                   const custom = getActiveCustomStatus(selectedPub, presenceNowMs);
                   if (!custom) return null;
                   return (
@@ -422,7 +425,7 @@ export function GroupMembersSidebar({
                 })()}
               </div>
 
-            {selectedPub?.bio && (
+            {selectedPub?.profileVisible !== false && selectedPub?.bio && (
               <p className="text-xs text-slate-600 dark:text-zinc-300 break-words">
                 {selectedPub.bio}
               </p>

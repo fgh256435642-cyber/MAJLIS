@@ -715,7 +715,7 @@ export function ChatArea({
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="absolute start-1/2 -translate-x-1/2 flex items-center justify-center gap-2">
           {/* Search Input */}
           <div className="relative flex items-center">
             <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 pointer-events-none" />
@@ -728,7 +728,7 @@ export function ChatArea({
                 setSearchOpen(true);
               }}
               placeholder={t(language, 'searchMessages')}
-              className="w-32 sm:w-48 focus:sm:w-60 transition-all ps-8 pe-7 py-1 rounded-md bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-nexus"
+              className="w-32 sm:w-48 focus:sm:w-60 transition-all ps-8 pe-7 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-900 dark:text-zinc-100 placeholder:text-slate-500 dark:placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-nexus"
             />
             {searchQuery && (
               <button
@@ -751,7 +751,7 @@ export function ChatArea({
                 onClick={() => onStartDmCall('audio')}
                 title={t(language, 'startAudioCall')}
                 aria-label={t(language, 'startAudioCall')}
-                className="p-1.5 rounded-md text-slate-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                className="p-2 rounded-2xl text-slate-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Phone className="w-4 h-4" />
               </button>
@@ -760,7 +760,7 @@ export function ChatArea({
                 onClick={() => onStartDmCall('video')}
                 title={t(language, 'startVideoCall')}
                 aria-label={t(language, 'startVideoCall')}
-                className="p-1.5 rounded-md text-slate-500 dark:text-zinc-400 hover:text-nexus dark:hover:text-nexus hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                className="p-2 rounded-2xl text-slate-500 dark:text-zinc-400 hover:text-nexus dark:hover:text-nexus hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Video className="w-4 h-4" />
               </button>

@@ -222,6 +222,7 @@ async function ensureUserProfileInternal(
         bio: '',
         status: 'online',
         isDiscoverable: true,
+        profileVisible: true,
         lastSeen: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -251,6 +252,7 @@ async function ensureUserProfileInternal(
       bio: '',
       status: 'online',
       isDiscoverable: true,
+      profileVisible: true,
       lastSeen: nowTs,
       updatedAt: nowTs,
     };
@@ -2028,6 +2030,7 @@ export function createDefaultUserSettings(uid: string): UserSettings {
     friendRequestPermission: 'everyone',
     dmPermission: 'server_members',
     hideOnlineStatus: false,
+    profileVisible: true,
     language: 'ar',
     timeFormat: '12h',
     timezone: detectedTz.slice(0, 64),
@@ -2096,6 +2099,7 @@ export async function saveDetailedUserSettings(
     friendRequestPermission: raw.friendRequestPermission,
     dmPermission: raw.dmPermission,
     hideOnlineStatus: Boolean(raw.hideOnlineStatus),
+    profileVisible: raw.profileVisible !== false,
     language: raw.language,
     timeFormat: raw.timeFormat,
     timezone: String(raw.timezone || 'UTC').slice(0, 64),
@@ -2187,6 +2191,7 @@ export async function updatePrivacySettings(
     hideOnlineStatus: boolean;
     friendRequestPermission: FriendRequestPermission;
     dmPermission: DmPermission;
+    profileVisible: boolean;
   },
   activePresenceTarget: UserStatus = 'online'
 ): Promise<void> {
@@ -2194,6 +2199,7 @@ export async function updatePrivacySettings(
     hideOnlineStatus: updates.hideOnlineStatus,
     friendRequestPermission: updates.friendRequestPermission,
     dmPermission: updates.dmPermission,
+    profileVisible: updates.profileVisible,
     status: updates.hideOnlineStatus ? 'offline' : activePresenceTarget,
     updatedAt: serverTimestamp(),
   };

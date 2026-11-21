@@ -56,6 +56,7 @@ export function PrivacySafetySection() {
           hideOnlineStatus: settings.hideOnlineStatus,
           friendRequestPermission: val,
           dmPermission: settings.dmPermission,
+          profileVisible: settings.profileVisible,
         },
         preferredStatus
       );
@@ -78,6 +79,7 @@ export function PrivacySafetySection() {
           hideOnlineStatus: settings.hideOnlineStatus,
           friendRequestPermission: settings.friendRequestPermission,
           dmPermission: val,
+          profileVisible: settings.profileVisible,
         },
         preferredStatus
       );
@@ -100,10 +102,34 @@ export function PrivacySafetySection() {
           hideOnlineStatus: checked,
           friendRequestPermission: settings.friendRequestPermission,
           dmPermission: settings.dmPermission,
+          profileVisible: settings.profileVisible,
         },
         preferredStatus
       );
       await updateSetting({ hideOnlineStatus: checked });
+    } catch (err) {
+      pushToast({
+        type: 'error',
+        title: t(language, 'errorGeneric'),
+        description: err instanceof Error ? err.message : undefined,
+      });
+    }
+  };
+
+  const handleProfileVisible = async (checked: boolean) => {
+    if (!uid) return;
+    try {
+      await updatePrivacySettings(
+        uid,
+        {
+          hideOnlineStatus: settings.hideOnlineStatus,
+          friendRequestPermission: settings.friendRequestPermission,
+          dmPermission: settings.dmPermission,
+          profileVisible: checked,
+        },
+        preferredStatus
+      );
+      await updateSetting({ profileVisible: checked });
     } catch (err) {
       pushToast({
         type: 'error',
@@ -216,6 +242,23 @@ export function PrivacySafetySection() {
             type="checkbox"
             checked={settings.hideOnlineStatus}
             onChange={(e) => void handleHideOnline(e.target.checked)}
+            className="w-4 h-4 accent-nexus"
+          />
+        </label>
+
+        <label className="flex items-center justify-between gap-4 pt-3 border-t border-slate-200 dark:border-white/10 cursor-pointer">
+          <div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-white">
+              {t(language, 'profileVisible')}
+            </div>
+            <div className="text-xs text-slate-500 dark:text-zinc-400">
+              {t(language, 'profileVisibleDesc')}
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.profileVisible}
+            onChange={(e) => void handleProfileVisible(e.target.checked)}
             className="w-4 h-4 accent-nexus"
           />
         </label>

@@ -80,6 +80,7 @@ export interface UserSettings {
   friendRequestPermission: FriendRequestPermission;
   dmPermission: DmPermission;
   hideOnlineStatus: boolean;
+  profileVisible: boolean;
   language: Language;
   timeFormat: TimeFormatMode;
   timezone: string;
@@ -152,6 +153,7 @@ export interface PublicUser {
   customStatusEmoji?: string;
   customStatusExpiresAtMs?: number;
   hideOnlineStatus?: boolean;
+  profileVisible?: boolean;
   friendRequestPermission?: FriendRequestPermission;
   dmPermission?: DmPermission;
   status: UserStatus;
