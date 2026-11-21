@@ -106,7 +106,7 @@ export function IncomingCallModal({
             className="flex flex-col items-center gap-1.5 group"
             title={t(language, 'declineCall')}
           >
-            <div className="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
+            <div className="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-lg transition-colors">
               <PhoneOff className="w-6 h-6" />
             </div>
             <span className="text-xs font-medium text-rose-600 dark:text-rose-400">
@@ -120,7 +120,7 @@ export function IncomingCallModal({
             className="flex flex-col items-center gap-1.5 group"
             title={t(language, 'acceptCall')}
           >
-            <div className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-105 animate-bounce">
+            <div className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-lg transition-colors animate-pulse">
               <Phone className="w-6 h-6" />
             </div>
             <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">

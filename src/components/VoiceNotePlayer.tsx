@@ -63,7 +63,7 @@ export function VoiceNotePlayer({ audioUrl }: { audioUrl: string }) {
         onClick={togglePlay}
         title={isPlaying ? t(language, 'pauseVoiceNote') : t(language, 'playVoiceNote')}
         aria-label={isPlaying ? t(language, 'pauseVoiceNote') : t(language, 'playVoiceNote')}
-        className="w-9 h-9 rounded-full bg-nexus hover:bg-nexus-hover text-white flex items-center justify-center transition-transform hover:scale-105 shrink-0 shadow-sm"
+        className="w-9 h-9 rounded-full bg-nexus hover:bg-nexus-hover text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
       >
         {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ms-0.5" />}
       </button>

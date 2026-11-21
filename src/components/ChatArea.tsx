@@ -1283,7 +1283,7 @@ export function ChatArea({
 
                     {/* Hover Action Toolbar */}
                     {(settings.showQuickReply || canEdit || canDelete) && (
-                      <div className="hidden group-hover:flex items-center gap-0.5 absolute -top-3 end-3 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] shadow-md px-1 py-0.5 z-10">
+                      <div className="hidden group-hover:flex items-center gap-0.5 absolute -top-3 end-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] shadow-md px-1 py-0.5 z-10">
                         {settings.showQuickReply && (
                           <>
                             <button

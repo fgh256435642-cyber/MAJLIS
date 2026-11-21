@@ -195,7 +195,7 @@ export function ServerRail({
               className={`relative w-12 h-12 flex items-center justify-center transition-all duration-150 ${
                 activeView === 'home'
                   ? 'rounded-2xl bg-nexus text-white shadow-sm'
-                  : 'rounded-3xl hover:rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
+                  : 'rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
               }`}
             >
               <MajlisBrandIcon className="w-6 h-6" />
@@ -215,7 +215,7 @@ export function ServerRail({
               onClick={onOpenQuickSwitcher}
               aria-label={t(language, 'quickSwitcher')}
               aria-keyshortcuts="Control+k"
-              className="w-12 h-12 rounded-3xl hover:rounded-2xl bg-white dark:bg-[#313338] text-slate-600 dark:text-zinc-300 hover:bg-nexus hover:text-white flex items-center justify-center transition-all duration-150"
+              className="w-12 h-12 rounded-2xl bg-white dark:bg-[#313338] text-slate-600 dark:text-zinc-300 hover:bg-nexus hover:text-white flex items-center justify-center transition-colors duration-150"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -237,7 +237,7 @@ export function ServerRail({
               className={`relative w-12 h-12 flex items-center justify-center transition-all duration-150 ${
                 isHomeFriendsActive
                   ? 'rounded-2xl bg-nexus text-white shadow-sm'
-                  : 'rounded-3xl hover:rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
+                  : 'rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
               }`}
             >
               <Users className="w-5 h-5" />
@@ -279,10 +279,10 @@ export function ServerRail({
                     type="button"
                     onClick={() => onSelectGroup(g.id)}
                     aria-label={gLabel}
-                    className={`relative rounded-full transition-all duration-150 ${
+                    className={`relative rounded-2xl transition-colors duration-150 ${
                       isActive
                         ? 'bg-nexus/15'
-                        : 'hover:scale-105'
+                        : ''
                     }`}
                   >
                     <GroupAvatar
@@ -333,10 +333,10 @@ export function ServerRail({
                   type="button"
                   onClick={() => onSelectDm(dm.id)}
                   aria-label={dmLabel}
-                  className={`relative rounded-full transition-all duration-150 ${
+                  className={`relative rounded-2xl transition-colors duration-150 ${
                     isActive
                       ? 'bg-nexus/15'
-                      : 'hover:scale-105'
+                      : ''
                   }`}
                 >
                   <UserAvatar
@@ -439,12 +439,12 @@ export function ServerRail({
                     }}
                     onClick={() => onSelectServer(srv.serverId)}
                     aria-label={srv.serverName}
-                    className={`transition-all duration-150 overflow-hidden cursor-grab active:cursor-grabbing ${
+                    className={`transition-colors duration-150 overflow-hidden cursor-grab active:cursor-grabbing ${
                       isDragging ? 'opacity-45 scale-95' : ''
                     } ${
                       isActive
                         ? 'rounded-2xl bg-nexus/15'
-                        : 'rounded-3xl hover:rounded-2xl'
+                        : 'rounded-2xl'
                     }`}
                   >
                     <ServerIcon
@@ -452,7 +452,7 @@ export function ServerRail({
                       name={srv.serverName}
                       size="md"
                       rounded={
-                        isActive ? 'rounded-2xl' : 'rounded-3xl group-hover:rounded-2xl'
+                        isActive ? 'rounded-2xl' : 'rounded-2xl'
                       }
                     />
                   </button>
@@ -472,7 +472,7 @@ export function ServerRail({
             type="button"
             onClick={onOpenCreateJoin}
             aria-label={t(language, 'addServer')}
-            className="w-12 h-12 rounded-3xl hover:rounded-2xl bg-white dark:bg-[#313338] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-all duration-150 shrink-0"
+            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#313338] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors duration-150 shrink-0"
           >
             <Plus className="w-6 h-6" />
           </button>
@@ -484,7 +484,7 @@ export function ServerRail({
             type="button"
             onClick={onOpenDiscover}
             aria-label={t(language, 'discoverServers')}
-            className="w-12 h-12 rounded-3xl hover:rounded-2xl bg-white dark:bg-[#313338] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-all duration-150 shrink-0"
+            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#313338] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors duration-150 shrink-0"
           >
             <Compass className="w-5 h-5" />
           </button>
