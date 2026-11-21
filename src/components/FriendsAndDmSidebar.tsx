@@ -143,7 +143,7 @@ export function FriendsAndDmSidebar({
       </div>
 
       {/* Friends + DM & Group List */}
-      <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
+      <div className="flex-1 overflow-y-auto px-2 py-2.5 space-y-3">
         {/* Fixed Friends Entry */}
         <button
           type="button"
@@ -190,9 +190,14 @@ export function FriendsAndDmSidebar({
 
           {combinedItems.length === 0 ? (
             <CollapsibleBody isOpen={!dmsCollapsed}>
-              <p className="px-2 py-2 text-xs text-slate-500 dark:text-zinc-500">
-                {t(language, 'noDmsYet')}
-              </p>
+              <div className="px-3 py-8 text-center">
+                <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-nexus/10 text-nexus flex items-center justify-center">
+                  <Users className="w-5 h-5" />
+                </div>
+                <p className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
+                  {t(language, 'noDmsYet')}
+                </p>
+              </div>
             </CollapsibleBody>
           ) : (
             combinedItems.map((item) => {
@@ -208,7 +213,7 @@ export function FriendsAndDmSidebar({
                     <button
                       type="button"
                       onClick={() => onSelectGroup?.(group.id)}
-                      className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-start transition-colors ${
+                      className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-start transition-colors ${
                         isActive
                           ? 'bg-slate-200/90 dark:bg-[#404249] text-slate-950 dark:text-white font-medium'
                           : unreadCount > 0
@@ -262,7 +267,7 @@ export function FriendsAndDmSidebar({
                   <button
                     type="button"
                     onClick={() => onSelectDm(dm.id)}
-                    className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-start transition-colors ${
+                    className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-start transition-colors ${
                       isActive
                         ? 'bg-slate-200/90 dark:bg-[#404249] text-slate-950 dark:text-white font-medium'
                         : unreadCount > 0
