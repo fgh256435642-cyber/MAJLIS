@@ -61,6 +61,7 @@ import {
   LIMITS,
 } from '../utils/validation';
 import { GroupAvatar, StatusIndicator, UserAvatar } from './NexusLogo';
+import { ProfileBanner } from './ProfileBanner';
 import { VoiceNotePlayer } from './VoiceNotePlayer';
 
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '🔥', '👀', '🎉', '✅', '🚀'];
@@ -179,6 +180,7 @@ export function ChatArea({
   const [pendingExternalUrl, setPendingExternalUrl] = useState<string | null>(null);
   const [revealedBlockedIds, setRevealedBlockedIds] = useState<Record<string, boolean>>({});
   const [revealedImageIds, setRevealedImageIds] = useState<Record<string, boolean>>({});
+  const [selectedProfileUid, setSelectedProfileUid] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -640,24 +642,41 @@ export function ChatArea({
           ) : mode === 'group' ? (
             <GroupAvatar src={group?.iconUrl} name={title} size="xs" />
           ) : dmRecipient ? (
-            <UserAvatar
-              src={dmRecipient.avatarUrl}
-              name={dmRecipient.displayName || title}
-              status={getEffectiveUserStatus(
-                dmRecipient.status,
-                dmRecipient.lastSeen?.toMillis?.(),
-                presenceNowMs
-              )}
-              size="xs"
-              showStatus
-            />
+            <button
+              type="button"
+              onClick={() => setSelectedProfileUid(dmRecipient.uid)}
+              aria-label={`${dmRecipient.displayName || title} profile`}
+              className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+            >
+              <UserAvatar
+                src={dmRecipient.avatarUrl}
+                name={dmRecipient.displayName || title}
+                status={getEffectiveUserStatus(
+                  dmRecipient.status,
+                  dmRecipient.lastSeen?.toMillis?.(),
+                  presenceNowMs
+                )}
+                size="xs"
+                showStatus
+              />
+            </button>
           ) : (
             <AtSign className="w-5 h-5 text-slate-400 dark:text-zinc-400 shrink-0" />
           )}
 
-          <h2 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">
-            {title}
-          </h2>
+          {mode === 'dm' && dmRecipient ? (
+            <button
+              type="button"
+              onClick={() => setSelectedProfileUid(dmRecipient.uid)}
+              className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate hover:text-nexus focus:outline-none"
+            >
+              {title}
+            </button>
+          ) : (
+            <h2 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">
+              {title}
+            </h2>
+          )}
 
           {mode === 'group' && group && (
             <span className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-500 dark:text-zinc-400 shrink-0 tabular-nums">
@@ -714,6 +733,91 @@ export function ChatArea({
             </span>
           )}
         </div>
+
+        {selectedProfileUid && (
+          (() => {
+            const profile =
+              usersById[selectedProfileUid] ||
+              (dmRecipient?.uid === selectedProfileUid ? dmRecipient : null);
+            if (!profile) return null;
+            const status = getEffectiveUserStatus(
+              profile.status,
+              profile.lastSeen?.toMillis?.(),
+              presenceNowMs
+            );
+            const statusText =
+              status === 'online'
+                ? t(language, 'online')
+                : status === 'idle'
+                ? t(language, 'idle')
+                : status === 'dnd'
+                ? t(language, 'dnd')
+                : t(language, 'offline');
+            const custom = getActiveCustomStatus(profile, presenceNowMs);
+            const visible = profile.profileVisible !== false;
+
+            return (
+              <>
+                <div
+                  className="fixed inset-0 z-40 bg-black/35 backdrop-blur-[1px]"
+                  onClick={() => setSelectedProfileUid(null)}
+                />
+                <div className="fixed z-50 inset-x-4 bottom-4 sm:inset-x-auto sm:start-1/2 sm:-translate-x-1/2 sm:bottom-auto sm:top-24 w-auto sm:w-72 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] shadow-2xl overflow-hidden">
+                  {visible && (
+                    <ProfileBanner
+                      bannerUrl={profile.bannerUrl}
+                      profileColor={profile.profileColor}
+                      className="h-20"
+                    />
+                  )}
+                  <div className="p-4 pt-0 space-y-3">
+                    <div className="-mt-8 flex items-end">
+                      <div className="rounded-full bg-transparent">
+                        <UserAvatar
+                          src={profile.avatarUrl}
+                          name={profile.displayName || profile.username}
+                          status={status}
+                          size="lg"
+                          showStatus
+                        />
+                      </div>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">
+                        {profile.displayName || profile.username}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                        @{profile.username}
+                      </div>
+                      <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                        <StatusIndicator status={status} className="w-2 h-2 shrink-0" />
+                        <span>{statusText}</span>
+                      </div>
+                      {visible && custom && (
+                        <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-700 dark:text-zinc-200 flex items-center gap-1.5">
+                          {custom.emoji && <span>{custom.emoji}</span>}
+                          <span className="truncate">{custom.text}</span>
+                        </div>
+                      )}
+                      {visible && profile.bio && (
+                        <p className="mt-3 text-xs leading-relaxed text-slate-600 dark:text-zinc-300 break-words">
+                          {profile.bio}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProfileUid(null)}
+                      className="w-full py-2 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                    >
+                      {t(language, 'cancel')}
+                    </button>
+                  </div>
+                </div>
+              </>
+            );
+          })()
+        )}
 
         <div className="shrink-0 flex items-center justify-end gap-1 ms-auto">
           {(mode === 'dm' || mode === 'group') && onStartDmCall && (
@@ -1062,26 +1166,35 @@ export function ChatArea({
                         </div>
                       ) : (
                         <div className="mt-0.5 shrink-0">
-                          <UserAvatar
-                            src={authorAvatar}
-                            name={authorName}
-                            size="md"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProfileUid(msg.authorId)}
+                            aria-label={`${authorName} profile`}
+                            className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+                          >
+                            <UserAvatar
+                              src={authorAvatar}
+                              name={authorName}
+                              size="md"
+                            />
+                          </button>
                         </div>
                       )}
 
                       <div className="flex-1 min-w-0">
                         {!isGrouped && !isCompact && (
                           <div className="flex items-baseline gap-2 flex-wrap">
-                            <span
-                              className={`text-sm font-semibold ${
+                            <button
+                              type="button"
+                              onClick={() => setSelectedProfileUid(msg.authorId)}
+                              className={`text-sm font-semibold hover:underline ${
                                 mode === 'channel'
                                   ? getRoleColorClass(memberRole)
                                   : 'text-slate-900 dark:text-white'
                               }`}
                             >
                               {authorName}
-                            </span>
+                            </button>
                             <span className="text-[11px] text-slate-500 dark:text-zinc-400 tabular-nums">
                               {formatTimestamp(currMs)}
                             </span>
