@@ -1,12 +1,12 @@
 {
-  "projectId": "stalwart-surface-46tvw",
-  "appId": "1:183771636416:web:77de01fe159c0505abc325",
-  "apiKey": "AIzaSyAkMGwmi2B_8nI9TYtATxvT4vmcvmmy_O4",
-  "authDomain": "stalwart-surface-46tvw.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-remixmajlis-fe85faad-f779-4c13-9a11-5a6875c34ed2",
-  "storageBucket": "stalwart-surface-46tvw.firebasestorage.app",
-  "messagingSenderId": "183771636416",
-  "measurementId": "",
-  "oAuthClientId": "183771636416-j8m36b3j6l2r1h8l2ci28f5nhg7sonqj.apps.googleusercontent.com",
+  "projectId": "majlis-d32ab",
+  "appId": "1:1067027485392:web:f9ee18c0af68c0ec5ac4d5",
+  "apiKey": "AIzaSyB0eWdnv2dE_4IHu5XPO_KU8oaHwSasipA",
+  "authDomain": "majlis-d32ab.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "majlis-d32ab.firebasestorage.app",
+  "messagingSenderId": "1067027485392",
+  "measurementId": "G-P7VB5L8XZ1",
+  "oAuthClientId": "",
   "recaptchaSiteKey": ""
 }
