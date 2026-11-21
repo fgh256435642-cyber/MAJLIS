@@ -4,6 +4,7 @@ import {
   CameraOff,
   Headphones,
   HeadphoneOff,
+  Maximize2,
   Mic,
   MicOff,
   Minimize2,
@@ -76,6 +77,7 @@ export function ActiveCallOverlay({
   const [durationSeconds, setDurationSeconds] = useState(0);
   const [isMinimized, setIsMinimized] = useState(false);
   const [showAddMember, setShowAddMember] = useState(false);
+  const [fullscreenParticipantId, setFullscreenParticipantId] = useState<string | null>(null);
 
   // Call duration timer
   useEffect(() => {
@@ -274,16 +276,28 @@ export function ActiveCallOverlay({
                       {p.muted && <MicOff className="w-3.5 h-3.5 text-rose-400" />}
                       {p.deafened && <HeadphoneOff className="w-3.5 h-3.5 text-rose-400" />}
                       {hasVideo && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setPinnedUserId(activePinnedId === p.userId ? null : p.userId)
-                          }
-                          className="p-1 rounded hover:bg-white/20 text-white"
-                          title={t(language, 'pinScreen')}
-                        >
-                          <Pin className="w-3 h-3" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          {p.hasScreenShare && (
+                            <button
+                              type="button"
+                              onClick={() => setFullscreenParticipantId(p.userId)}
+                              className="p-1 rounded hover:bg-white/20 text-white"
+                              title={t(language, 'fullscreen')}
+                            >
+                              <Maximize2 className="w-3 h-3" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPinnedUserId(activePinnedId === p.userId ? null : p.userId)
+                            }
+                            className="p-1 rounded hover:bg-white/20 text-white"
+                            title={t(language, 'pinScreen')}
+                          >
+                            <Pin className="w-3 h-3" />
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -349,6 +363,46 @@ export function ActiveCallOverlay({
           <span>{t(language, 'endCall')}</span>
         </button>
       </footer>
+
+      {fullscreenParticipantId && (() => {
+        const participant = participants.find((p) => p.userId === fullscreenParticipantId);
+        if (!participant) return null;
+        const stream =
+          participant.userId === myUid
+            ? localVideoStream
+            : remoteVideoStreams[participant.userId];
+        return (
+          <div
+            className="fixed inset-0 z-[80] bg-black/95 flex flex-col"
+            onClick={() => setFullscreenParticipantId(null)}
+          >
+            <div className="h-12 px-4 flex items-center justify-between text-white shrink-0">
+              <span className="text-sm font-semibold truncate">
+                {participant.displayName} · {t(language, 'screenShare')}
+              </span>
+              <button
+                type="button"
+                onClick={() => setFullscreenParticipantId(null)}
+                className="p-2 rounded-xl hover:bg-white/10"
+                title=                {t(language, 'cancel')}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 min-h-0 p-3" onClick={(e) => e.stopPropagation()}>
+              <video
+                autoPlay
+                playsInline
+                muted={participant.userId === myUid}
+                ref={(el) => {
+                  if (el && stream && el.srcObject !== stream) el.srcObject = stream;
+                }}
+                className="w-full h-full object-contain rounded-xl"
+              />
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Add Friend Dialog */}
       {showAddMember && (
