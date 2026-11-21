@@ -17,6 +17,7 @@ import type {
 } from '../types/nexus';
 import {
   darkenHexColor,
+  getAccentContrast,
   isDndScheduleActive,
   isTargetMuted,
   isValidHexColor,
@@ -51,10 +52,11 @@ function loadCachedSettings(uid?: string): UserSettings {
   if (typeof localStorage !== 'undefined') {
     const savedTheme = localStorage.getItem('nexus_theme');
     if (
-      savedTheme === 'light' ||
-      savedTheme === 'dark' ||
-      savedTheme === 'system' ||
-      savedTheme === 'amoled'
+      savedTheme === 'basic' ||
+      savedTheme === 'warm' ||
+      savedTheme === 'royal' ||
+      savedTheme === 'forest' ||
+      savedTheme === 'ocean'
     ) {
       base.themeMode = savedTheme;
     }
@@ -256,9 +258,33 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
       root.setAttribute('data-accent', 'custom');
       root.style.setProperty('--nexus-accent', settings.customAccentHex);
       root.style.setProperty('--nexus-accent-hover', darkenHexColor(settings.customAccentHex));
+      root.style.setProperty('--accent', settings.customAccentHex);
+      root.style.setProperty('--accent-hover', darkenHexColor(settings.customAccentHex));
+      root.style.setProperty('--nexus-accent-hover', darkenHexColor(settings.customAccentHex));
+      root.style.setProperty('--accent-contrast', getAccentContrast(settings.customAccentHex));
+      root.style.setProperty('--lk-accent', settings.customAccentHex);
+      localStorage.setItem('nexus_accent_custom', settings.customAccentHex);
     } else {
       root.style.removeProperty('--nexus-accent');
       root.style.removeProperty('--nexus-accent-hover');
+      const presetHex: Record<string, string> = {
+        indigo: '#5865F2',
+        blue: '#2563EB',
+        green: '#10B981',
+        violet: '#8B5CF6',
+        rose: '#E11D48',
+        amber: '#D97706',
+        cyan: '#0891B2',
+        pink: '#DB2777',
+      };
+      const hex = presetHex[settings.accentPreset] || '#5865F2';
+      root.style.setProperty('--accent', hex);
+      root.style.setProperty('--nexus-accent', hex);
+      root.style.setProperty('--accent-hover', darkenHexColor(hex));
+      root.style.setProperty('--nexus-accent-hover', darkenHexColor(hex));
+      root.style.setProperty('--accent-contrast', getAccentContrast(hex));
+      root.style.setProperty('--lk-accent', hex);
+      localStorage.removeItem('nexus_accent_custom');
       root.setAttribute('data-accent', settings.accentPreset === 'custom' ? 'indigo' : settings.accentPreset);
     }
 

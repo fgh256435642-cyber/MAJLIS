@@ -3,8 +3,8 @@ import type { Timestamp } from 'firebase/firestore';
 export type UserStatus = 'online' | 'idle' | 'dnd' | 'offline';
 export type SelectableUserStatus = 'online' | 'idle' | 'dnd';
 export type Role = 'owner' | 'admin' | 'moderator' | 'member';
-export type ThemeMode = 'dark' | 'light' | 'system' | 'amoled';
-export type AccentColor = 'indigo' | 'blue' | 'green' | 'violet' | 'rose' | 'amber';
+export type ThemeMode = 'basic' | 'warm' | 'royal' | 'forest' | 'ocean';
+export type AccentColor = 'indigo' | 'blue' | 'green' | 'violet' | 'rose' | 'amber' | 'cyan' | 'pink';
 export type Language = 'en' | 'ar';
 export type ChannelType = 'text' | 'voice';
 

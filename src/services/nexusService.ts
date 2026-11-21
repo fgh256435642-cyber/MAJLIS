@@ -1380,27 +1380,32 @@ export async function searchDiscoverableUsers(searchQuery: string): Promise<Publ
 }
 
 export function resolveThemeMode(theme: ThemeMode): 'dark' | 'light' {
-  if (theme === 'amoled' || theme === 'dark') return 'dark';
-  if (theme === 'light') return 'light';
-  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
-  return 'light';
+  return theme === 'warm' || theme === 'royal' ? 'light' : 'dark';
 }
 
 export function applyDocumentThemeAndDirection(theme: ThemeMode, language: Language) {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
   const resolved = resolveThemeMode(theme);
+  root.setAttribute('data-theme', theme);
+  root.style.setProperty('color-scheme', resolved);
+  root.setAttribute('data-theme-mode', resolved);
+  const themeColor =
+    theme === 'warm'
+      ? '#FFF6EB'
+      : theme === 'royal'
+      ? '#F9FCFF'
+      : theme === 'forest'
+      ? '#162A2C'
+      : theme === 'ocean'
+      ? '#323D42'
+      : '#07192D';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', themeColor);
   if (resolved === 'dark') {
     root.classList.add('dark');
   } else {
     root.classList.remove('dark');
-  }
-  if (theme === 'amoled') {
-    root.classList.add('theme-amoled');
-  } else {
-    root.classList.remove('theme-amoled');
   }
   root.dir = language === 'ar' ? 'rtl' : 'ltr';
   root.lang = language;
@@ -1998,7 +2003,7 @@ export function createDefaultUserSettings(uid: string): UserSettings {
       : 'Asia/Riyadh';
   return {
     uid,
-    themeMode: 'dark',
+    themeMode: 'basic',
     accentPreset: 'indigo',
     customAccentHex: '#5865F2',
     fontSize: 'normal',
@@ -2064,7 +2069,13 @@ export async function saveDetailedUserSettings(
 
   const merged: UserSettings = {
     uid,
-    themeMode: raw.themeMode,
+    themeMode:
+      raw.themeMode === 'warm' ||
+      raw.themeMode === 'royal' ||
+      raw.themeMode === 'forest' ||
+      raw.themeMode === 'ocean'
+        ? raw.themeMode
+        : 'basic',
     accentPreset: String(raw.accentPreset || 'indigo').slice(0, 16) as UserSettings['accentPreset'],
     customAccentHex: isValidHexColor(raw.customAccentHex) ? raw.customAccentHex : '#5865F2',
     fontSize: raw.fontSize,

@@ -3,6 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07192D" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem('nexus_theme');
+          var allowed = ['basic', 'warm', 'royal', 'forest', 'ocean'];
+          if (allowed.indexOf(theme) === -1) theme = 'basic';
+          var root = document.documentElement;
+          root.setAttribute('data-theme', theme);
+          var dark = theme === 'basic' || theme === 'forest' || theme === 'ocean';
+          root.classList.toggle('dark', dark);
+          root.style.colorScheme = dark ? 'dark' : 'light';
+          var colors = {
+            basic: '#07192D',
+            warm: '#FFF6EB',
+            royal: '#F9FCFF',
+            forest: '#162A2C',
+            ocean: '#323D42'
+          };
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', colors[theme]);
+          var accent = localStorage.getItem('nexus_accent');
+          var presetHex = {
+            indigo: '#5865F2',
+            blue: '#2563EB',
+            green: '#10B981',
+            violet: '#8B5CF6',
+            rose: '#E11D48',
+            amber: '#D97706',
+            cyan: '#0891B2',
+            pink: '#DB2777'
+          };
+          var customHex = localStorage.getItem('nexus_accent_custom');
+          var hex = accent === 'custom' && /^#[0-9A-Fa-f]{6}$/.test(customHex || '') ? customHex : (presetHex[accent] || colors.basic && '#5865F2');
+          if (hex) {
+            root.style.setProperty('--accent', hex);
+            root.style.setProperty('--nexus-accent', hex);
+            root.style.setProperty('--lk-accent', hex);
+          }
+        } catch (_) {}
+      })();
+    </script>
     <title>مجلس | MAJLIS — مجتمعات الدردشة الفورية والصوت</title>
     <meta name="description" content="منصة مجلس — مجتمعات فورية وقنوات صوتية ومراسلة مباشرة." />
     <meta property="og:title" content="مجلس | MAJLIS — مجتمعات الدردشة الفورية والصوت" />

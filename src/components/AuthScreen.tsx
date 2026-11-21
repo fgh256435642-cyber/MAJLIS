@@ -13,9 +13,7 @@ import {
   Globe,
   LogOut,
   MailCheck,
-  Moon,
   RefreshCw,
-  Sun,
   Eye,
   EyeOff,
   CheckCircle2,
@@ -45,9 +43,7 @@ export function AuthScreen() {
   const {
     firebaseUser,
     needsVerification,
-    theme,
     language,
-    setLocalTheme,
     setLocalLanguage,
     refreshVerification,
     logout,
@@ -78,12 +74,6 @@ export function AuthScreen() {
   // Terms & Privacy modal state
   const [activeLegalModal, setActiveLegalModal] = useState<'terms' | 'privacy' | null>(null);
 
-  const isDarkActive =
-    theme === 'dark' ||
-    theme === 'amoled' ||
-    (theme === 'system' &&
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   // Trigger card shake on error
   const triggerShake = () => {
@@ -380,23 +370,6 @@ export function AuthScreen() {
             >
               <Globe className="w-3.5 h-3.5 text-indigo-500 dark:text-sky-300" />
               <span>{language === 'en' ? 'العربية' : 'English'}</span>
-            </button>
-          </NexusTooltip>
-          <NexusTooltip
-            content={isDarkActive ? t(language, 'switchToLight') : t(language, 'switchToDark')}
-            side="bottom"
-          >
-            <button
-              type="button"
-              onClick={() => setLocalTheme(isDarkActive ? 'light' : 'dark')}
-              className="p-2 rounded-xl nexus-glass-control hover:bg-white/15 dark:hover:bg-white/12 transition-all shadow-sm text-slate-800 dark:text-white cursor-pointer"
-              aria-label={isDarkActive ? t(language, 'switchToLight') : t(language, 'switchToDark')}
-            >
-              {isDarkActive ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-indigo-600" />
-              )}
             </button>
           </NexusTooltip>
         </div>

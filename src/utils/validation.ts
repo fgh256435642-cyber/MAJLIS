@@ -227,7 +227,9 @@ export const ACCENT_PRESETS: ReadonlyArray<{
     | 'accentGreen'
     | 'accentViolet'
     | 'accentRose'
-    | 'accentAmber';
+    | 'accentAmber'
+    | 'accentCyan'
+    | 'accentPink';
   swatchClass: string;
 }> = [
   { id: 'indigo', labelKey: 'accentIndigo', swatchClass: 'bg-[#5865F2]' },
@@ -236,6 +238,8 @@ export const ACCENT_PRESETS: ReadonlyArray<{
   { id: 'violet', labelKey: 'accentViolet', swatchClass: 'bg-[#8B5CF6]' },
   { id: 'rose', labelKey: 'accentRose', swatchClass: 'bg-[#E11D48]' },
   { id: 'amber', labelKey: 'accentAmber', swatchClass: 'bg-[#D97706]' },
+  { id: 'cyan', labelKey: 'accentCyan', swatchClass: 'bg-[#0891B2]' },
+  { id: 'pink', labelKey: 'accentPink', swatchClass: 'bg-[#DB2777]' },
 ];
 
 export function isValidAccentColor(value: string | null): value is AccentColor {
@@ -286,6 +290,16 @@ export function darkenHexColor(hex: string, amount = 0.14): string {
   const g = Math.max(0, Math.round(((num >> 8) & 255) * (1 - amount)));
   const b = Math.max(0, Math.round((num & 255) * (1 - amount)));
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+export function getAccentContrast(hex: string): '#FFFFFF' | '#000000' {
+  if (!isValidHexColor(hex)) return '#FFFFFF';
+  const clean = hex.slice(1);
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.72 ? '#000000' : '#FFFFFF';
 }
 
 export function getActiveCustomStatus(

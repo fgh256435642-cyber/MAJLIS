@@ -7,6 +7,7 @@ import {
   ensureUserProfile,
   pingUserPresence,
   updateUserSettings,
+  resolveThemeMode,
 } from '../services/nexusService';
 import type {
   AccentColor,
@@ -19,6 +20,8 @@ import type {
 } from '../types/nexus';
 import {
   getSelfEffectiveStatus,
+  darkenHexColor,
+  getAccentContrast,
   IDLE_TIMEOUT_MS,
   isValidAccentColor,
   PRESENCE_HEARTBEAT_MS,
@@ -60,10 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [presenceNowMs, setPresenceNowMs] = useState<number>(() => Date.now());
   const [localTheme, setLocalTheme] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('nexus_theme');
-    if (saved === 'light' || saved === 'dark' || saved === 'system' || saved === 'amoled') {
+    if (saved === 'basic' || saved === 'warm' || saved === 'royal' || saved === 'forest' || saved === 'ocean') {
       return saved;
     }
-    return 'dark';
+    return 'basic';
   });
   const [localLanguage, setLocalLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('nexus_lang');
@@ -86,16 +89,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('nexus_theme', theme);
     localStorage.setItem('nexus_lang', language);
 
-    if (theme !== 'system' || typeof window === 'undefined') return;
-    const mql = window.matchMedia('(prefers-color-scheme: dark)');
-    const onSystemChange = () => applyDocumentThemeAndDirection('system', language);
-    mql.addEventListener('change', onSystemChange);
-    return () => mql.removeEventListener('change', onSystemChange);
   }, [theme, language]);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-accent', accentColor);
+      const root = document.documentElement;
+      root.setAttribute('data-accent', accentColor);
+      const presetHex: Record<AccentColor, string> = {
+        indigo: '#5865F2',
+        blue: '#2563EB',
+        green: '#10B981',
+        violet: '#8B5CF6',
+        rose: '#E11D48',
+        amber: '#D97706',
+        cyan: '#0891B2',
+        pink: '#DB2777',
+      };
+      const hex = presetHex[accentColor];
+      root.style.setProperty('--accent', hex);
+      root.style.setProperty('--nexus-accent', hex);
+      root.style.setProperty('--accent-hover', darkenHexColor(hex));
+      root.style.setProperty('--nexus-accent-hover', darkenHexColor(hex));
+      root.style.setProperty('--accent-contrast', getAccentContrast(hex));
+      root.style.setProperty('--lk-accent', hex);
     }
     localStorage.setItem('nexus_accent', accentColor);
   }, [accentColor]);
@@ -321,15 +337,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (nextTheme: ThemeMode) => {
       setLocalTheme(nextTheme);
       if (firebaseUser?.emailVerified) {
-        const legacyTheme =
-          nextTheme === 'light'
-            ? 'light'
-            : nextTheme === 'system' &&
-              typeof window !== 'undefined' &&
-              !window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'light'
-            : 'dark';
-        await updateUserSettings(firebaseUser.uid, { theme: legacyTheme });
+        await updateUserSettings(firebaseUser.uid, { theme: resolveThemeMode(nextTheme) });
       }
     },
     [firebaseUser]
@@ -337,6 +345,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const changeAccentColor = useCallback((nextAccent: AccentColor) => {
     setAccentColor(nextAccent);
+    if (typeof document !== 'undefined') {
+      const presetHex: Record<AccentColor, string> = {
+        indigo: '#5865F2',
+        blue: '#2563EB',
+        green: '#10B981',
+        violet: '#8B5CF6',
+        rose: '#E11D48',
+        amber: '#D97706',
+        cyan: '#0891B2',
+        pink: '#DB2777',
+      };
+      const hex = presetHex[nextAccent];
+      const root = document.documentElement;
+      root.style.setProperty('--accent', hex);
+      root.style.setProperty('--nexus-accent', hex);
+      root.style.setProperty('--accent-hover', darkenHexColor(hex));
+      root.style.setProperty('--nexus-accent-hover', darkenHexColor(hex));
+      root.style.setProperty('--accent-contrast', getAccentContrast(hex));
+      root.style.setProperty('--lk-accent', hex);
+    }
   }, []);
 
   const changeLanguage = useCallback(

@@ -10,8 +10,145 @@
   :root {
     --font-sans: "Plus Jakarta Sans", "Cairo", system-ui, -apple-system, sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-    --nexus-accent: #5865F2;
-    --nexus-accent-hover: #4752C4;
+    --bg: #07192d;
+    --surface: #1E1F22;
+    --surface-2: #313338;
+    --surface-hover: #35373C;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #F2F3F5;
+    --text-muted: #A1A1AA;
+    --accent: #5865F2;
+    --nexus-accent: var(--accent);
+    --accent-hover: #4752C4;
+    --nexus-accent-hover: var(--accent-hover);
+    --accent-contrast: #FFFFFF;
+    --link: #A5B4FC;
+    --danger: #EF4444;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --overlay: rgba(0, 0, 0, 0.65);
+    --lk-bg: var(--surface);
+    --lk-fg: var(--text);
+    --lk-control-bg: var(--surface-2);
+    --lk-accent: var(--accent);
+    color-scheme: dark;
+  }
+
+  :root[data-theme='basic'],
+  :root:not([data-theme]) {
+    --bg: #07192d;
+    --surface: #1E1F22;
+    --surface-2: #313338;
+    --surface-hover: #35373C;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #F2F3F5;
+    --text-muted: #A1A1AA;
+    --accent: #5865F2;
+    --nexus-accent: var(--accent);
+    --accent-hover: #4752C4;
+    --nexus-accent-hover: var(--accent-hover);
+    --accent-contrast: #FFFFFF;
+    --link: #A5B4FC;
+  }
+
+  :root[data-theme='warm'] {
+    --bg: #FFF6EB;
+    --surface: #F1E3D3;
+    --surface-2: #DDBEA9;
+    --surface-hover: #C58C6D;
+    --border: #B7B7A4;
+    --text: #4F5442;
+    --text-muted: #6B705C;
+    --accent: #C58C6D;
+    --nexus-accent: var(--accent);
+    --accent-hover: #B77D5F;
+    --nexus-accent-hover: var(--accent-hover);
+    --accent-contrast: #261B16;
+    --link: #6B705C;
+    --danger: #B91C1C;
+    --success: #166534;
+    --warning: #A16207;
+    --overlay: rgba(79, 84, 66, 0.38);
+    --lk-bg: var(--surface);
+    --lk-fg: var(--text);
+    --lk-control-bg: var(--surface-2);
+    --lk-accent: var(--accent);
+    color-scheme: light;
+  }
+
+  :root[data-theme='royal'] {
+    --bg: #F9FCFF;
+    --surface: #E7F1FF;
+    --surface-2: #D0E3FF;
+    --surface-hover: #7096D1;
+    --border: #7096D1;
+    --text: #081F5C;
+    --text-muted: #334EAC;
+    --accent: #334EAC;
+    --nexus-accent: var(--accent);
+    --accent-hover: #263F91;
+    --nexus-accent-hover: var(--accent-hover);
+    --accent-contrast: #FFFFFF;
+    --link: #081F5C;
+    --danger: #B91C1C;
+    --success: #166534;
+    --warning: #A16207;
+    --overlay: rgba(8, 31, 92, 0.32);
+    --lk-bg: var(--surface);
+    --lk-fg: var(--text);
+    --lk-control-bg: var(--surface-2);
+    --lk-accent: var(--accent);
+    color-scheme: light;
+  }
+
+  :root[data-theme='forest'] {
+    --bg: #162A2C;
+    --surface: #223638;
+    --surface-2: #2B4547;
+    --surface-hover: #36574F;
+    --border: #686867;
+    --text: #FEFCF6;
+    --text-muted: #D6E6E2;
+    --accent: #6C8B70;
+    --nexus-accent: var(--accent);
+    --accent-hover: #5E7C62;
+    --nexus-accent-hover: var(--accent-hover);
+    --accent-contrast: #FFFFFF;
+    --link: #D6E6E2;
+    --danger: #F87171;
+    --success: #34D399;
+    --warning: #FBBF24;
+    --overlay: rgba(22, 42, 44, 0.72);
+    --lk-bg: var(--surface);
+    --lk-fg: var(--text);
+    --lk-control-bg: var(--surface-2);
+    --lk-accent: var(--accent);
+    color-scheme: dark;
+  }
+
+  :root[data-theme='ocean'] {
+    --bg: #323D42;
+    --surface: #26393D;
+    --surface-2: #314D52;
+    --surface-hover: #3A5A60;
+    --border: #6587A1;
+    --text: #CBDCED;
+    --text-muted: #8FA9B5;
+    --accent: #6587A1;
+    --nexus-accent: var(--accent);
+    --accent-hover: #52758F;
+    --nexus-accent-hover: var(--accent-hover);
+    --accent-contrast: #FFFFFF;
+    --link: #CBDCED;
+    --danger: #FB7185;
+    --success: #34D399;
+    --warning: #FBBF24;
+    --overlay: rgba(50, 61, 66, 0.72);
+    --lk-bg: var(--surface);
+    --lk-fg: var(--text);
+    --lk-control-bg: var(--surface-2);
+    --lk-accent: var(--accent);
+    color-scheme: dark;
   }
 
   :root[data-accent='blue'] {
@@ -45,12 +182,14 @@
   }
 
   body {
-    background-color: #07192d;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: var(--font-sans);
+    transition: background-color 180ms ease, color 180ms ease;
   }
 
   :root:not(.dark) body {
-    background-color: #e2e8f0;
+    background-color: var(--bg);
   }
 
   code, pre, .font-mono {
@@ -60,6 +199,120 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Semantic theme surface mapping for existing Tailwind utility classes.
+   New components should use --surface/--text directly; these aliases keep
+   existing screens consistent while the full theme migration is in use. */
+html[data-theme],
+body,
+#root {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.bg-white { background-color: var(--surface) !important; }
+.bg-slate-50 { background-color: var(--surface) !important; }
+.bg-slate-100 { background-color: var(--surface) !important; }
+.bg-slate-200 { background-color: var(--surface-2) !important; }
+.bg-slate-950 { background-color: var(--bg) !important; }
+.bg-\[\#07192d\] { background-color: var(--bg) !important; }
+.bg-\[\#1E1F22\] { background-color: var(--surface) !important; }
+.bg-\[\#2B2D31\] { background-color: var(--surface) !important; }
+.bg-\[\#313338\] { background-color: var(--surface-2) !important; }
+.bg-\[\#35373C\] { background-color: var(--surface-hover) !important; }
+.bg-\[\#404249\] { background-color: var(--surface-hover) !important; }
+.bg-\[\#111214\] { background-color: var(--bg) !important; }
+.bg-\[\#232428\] { background-color: var(--surface) !important; }
+.bg-\[\#383A40\] { background-color: var(--surface-2) !important; }
+.bg-\[\#1e1f24\] { background-color: var(--surface) !important; }
+.bg-\[\#32353B\] { background-color: var(--surface-hover) !important; }
+.bg-\[\#2E3035\] { background-color: var(--surface-hover) !important; }
+
+.bg-indigo-500,
+.bg-indigo-600,
+.bg-violet-500,
+.bg-violet-600,
+.bg-blue-600,
+.bg-sky-600 { background-color: var(--accent) !important; }
+.bg-indigo-500\/20,
+.bg-indigo-500\/10,
+.bg-violet-500\/10,
+.bg-violet-500\/20,
+.bg-nexus\/10,
+.bg-nexus\/20,
+.bg-nexus\/15,
+.bg-nexus\/40 { background-color: color-mix(in srgb, var(--accent) 16%, transparent) !important; }
+.text-indigo-500,
+.text-indigo-600,
+.text-violet-500,
+.text-violet-600,
+.text-blue-500,
+.text-blue-600,
+.text-sky-300,
+.text-sky-400 { color: var(--link) !important; }
+.text-\[\#006CE7\],
+.text-\[\#00A8FC\] { color: var(--link) !important; }
+
+.dark [class*="dark:bg-[#1E1F22]"] { background-color: var(--surface) !important; }
+.dark [class*="dark:bg-[#2B2D31]"] { background-color: var(--surface) !important; }
+.dark [class*="dark:bg-[#313338]"] { background-color: var(--surface-2) !important; }
+.dark [class*="dark:bg-[#35373C]"] { background-color: var(--surface-hover) !important; }
+.dark [class*="dark:bg-[#404249]"] { background-color: var(--surface-hover) !important; }
+.dark [class*="dark:bg-[#111214]"] { background-color: var(--bg) !important; }
+.dark [class*="dark:bg-[#232428]"] { background-color: var(--surface) !important; }
+.dark [class*="dark:bg-[#383A40]"] { background-color: var(--surface-2) !important; }
+.dark [class*="dark:text-white"] { color: var(--text) !important; }
+.dark [class*="dark:text-zinc-100"],
+.dark [class*="dark:text-zinc-200"],
+.dark [class*="dark:text-zinc-300"],
+.dark [class*="dark:text-zinc-400"],
+.dark [class*="dark:text-zinc-500"] { color: var(--text-muted) !important; }
+
+.text-slate-950,
+.text-slate-900,
+.dark .text-slate-900 { color: var(--text) !important; }
+.text-slate-800,
+.text-slate-700,
+.text-slate-600,
+.text-zinc-300,
+.text-zinc-200,
+.text-zinc-100 { color: var(--text-muted) !important; }
+.text-slate-500,
+.text-slate-400,
+.text-zinc-500,
+.text-zinc-400 { color: var(--text-muted) !important; }
+.text-slate-300 { color: var(--text-muted) !important; }
+
+.border-slate-200,
+.border-slate-300,
+.border-slate-200\/80,
+.border-slate-300\/70,
+.border-slate-300\/90,
+.border-white\/10,
+.border-white\/20,
+.border-black\/25,
+.border-black\/30,
+.border-white\/5,
+.border-white\/15 { border-color: var(--border) !important; }
+
+input,
+textarea,
+select {
+  background-color: var(--surface-2);
+  color: var(--text);
+  border-color: var(--border);
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.82;
+}
+
+* {
+  scrollbar-color: color-mix(in srgb, var(--text-muted) 45%, transparent) transparent;
 }
 
 /* Custom sleek scrollbars */
@@ -201,26 +454,6 @@
   min-height: 2.35rem;
 }
 
-:root.theme-amoled.dark body,
-:root.theme-amoled.dark .dark\:bg-\[\#313338\] {
-  background-color: #000000 !important;
-}
-
-:root.theme-amoled.dark .dark\:bg-\[\#2B2D31\],
-:root.theme-amoled.dark .dark\:bg-\[\#232428\] {
-  background-color: #09090b !important;
-}
-
-:root.theme-amoled.dark .dark\:bg-\[\#1E1F22\],
-:root.theme-amoled.dark .dark\:bg-\[\#111214\] {
-  background-color: #000000 !important;
-}
-
-:root.theme-amoled.dark .dark\:bg-\[\#383A40\],
-:root.theme-amoled.dark .dark\:bg-\[\#404249\] {
-  background-color: #141418 !important;
-}
-
 /* Avatar Radius Override */
 :root[data-avatar-shape='rounded'] .nexus-avatar-shape {
   border-radius: 0.75rem !important;
@@ -238,18 +471,18 @@
 
 .nexus-auth-bg {
   background:
-    radial-gradient(ellipse 85% 65% at 15% 15%, rgba(124, 58, 237, 0.34), transparent 60%),
-    radial-gradient(ellipse 75% 60% at 85% 20%, rgba(37, 99, 235, 0.32), transparent 60%),
-    radial-gradient(ellipse 70% 55% at 55% 90%, rgba(6, 182, 212, 0.24), transparent 62%),
-    linear-gradient(155deg, #070615 0%, #0d0b26 48%, #07192d 100%);
+    radial-gradient(ellipse 85% 65% at 15% 15%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 60%),
+    radial-gradient(ellipse 75% 60% at 85% 20%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 60%),
+    radial-gradient(ellipse 70% 55% at 55% 90%, color-mix(in srgb, var(--link) 24%, transparent), transparent 62%),
+    linear-gradient(155deg, var(--bg) 0%, var(--surface) 48%, var(--bg) 100%);
 }
 
 :root:not(.dark) .nexus-auth-bg {
   background:
-    radial-gradient(ellipse 85% 65% at 12% 14%, rgba(139, 92, 246, 0.14), transparent 58%),
-    radial-gradient(ellipse 75% 60% at 88% 18%, rgba(59, 130, 246, 0.12), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 52% 92%, rgba(6, 182, 212, 0.1), transparent 60%),
-    linear-gradient(155deg, #f8fafc 0%, #f1f5f9 46%, #e2e8f0 100%);
+    radial-gradient(ellipse 85% 65% at 12% 14%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 58%),
+    radial-gradient(ellipse 75% 60% at 88% 18%, color-mix(in srgb, var(--link) 14%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 52% 92%, color-mix(in srgb, var(--success) 12%, transparent), transparent 60%),
+    linear-gradient(155deg, var(--bg) 0%, var(--surface) 46%, var(--surface-2) 100%);
 }
 
 .nexus-auth-noise {

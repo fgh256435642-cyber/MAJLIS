@@ -209,7 +209,7 @@ service cloud.firestore {
         ])
         && data.uid == userId
         && data.updatedAt == request.time
-        && (!('themeMode' in data) || data.themeMode in ['dark', 'light', 'system', 'amoled'])
+        && (!('themeMode' in data) || data.themeMode in ['basic', 'warm', 'royal', 'forest', 'ocean'])
         && (!('accentPreset' in data) || (data.accentPreset is string && data.accentPreset.size() <= 16))
         && (!('customAccentHex' in data) || isValidHexOrEmpty(data.customAccentHex))
         && (!('fontSize' in data) || data.fontSize in ['small', 'normal', 'large'])

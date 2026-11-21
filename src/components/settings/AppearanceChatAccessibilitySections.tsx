@@ -1,4 +1,4 @@
-import { Check, Eye, Laptop, MessageSquare, Moon, Palette, Sparkles, Sun } from 'lucide-react';
+import { Check, Eye, MessageSquare, Palette } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserSettings } from '../../hooks/useUserSettings';
 import { t } from '../../i18n/translations';
@@ -14,16 +14,16 @@ import { ACCENT_PRESETS, isValidHexColor } from '../../utils/validation';
 export function AppearanceSection() {
   const { language } = useAuth();
   const { settings, updateSetting } = useUserSettings();
-
   const themeOptions: ReadonlyArray<{
     id: ThemeMode;
     label: string;
-    icon: typeof Moon;
+    colors: string[];
   }> = [
-    { id: 'dark', label: t(language, 'darkTheme'), icon: Moon },
-    { id: 'light', label: t(language, 'lightTheme'), icon: Sun },
-    { id: 'system', label: t(language, 'systemTheme'), icon: Laptop },
-    { id: 'amoled', label: t(language, 'amoledTheme'), icon: Sparkles },
+    { id: 'basic', label: language === 'ar' ? 'الأساسي' : 'Basic', colors: ['#07192D', '#1E1F22', '#313338', '#5865F2', '#A1A1AA', '#F2F3F5'] },
+    { id: 'warm', label: language === 'ar' ? 'ترابي دافئ' : 'Warm Earth', colors: ['#6B705C', '#B7B7A4', '#C58C6D', '#DDBEA9', '#F1E3D3', '#FFF6EB'] },
+    { id: 'royal', label: language === 'ar' ? 'أزرق ملكي' : 'Royal Blue', colors: ['#081F5C', '#334EAC', '#7096D1', '#D0E3FF', '#E7F1FF', '#F9FCFF'] },
+    { id: 'forest', label: language === 'ar' ? 'غابة هادئة' : 'Quiet Forest', colors: ['#162A2C', '#686867', '#5E6C58', '#D6E6E2', '#F4EFE6', '#FEFCF6'] },
+    { id: 'ocean', label: language === 'ar' ? 'بحري' : 'Ocean', colors: ['#323D42', '#365E62', '#6587A1', '#8FA9B5', '#CBDCED', '#F3F8FC'] },
   ];
 
   return (
@@ -40,25 +40,33 @@ export function AppearanceSection() {
       {/* Theme Mode */}
       <div className="space-y-3">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-          {t(language, 'themeLabel')}
+          {language === 'ar' ? 'الثيم' : 'Theme'}
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
           {themeOptions.map((opt) => {
-            const Icon = opt.icon;
             const selected = settings.themeMode === opt.id;
             return (
               <button
                 key={opt.id}
                 type="button"
                 onClick={() => void updateSetting({ themeMode: opt.id })}
-                className={`p-4 rounded-xl border text-start space-y-2 transition-colors ${
+                className={`relative p-3 rounded-xl border text-start space-y-2 transition-colors ${
                   selected
                     ? 'border-nexus bg-nexus/10 text-slate-950 dark:text-white'
                     : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] hover:bg-slate-50 dark:hover:bg-white/5'
                 }`}
               >
-                <Icon className="w-5 h-5 text-nexus" />
                 <div className="text-xs font-semibold">{opt.label}</div>
+                <div className="h-7 rounded-md overflow-hidden flex">
+                  {opt.colors.map((color) => (
+                    <span key={color} className="flex-1 h-full" style={{ backgroundColor: color }} />
+                  ))}
+                </div>
+                {selected && (
+                  <span className="absolute top-2 end-2 w-5 h-5 rounded-full bg-nexus text-white flex items-center justify-center shadow-sm">
+                    <Check className="w-3 h-3" />
+                  </span>
+                )}
               </button>
             );
           })}
@@ -119,6 +127,40 @@ export function AppearanceSection() {
             />
             <span className="truncate">{t(language, 'customColor')}</span>
           </label>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            aria-label={language === 'ar' ? 'لون التمييز بصيغة hex' : 'Accent color hex'}
+            value={settings.customAccentHex}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (isValidHexColor(value)) {
+                void updateSetting({ accentPreset: 'custom', customAccentHex: value });
+              }
+            }}
+            placeholder="#5865F2"
+            className="w-32 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs font-mono uppercase"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const defaults: Record<ThemeMode, string> = {
+                basic: '#5865F2',
+                warm: '#C58C6D',
+                royal: '#334EAC',
+                forest: '#6C8B70',
+                ocean: '#6587A1',
+              };
+              void updateSetting({
+                accentPreset: 'custom',
+                customAccentHex: defaults[settings.themeMode],
+              });
+            }}
+            className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-xs font-semibold hover:border-nexus transition-colors"
+          >
+            {language === 'ar' ? 'إعادة اللون الافتراضي للثيم' : 'Reset theme accent'}
+          </button>
         </div>
       </div>
 
