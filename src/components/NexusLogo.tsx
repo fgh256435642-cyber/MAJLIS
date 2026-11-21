@@ -19,12 +19,12 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
         </linearGradient>
       </defs>
       <circle cx="32" cy="32" r="29" fill="url(#majlis-circle-grad)" />
-      <path d="M18.5 31C18.5 20.2 24.3 12 32 12C39.7 12 45.5 20.2 45.5 31V36.5C45.5 44.6 39.5 50 32 50C24.5 50 18.5 44.6 18.5 36.5V31Z" fill="#FFFFFF" stroke="#4F46A5" strokeWidth="1.8" />
-      <path d="M16.5 30V23C16.5 14.2 23.1 7.5 32 7.5C40.9 7.5 47.5 14.2 47.5 23V30" stroke="#DDD6FE" strokeWidth="3.5" strokeLinecap="round" />
-      <rect x="11" y="24" width="9.5" height="14" rx="4.75" fill="#DDD6FE" stroke="#4F46A5" strokeWidth="1.8" />
-      <rect x="43.5" y="24" width="9.5" height="14" rx="4.75" fill="#DDD6FE" stroke="#4F46A5" strokeWidth="1.8" />
-      <path d="M43.5 36.5C43.5 42.5 40.2 45.5 36 46.5" stroke="#DDD6FE" strokeWidth="2.2" strokeLinecap="round" />
-      <circle cx="35" cy="46.5" r="2.2" fill="#DDD6FE" stroke="#4F46A5" strokeWidth="1" />
+      <circle cx="32" cy="32" r="18" fill="#FFFFFF" stroke="#4F46A5" strokeWidth="1.8" />
+      <path d="M14 30V26C14 16.1 22.1 8 32 8C41.9 8 50 16.1 50 26V30" stroke="#DDD6FE" strokeWidth="4.5" strokeLinecap="round" />
+      <rect x="8.5" y="24" width="11" height="16" rx="5.5" fill="#E8E5FF" stroke="#4F46A5" strokeWidth="2" />
+      <rect x="44.5" y="24" width="11" height="16" rx="5.5" fill="#E8E5FF" stroke="#4F46A5" strokeWidth="2" />
+      <path d="M44.5 37C44.5 43.5 40.5 47 35.5 47.5" stroke="#DDD6FE" strokeWidth="3" strokeLinecap="round" />
+      <rect x="31.5" y="45" width="7" height="4" rx="2" fill="#FFFFFF" stroke="#4F46A5" strokeWidth="1.8" />
     </svg>
   );
 }
