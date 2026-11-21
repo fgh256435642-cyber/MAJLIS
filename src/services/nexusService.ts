@@ -2412,7 +2412,7 @@ export async function startTotpMfaEnrollment(currentPassword?: string): Promise<
     }
     const session = await multiFactor(user).getSession();
     const secret = await TotpMultiFactorGenerator.generateSecret(session);
-    const qrUrl = secret.generateQrCodeUrl(user.email || user.uid, 'NexusChat');
+    const qrUrl = secret.generateQrCodeUrl(user.email || user.uid, 'Majlis');
     return { secret, qrUrl, secretKey: secret.secretKey };
   } catch (err: unknown) {
     const code = (err as { code?: string })?.code || '';

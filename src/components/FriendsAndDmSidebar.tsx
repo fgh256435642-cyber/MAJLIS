@@ -10,11 +10,10 @@ import {
   Users,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { usePersistentCollapseMap } from '../hooks/useCollapsibleState';
 import { t } from '../i18n/translations';
 import type { DirectMessageThread, GroupDm, PublicUser } from '../types/nexus';
 import { getEffectiveUserStatus, getGroupDisplayName } from '../utils/validation';
-import { CollapseChevron, CollapsibleBody } from './CollapsibleSection';
+import { CollapsibleBody } from './CollapsibleSection';
 import { GroupAvatar, UserAvatar } from './NexusLogo';
 import { SidebarMemberSearch } from './SidebarMemberSearch';
 import { NexusTooltip } from './ui/NexusUI';
@@ -72,13 +71,8 @@ export function FriendsAndDmSidebar({
 }: FriendsAndDmSidebarProps) {
   const { language, presenceNowMs } = useAuth();
   const myUid = publicUser?.uid || '';
-  const { isCollapsed, toggleSection } = usePersistentCollapseMap(
-    'nexus_collapsed_home_sections'
-  );
-
-  const friendsCollapsed = isCollapsed('friends');
-  const dmsCollapsed = isCollapsed('dms');
   const tooltipSide = language === 'ar' ? 'left' : 'right';
+  const dmsCollapsed = false;
 
   const combinedItems = [
     ...dmThreads.map((dm) => ({
@@ -150,80 +144,35 @@ export function FriendsAndDmSidebar({
 
       {/* Friends + DM & Group List */}
       <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
-        {/* Collapsible Friends Section */}
-        <div>
-          <NexusTooltip
-            content={
-              friendsCollapsed
-                ? t(language, 'expandSection')
-                : t(language, 'collapseSection')
-            }
-            side={tooltipSide}
-          >
-            <button
-              type="button"
-              aria-expanded={!friendsCollapsed}
-              onClick={() => toggleSection('friends')}
-              className="w-full px-1.5 py-1 mb-1 flex items-center justify-between gap-1 rounded text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexus transition-colors"
-            >
-              <span className="flex items-center gap-1 min-w-0">
-                <CollapseChevron collapsed={friendsCollapsed} />
-                <span className="truncate">{t(language, 'friends')}</span>
-              </span>
-              {friendsCollapsed && pendingFriendCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold tabular-nums shrink-0">
-                  {pendingFriendCount}
-                </span>
-              )}
-            </button>
-          </NexusTooltip>
-
-          <CollapsibleBody isOpen={!friendsCollapsed}>
-            <button
-              type="button"
-              onClick={onSelectFriends}
-              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeDmId === null && activeGroupId === null
-                  ? 'bg-slate-200/90 dark:bg-[#404249] text-slate-950 dark:text-white'
-                  : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-200/60 dark:hover:bg-[#35373C]'
-              }`}
-            >
-              <span className="flex items-center gap-2.5">
-                <Users className="w-4 h-4" />
-                <span>{t(language, 'friends')}</span>
-              </span>
-              {pendingFriendCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold tabular-nums">
-                  {pendingFriendCount}
-                </span>
-              )}
-            </button>
-          </CollapsibleBody>
-        </div>
+        {/* Fixed Friends Entry */}
+        <button
+          type="button"
+          onClick={onSelectFriends}
+          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeDmId === null && activeGroupId === null
+              ? 'bg-nexus/10 text-nexus'
+              : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-200/60 dark:hover:bg-[#35373C]'
+          }`}
+        >
+          <span className="flex items-center gap-2.5">
+            <Users className="w-4 h-4" />
+            <span>{t(language, 'friends')}</span>
+          </span>
+          {pendingFriendCount > 0 && (
+            <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold tabular-nums">
+              {pendingFriendCount}
+            </span>
+          )}
+        </button>
 
         {/* Collapsible Direct Messages & Groups Section */}
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-1 px-1.5 py-1">
-            <NexusTooltip
-              content={
-                dmsCollapsed
-                  ? t(language, 'expandSection')
-                  : t(language, 'collapseSection')
-              }
-              side={tooltipSide}
-            >
-              <button
-                type="button"
-                aria-expanded={!dmsCollapsed}
-                onClick={() => toggleSection('dms')}
-                className="flex-1 min-w-0 flex items-center gap-1 rounded text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexus transition-colors tabular-nums"
-              >
-                <CollapseChevron collapsed={dmsCollapsed} />
-                <span className="truncate">
-                  {t(language, 'directMessages')} — {combinedItems.length}
-                </span>
-              </button>
-            </NexusTooltip>
+            <div className="flex-1 min-w-0 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 tabular-nums">
+              <span className="truncate">
+                {t(language, 'directMessages')} — {combinedItems.length}
+              </span>
+            </div>
 
             {onOpenCreateGroup && (
               <NexusTooltip content={t(language, 'createGroup')} side="top">
@@ -238,19 +187,6 @@ export function FriendsAndDmSidebar({
               </NexusTooltip>
             )}
           </div>
-
-          {onOpenCreateGroup && (
-            <CollapsibleBody isOpen={!dmsCollapsed}>
-              <button
-                type="button"
-                onClick={onOpenCreateGroup}
-                className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 mb-1.5 rounded-md border border-dashed border-slate-300 dark:border-white/15 text-xs font-medium text-slate-600 dark:text-zinc-300 hover:border-nexus hover:text-nexus hover:bg-nexus/5 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>{t(language, 'createGroup')}</span>
-              </button>
-            </CollapsibleBody>
-          )}
 
           {combinedItems.length === 0 ? (
             <CollapsibleBody isOpen={!dmsCollapsed}>

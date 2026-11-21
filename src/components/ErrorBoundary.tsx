@@ -20,7 +20,7 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('Nexus ErrorBoundary:', error, info);
+    console.error('Majlis ErrorBoundary:', error, info);
   }
 
   render() {

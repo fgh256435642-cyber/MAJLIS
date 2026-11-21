@@ -12,28 +12,15 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="majlis-head-grad" x1="13" y1="8" x2="54" y2="55" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#A78BFA" />
-          <stop offset="0.45" stopColor="#7456E8" />
-          <stop offset="1" stopColor="#30266B" />
-        </linearGradient>
-        <linearGradient id="majlis-headband-grad" x1="8" y1="22" x2="56" y2="42" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#C4B5FD" />
-          <stop offset="0.5" stopColor="#7C6BE7" />
-          <stop offset="1" stopColor="#4C3AA7" />
+        <linearGradient id="majlis-circle-grad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#8B7CF6" />
+          <stop offset="0.55" stopColor="#5865F2" />
+          <stop offset="1" stopColor="#3140A8" />
         </linearGradient>
       </defs>
-      <path
-        d="M17 34C17 19.7 23.7 10 32 10C40.3 10 47 19.7 47 34C47 44.5 40.7 51 32 51C23.3 51 17 44.5 17 34Z"
-        fill="url(#majlis-head-grad)"
-        stroke="#261E61"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M17 31C17 18.9 23.2 8 32 8C40.8 8 47 18.9 47 31" stroke="url(#majlis-headband-grad)" strokeWidth="5" strokeLinecap="round" />
-      <rect x="9" y="27" width="11" height="17" rx="5.5" fill="#5141A8" stroke="#2D246B" strokeWidth="2" />
-      <rect x="44" y="27" width="11" height="17" rx="5.5" fill="#5141A8" stroke="#2D246B" strokeWidth="2" />
-      <path d="M49.5 43C45.5 48 41.5 50.5 37 51.5" stroke="#5141A8" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="32" cy="32" r="28" fill="url(#majlis-circle-grad)" />
+      <circle cx="32" cy="23" r="9" fill="#FFFFFF" />
+      <path d="M16 51C16.8 41.5 23.1 35.5 32 35.5C40.9 35.5 47.2 41.5 48 51H16Z" fill="#FFFFFF" />
     </svg>
   );
 }

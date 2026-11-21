@@ -715,35 +715,7 @@ export function ChatArea({
           )}
         </div>
 
-        <div className="absolute start-1/2 -translate-x-1/2 flex items-center justify-center gap-2">
-          {/* Search Input */}
-          <div className="relative flex items-center">
-            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onFocus={() => setSearchOpen(true)}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSearchOpen(true);
-              }}
-              placeholder={t(language, 'searchMessages')}
-              className="w-32 sm:w-48 focus:sm:w-60 transition-all ps-8 pe-7 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-900 dark:text-zinc-100 placeholder:text-slate-500 dark:placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-nexus"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSearchOpen(false);
-                }}
-                className="absolute end-2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
+        <div className="absolute start-1/2 -translate-x-1/2 flex items-center justify-center gap-1">
           {(mode === 'dm' || mode === 'group') && onStartDmCall && (
             <div className="flex items-center gap-1">
               <button
@@ -819,6 +791,35 @@ export function ChatArea({
               <Users className="w-5 h-5" />
             </button>
           )}
+        </div>
+
+        <div className="shrink-0 flex items-center justify-end">
+          <div className="relative flex items-center">
+            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onFocus={() => setSearchOpen(true)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSearchOpen(true);
+              }}
+              placeholder={t(language, 'searchMessages')}
+              className="w-28 sm:w-40 lg:w-48 focus:lg:w-56 transition-all ps-8 pe-7 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-900 dark:text-zinc-100 placeholder:text-slate-500 dark:placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-nexus"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSearchOpen(false);
+                }}
+                className="absolute end-2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
