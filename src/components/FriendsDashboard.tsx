@@ -187,6 +187,7 @@ export function FriendsDashboard({
               );
             })()}
           </div>
+
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -249,6 +250,7 @@ export function FriendsDashboard({
             </NexusTooltip>
           )}
         </div>
+
       </div>
     );
   };
@@ -316,30 +318,34 @@ export function FriendsDashboard({
           <button
             type="button"
             onClick={() => setTab('add')}
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
               tab === 'add'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-emerald-600/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white'
+                ? 'bg-nexus text-white'
+                : 'bg-nexus hover:bg-nexus-hover text-white'
             }`}
           >
-            {t(language, 'addFriend')}
+            <UserPlus className="w-3.5 h-3.5" />
+            <span>{t(language, 'addFriend')}</span>
           </button>
 
           {onOpenCreateGroup && (
-            <button
-              type="button"
-              onClick={onOpenCreateGroup}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap bg-nexus/15 text-nexus hover:bg-nexus hover:text-white transition-colors"
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>{t(language, 'createGroup')}</span>
-            </button>
+            <NexusTooltip content={t(language, 'createGroup')} side="bottom">
+              <button
+                type="button"
+                onClick={onOpenCreateGroup}
+                aria-label={t(language, 'createGroup')}
+                className="w-8 h-8 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 dark:text-zinc-400 hover:bg-nexus/10 hover:text-nexus flex items-center justify-center transition-colors"
+              >
+                <Users className="w-4 h-4" />
+              </button>
+            </NexusTooltip>
           )}
         </div>
       </header>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto p-5 max-w-3xl w-full">
+      <div className="flex-1 min-h-0 flex">
+      <div className="flex-1 min-w-0 overflow-y-auto p-5">
         {tab === 'add' ? (
           <form onSubmit={handleSendRequest} className="space-y-4">
             <div>
@@ -401,24 +407,14 @@ export function FriendsDashboard({
             </div>
             <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
               {tab === 'online' && accepted.length > 0 ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setTab('all')}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold transition-colors"
-                  >
-                    <Users className="w-4 h-4" />
-                    <span>{t(language, 'viewAllFriends')}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTab('add')}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-semibold transition-colors"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    <span>{t(language, 'addFriend')}</span>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={() => setTab('all')}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold transition-colors"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>{t(language, 'viewAllFriends')}</span>
+                </button>
               ) : (
                 <button
                   type="button"
@@ -503,6 +499,62 @@ export function FriendsDashboard({
             {listToRender.map(renderFriendshipRow)}
           </div>
         )}
+      </div>
+
+      <aside className="hidden lg:flex w-64 shrink-0 h-full flex-col border-s border-slate-200 dark:border-black/25 bg-slate-50/70 dark:bg-[#2B2D31] px-3 py-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 px-1 mb-3">
+          {language === 'ar' ? 'نشط الآن' : 'Active Now'}
+        </h3>
+        {onlineAccepted.length > 0 ? (
+          <div className="space-y-1">
+            {onlineAccepted.map((friendship) => {
+              const uid = friendship.participants.find((id) => id !== myUid) || '';
+              const friend = usersById[uid];
+              const status = getEffectiveUserStatus(
+                friend?.status,
+                friend?.lastSeen?.toMillis?.(),
+                presenceNowMs
+              );
+              const statusLabel =
+                status === 'online'
+                  ? t(language, 'online')
+                  : status === 'idle'
+                  ? t(language, 'idle')
+                  : status === 'dnd'
+                  ? t(language, 'dnd')
+                  : t(language, 'offline');
+              return (
+                <button
+                  key={friendship.id}
+                  type="button"
+                  onClick={() => onStartDm(uid)}
+                  className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-start hover:bg-slate-200/70 dark:hover:bg-[#35373C] transition-colors"
+                >
+                  <UserAvatar
+                    src={friend?.avatarUrl}
+                    name={friend?.displayName || 'User'}
+                    status={status}
+                    size="sm"
+                    showStatus
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                      {friend?.displayName || 'User'}
+                    </div>
+                    <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                      {statusLabel}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="px-2 py-6 text-xs leading-relaxed text-center text-slate-500 dark:text-zinc-400">
+            {language === 'ar' ? 'لا يوجد أحد نشطاً الآن.' : 'Nobody is active right now.'}
+          </p>
+        )}
+      </aside>
       </div>
     </div>
   );

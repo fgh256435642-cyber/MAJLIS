@@ -1,8 +1,12 @@
 import {
   BellOff,
   Command,
+  Headphones,
+  Mic,
+  MicOff,
   PanelLeftClose,
   Plus,
+  Settings,
   Users,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -34,6 +38,11 @@ interface FriendsAndDmSidebarProps {
   onAddFriend?: (username: string) => void;
   onAfterSelectMember?: () => void;
   onOpenQuickSwitcher: () => void;
+  onOpenUserSettings?: () => void;
+  voiceMuted?: boolean;
+  voiceDeafened?: boolean;
+  onToggleMute?: () => void;
+  onToggleDeafen?: () => void;
 }
 
 export function FriendsAndDmSidebar({
@@ -55,6 +64,11 @@ export function FriendsAndDmSidebar({
   onAddFriend,
   onAfterSelectMember,
   onOpenQuickSwitcher,
+  onOpenUserSettings,
+  voiceMuted = false,
+  voiceDeafened = false,
+  onToggleMute,
+  onToggleDeafen,
 }: FriendsAndDmSidebarProps) {
   const { language, presenceNowMs } = useAuth();
   const myUid = publicUser?.uid || '';
@@ -348,6 +362,51 @@ export function FriendsAndDmSidebar({
                 </CollapsibleBody>
               );
             })
+          )}
+        </div>
+      </div>
+
+      <div className="h-[62px] px-2.5 border-t border-slate-200/80 dark:border-black/25 bg-slate-100/95 dark:bg-[#232428] flex items-center gap-2 shrink-0">
+        <UserAvatar
+          src={publicUser?.avatarUrl}
+          name={publicUser?.displayName || 'User'}
+          status={getEffectiveUserStatus(
+            publicUser?.status,
+            publicUser?.lastSeen?.toMillis?.(),
+            presenceNowMs
+          )}
+          size="sm"
+          showStatus
+        />
+        <div className="min-w-0 flex-1">
+          <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+            {publicUser?.displayName || t(language, 'myAccount')}
+          </div>
+          <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+            @{publicUser?.username || 'majlis'}
+          </div>
+        </div>
+        <div className="flex items-center gap-0.5">
+          {onToggleMute && (
+            <NexusTooltip content={voiceMuted ? t(language, 'unmute') : t(language, 'mute')} side="top">
+              <button type="button" onClick={onToggleMute} aria-label={voiceMuted ? t(language, 'unmute') : t(language, 'mute')} className="w-8 h-8 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
+                {voiceMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+            </NexusTooltip>
+          )}
+          {onToggleDeafen && (
+            <NexusTooltip content={voiceDeafened ? t(language, 'undeafen') : t(language, 'deafen')} side="top">
+              <button type="button" onClick={onToggleDeafen} aria-label={voiceDeafened ? t(language, 'undeafen') : t(language, 'deafen')} className="w-8 h-8 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
+                <Headphones className={`w-4 h-4 ${voiceDeafened ? 'text-rose-500' : ''}`} />
+              </button>
+            </NexusTooltip>
+          )}
+          {onOpenUserSettings && (
+            <NexusTooltip content={t(language, 'settings')} side="top">
+              <button type="button" onClick={onOpenUserSettings} aria-label={t(language, 'settings')} className="w-8 h-8 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
+                <Settings className="w-4 h-4" />
+              </button>
+            </NexusTooltip>
           )}
         </div>
       </div>

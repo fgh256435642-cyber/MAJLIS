@@ -304,6 +304,11 @@ export function PersistentSidebar({
             onAddFriend={onAddFriend}
             onAfterSelectMember={onCloseMobile}
             onOpenQuickSwitcher={onOpenQuickSwitcher}
+            onOpenUserSettings={() => onOpenUserSettings()}
+            voiceMuted={voiceMuted}
+            voiceDeafened={voiceDeafened}
+            onToggleMute={onToggleMute}
+            onToggleDeafen={onToggleDeafen}
           />
         )}
       </div>
