@@ -23,8 +23,9 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
       <path d="M14 30V26C14 16.1 22.1 8 32 8C41.9 8 50 16.1 50 26V30" stroke="#DDD6FE" strokeWidth="4.5" strokeLinecap="round" />
       <rect x="8.5" y="24" width="11" height="16" rx="5.5" fill="#E8E5FF" stroke="#4F46A5" strokeWidth="2" />
       <rect x="44.5" y="24" width="11" height="16" rx="5.5" fill="#E8E5FF" stroke="#4F46A5" strokeWidth="2" />
-      <path d="M44.5 37C44.5 43.5 40.5 47 35.5 47.5" stroke="#DDD6FE" strokeWidth="3" strokeLinecap="round" />
-      <rect x="31.5" y="45" width="7" height="4" rx="2" fill="#FFFFFF" stroke="#4F46A5" strokeWidth="1.8" />
+      <circle cx="26" cy="31" r="1.6" fill="#4F46A5" />
+      <circle cx="38" cy="31" r="1.6" fill="#4F46A5" />
+      <path d="M27.5 38C29.5 40 34.5 40 36.5 38" stroke="#4F46A5" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
