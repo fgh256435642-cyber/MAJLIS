@@ -13,14 +13,17 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
     >
       <defs>
         <linearGradient id="majlis-circle-grad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#8B7CF6" />
-          <stop offset="0.55" stopColor="#5865F2" />
-          <stop offset="1" stopColor="#3140A8" />
+          <stop offset="0" stopColor="#A78BFA" />
+          <stop offset="0.5" stopColor="#5865F2" />
+          <stop offset="1" stopColor="#2F3FA8" />
         </linearGradient>
       </defs>
-      <circle cx="32" cy="32" r="28" fill="url(#majlis-circle-grad)" />
-      <circle cx="32" cy="23" r="9" fill="#FFFFFF" />
-      <path d="M16 51C16.8 41.5 23.1 35.5 32 35.5C40.9 35.5 47.2 41.5 48 51H16Z" fill="#FFFFFF" />
+      <circle cx="32" cy="32" r="29" fill="url(#majlis-circle-grad)" />
+      <circle cx="32" cy="21" r="10" fill="#FFFFFF" />
+      <path d="M14.5 51C15.5 40.5 22.5 34.5 32 34.5C41.5 34.5 48.5 40.5 49.5 51H14.5Z" fill="#FFFFFF" />
+      <path d="M17 25C17 15.5 23.7 8.5 32 8.5C40.3 8.5 47 15.5 47 25" stroke="#DDD6FE" strokeWidth="3.5" strokeLinecap="round" />
+      <rect x="10.5" y="24" width="9" height="13" rx="4.5" fill="#DDD6FE" stroke="#4F46A5" strokeWidth="1.5" />
+      <rect x="44.5" y="24" width="9" height="13" rx="4.5" fill="#DDD6FE" stroke="#4F46A5" strokeWidth="1.5" />
     </svg>
   );
 }

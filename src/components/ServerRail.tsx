@@ -198,7 +198,7 @@ export function ServerRail({
                   : 'rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
               }`}
             >
-              <MajlisBrandIcon className="w-6 h-6" />
+              <MajlisBrandIcon className="w-11 h-11" />
             </button>
           </NexusTooltip>
         </div>
@@ -540,7 +540,10 @@ export function ServerRail({
                 <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                   {publicUser?.displayName || t(language, 'loading')}
                 </div>
-                <div className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5 truncate">
+                <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                  @{publicUser?.username || 'majlis'}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5 truncate mt-0.5">
                   <StatusIndicator
                     status={settings.hideOnlineStatus ? 'offline' : effectiveSelfStatus}
                     className="w-2.5 h-2.5 shrink-0"

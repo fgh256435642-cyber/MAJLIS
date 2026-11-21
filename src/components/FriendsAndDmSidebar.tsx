@@ -320,11 +320,11 @@ export function FriendsAndDmSidebar({
           showStatus
         />
         <div className="min-w-0 flex-1">
-          <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-            {publicUser?.displayName || t(language, 'myAccount')}
-          </div>
           <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
-            @{publicUser?.username || 'majlis'}
+            {publicUser?.username ? `@${publicUser.username}` : '@majlis'}
+          </div>
+          <div className="text-xs font-semibold text-slate-900 dark:text-white truncate mt-0.5">
+            {publicUser?.displayName || t(language, 'myAccount')}
           </div>
         </div>
         <div className="flex items-center gap-0.5">

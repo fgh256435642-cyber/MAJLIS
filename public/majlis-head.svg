@@ -1,12 +1,15 @@
 <svg width="1024" height="1024" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="circle" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#8B7CF6"/>
-      <stop offset=".55" stop-color="#5865F2"/>
-      <stop offset="1" stop-color="#3140A8"/>
+      <stop stop-color="#A78BFA"/>
+      <stop offset=".5" stop-color="#5865F2"/>
+      <stop offset="1" stop-color="#2F3FA8"/>
     </linearGradient>
   </defs>
-  <circle cx="32" cy="32" r="28" fill="url(#circle)"/>
-  <circle cx="32" cy="23" r="9" fill="#FFFFFF"/>
-  <path d="M16 51C16.8 41.5 23.1 35.5 32 35.5C40.9 35.5 48 51H16Z" fill="#FFFFFF"/>
+  <circle cx="32" cy="32" r="29" fill="url(#circle)"/>
+  <circle cx="32" cy="21" r="10" fill="#FFFFFF"/>
+  <path d="M14.5 51C15.5 40.5 22.5 34.5 32 34.5C41.5 34.5 48.5 40.5 49.5 51H14.5Z" fill="#FFFFFF"/>
+  <path d="M17 25C17 15.5 23.7 8.5 32 8.5C40.3 8.5 47 15.5 47 25" stroke="#DDD6FE" stroke-width="3.5" stroke-linecap="round"/>
+  <rect x="10.5" y="24" width="9" height="13" rx="4.5" fill="#DDD6FE" stroke="#4F46A5" stroke-width="1.5"/>
+  <rect x="44.5" y="24" width="9" height="13" rx="4.5" fill="#DDD6FE" stroke="#4F46A5" stroke-width="1.5"/>
 </svg>
