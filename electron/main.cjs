@@ -128,8 +128,8 @@ async function createWindow() {
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     const allowedAuthUrls = [
       'https://accounts.google.com/',
-      'https://stalwart-surface-46tvw.firebaseapp.com/',
-      'https://stalwart-surface-46tvw.web.app/',
+      'https://majlis-d32ab.firebaseapp.com/',
+      'https://majlis-d32ab.web.app/',
     ];
     if (allowedAuthUrls.some((allowedUrl) => url.startsWith(allowedUrl))) {
       return {
