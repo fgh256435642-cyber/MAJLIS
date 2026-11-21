@@ -715,7 +715,7 @@ export function ChatArea({
           )}
         </div>
 
-        <div className="absolute start-1/2 -translate-x-1/2 flex items-center justify-center gap-1">
+        <div className="shrink-0 flex items-center justify-end gap-1 ms-auto">
           {(mode === 'dm' || mode === 'group') && onStartDmCall && (
             <div className="flex items-center gap-1">
               <button
@@ -791,9 +791,6 @@ export function ChatArea({
               <Users className="w-5 h-5" />
             </button>
           )}
-        </div>
-
-        <div className="shrink-0 flex items-center justify-end">
           <div className="relative flex items-center">
             <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 pointer-events-none" />
             <input
