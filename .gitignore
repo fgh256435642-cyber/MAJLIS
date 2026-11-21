@@ -7,5 +7,6 @@ release/
 coverage/
 .DS_Store
 *.log
+firebase-debug.log*
 .env*
 !.env.example
