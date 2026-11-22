@@ -49,12 +49,12 @@
     "autoprefixer": "^10.4.21",
     "electron": "^45.4.1",
     "electron-builder": "^26.18.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.2",
     "png2icons": "^2.0.1",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   },
   "build": {
     "appId": "com.majlis.desktop",

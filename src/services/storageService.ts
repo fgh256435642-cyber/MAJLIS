@@ -1,6 +1,6 @@
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { storage } from './firebase';
-import { DATA_IMAGE_URL_PATTERN, LIMITS } from '../utils/validation';
+import { DATA_IMAGE_URL_PATTERN } from '../utils/validation';
 
 export interface UploadImageOptions {
   maxWidth?: number;
@@ -9,6 +9,10 @@ export interface UploadImageOptions {
 }
 
 const IMAGE_EXT_REGEX = /\.(png|jpe?g|webp|gif|bmp|avif)$/i;
+const FIRESTORE_FALLBACK_MAX_FILE_BYTES = 400 * 1024;
+const FIRESTORE_FALLBACK_MAX_DATA_URL_LENGTH = 600_000;
+const INLINE_MEDIA_MIME_PATTERN =
+  /^(audio\/(aac|mp4|mpeg|ogg|wav|webm)|video\/(mp4|mpeg|ogg|webm|quicktime))$/i;
 let storageUnavailableForSession = false;
 
 function isImageFile(file: File): boolean {
@@ -22,10 +26,10 @@ function readFileAsDataUrl(file: File): Promise<string> {
       if (typeof reader.result === 'string') {
         resolve(reader.result);
       } else {
-        reject(new Error('Failed to read image file.'));
+        reject(new Error('Failed to read file.'));
       }
     };
-    reader.onerror = () => reject(new Error('Failed to read image file.'));
+    reader.onerror = () => reject(new Error('Failed to read file.'));
     reader.readAsDataURL(file);
   });
 }
@@ -47,11 +51,11 @@ export async function compressImageToDataUrl(
   const maxHeight = options?.maxHeight ?? 640;
   const maxLen = Math.min(
     options?.maxDataUrlLength ?? 160_000,
-    LIMITS.DATA_IMAGE_URL_MAX - 5_000
+    FIRESTORE_FALLBACK_MAX_DATA_URL_LENGTH - 5_000
   );
 
-  // Preserve animated GIFs when already compact enough
-  if ((file.type === 'image/gif' || /\.gif$/i.test(file.name)) && file.size <= 135_000) {
+  const maxOriginalFileSize = Math.floor((maxLen - 64) * 0.75);
+  if (file.size <= maxOriginalFileSize) {
     const raw = await readFileAsDataUrl(file);
     if (raw.length <= maxLen && DATA_IMAGE_URL_PATTERN.test(raw)) {
       return raw;
@@ -166,6 +170,38 @@ async function tryFirebaseStorageUpload(
   });
 }
 
+async function uploadSmallFileToFirestore(
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<string> {
+  if (file.size > FIRESTORE_FALLBACK_MAX_FILE_BYTES) {
+    throw new Error(
+      'Firebase Storage is unavailable. The Firestore fallback supports files up to 400 KB; choose a smaller file or enable Firebase Storage.'
+    );
+  }
+
+  const rawDataUrl = await readFileAsDataUrl(file);
+  const commaIndex = rawDataUrl.indexOf(',');
+  if (!rawDataUrl.startsWith('data:') || commaIndex < 0) {
+    throw new Error('Failed to encode file for the Firestore fallback.');
+  }
+
+  const requestedMimeType = file.type.split(';', 1)[0].trim().toLowerCase();
+  const mimeType = INLINE_MEDIA_MIME_PATTERN.test(requestedMimeType)
+    ? requestedMimeType
+    : 'application/octet-stream';
+  const dataUrl = `data:${mimeType};base64,${rawDataUrl.slice(commaIndex + 1)}`;
+
+  if (dataUrl.length > FIRESTORE_FALLBACK_MAX_DATA_URL_LENGTH) {
+    throw new Error(
+      'Firebase Storage is unavailable. The Firestore fallback supports files up to 400 KB; choose a smaller file or enable Firebase Storage.'
+    );
+  }
+
+  onProgress?.(100);
+  return dataUrl;
+}
+
 export async function uploadFileToStorage(
   storagePath: string,
   file: File,
@@ -186,25 +222,22 @@ export async function uploadFileToStorage(
       const code = (err as { code?: string })?.code || '';
       const msg = err instanceof Error ? err.message : '';
       if (
-        code === 'storage/unauthorized' ||
-        code === 'storage/unauthenticated' ||
         code === 'storage/bucket-not-found' ||
         code === 'storage/project-not-found' ||
         code === 'storage/retry-limit-exceeded' ||
         code === 'storage/unknown' ||
+        code === 'storage/unauthorized' ||
         msg === 'STORAGE_TIMEOUT' ||
         msg.includes('404')
       ) {
         storageUnavailableForSession = true;
       }
 
-      if (!image) {
-        if (code === 'storage/unauthorized') {
-          throw new Error(
-            'Firebase Storage permission denied. Deploy storage.rules or enable Firebase Storage in the Firebase Console.'
-          );
+      if (!image && !storageUnavailableForSession) {
+        if (code === 'storage/unauthenticated') {
+          throw new Error('Sign in before uploading files.');
         }
-        throw new Error('Upload failed. Ensure Firebase Storage is enabled.');
+        throw new Error('Upload failed. Check your connection and Firebase Storage setup.');
       }
     }
   }
@@ -213,6 +246,10 @@ export async function uploadFileToStorage(
     const dataUrl = await compressImageToDataUrl(file, imageOptions);
     onProgress?.(100);
     return dataUrl;
+  }
+
+  if (storageUnavailableForSession) {
+    return uploadSmallFileToFirestore(file, onProgress);
   }
 
   throw new Error('File upload requires Firebase Storage to be enabled.');
