@@ -12,7 +12,6 @@ import {
   LogOut,
   RotateCcw,
   Shield,
-  Sparkles,
   Trash2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -20,7 +19,6 @@ import { useToast } from '../../hooks/useToast';
 import { useUserSettings } from '../../hooks/useUserSettings';
 import { t } from '../../i18n/translations';
 import {
-  APP_VERSION,
   clearAppLocalCacheAndReload,
   DEFAULT_SHORTCUTS,
   exportAllMyUserData,
@@ -651,35 +649,6 @@ export function AboutSection() {
         <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'aboutAppSubtitle')}
         </p>
-      </div>
-
-      {/* Version Card */}
-      <div className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated flex items-center justify-between gap-4">
-        <div>
-          <div className="text-link font-bold text-text dark:text-text">
-            {t(language, 'appName')}
-          </div>
-          <div className="text-link text-text-muted dark:text-text-muted mt-0.5">
-            {t(language, 'buildVersionLabel')} v{APP_VERSION}
-          </div>
-        </div>
-        <span className="px-3 py-1 rounded-full bg-accent/15 text-link text-link font-bold font-mono">
-          v{APP_VERSION}
-        </span>
-      </div>
-
-      {/* What's New Changelog */}
-      <div className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
-        <div className="flex items-center gap-2 text-link font-bold text-text dark:text-text">
-          <Sparkles className="w-4 h-4 text-link" />
-          <span>{t(language, 'whatsNewTitle')}</span>
-        </div>
-        <ul className="space-y-2 text-link text-text dark:text-text list-disc ps-5">
-          <li>{t(language, 'changelogItem1')}</li>
-          <li>{t(language, 'changelogItem2')}</li>
-          <li>{t(language, 'changelogItem3')}</li>
-          <li>{t(language, 'changelogItem4')}</li>
-        </ul>
       </div>
 
       {/* Report a Problem */}
