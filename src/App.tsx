@@ -4,6 +4,7 @@ import { MajlisBrandIcon } from './components/MajlisLogo';
 import { MajlisWorkspace } from './components/MajlisWorkspace';
 import { ToastContainer } from './components/ToastContainer';
 import { MajlisTooltipProvider } from './components/ui/MajlisUI';
+import { ImagePreviewProvider } from './components/ImagePreview';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { ToastProvider } from './hooks/useToast';
 import { UserSettingsProvider } from './hooks/useUserSettings';
@@ -37,10 +38,12 @@ export default function App() {
       <ToastProvider>
         <AuthProvider>
           <UserSettingsProvider>
-            <MajlisTooltipProvider>
-              <MajlisRoot />
-              <ToastContainer />
-            </MajlisTooltipProvider>
+            <ImagePreviewProvider>
+              <MajlisTooltipProvider>
+                <MajlisRoot />
+                <ToastContainer />
+              </MajlisTooltipProvider>
+            </ImagePreviewProvider>
           </UserSettingsProvider>
         </AuthProvider>
       </ToastProvider>

@@ -28,6 +28,10 @@
     transition: background-color 180ms ease, color 180ms ease;
   }
 
+  img[src]:not([data-image-preview-modal="true"]) {
+    cursor: zoom-in;
+  }
+
   code, pre, .font-mono {
     font-family: var(--font-mono);
   }
