@@ -1,5 +1,5 @@
 /**
- * Nexus Firestore Security Rules Verification Suite (Phase 0 Dirty Dozen Spec)
+ * Majlis Firestore Security Rules Verification Suite (Phase 0 Dirty Dozen Spec)
  * Defines adversarial payloads and expected PERMISSION_DENIED outcomes for
  * the Firestore Emulator test runner (`@firebase/rules-unit-testing`).
  */

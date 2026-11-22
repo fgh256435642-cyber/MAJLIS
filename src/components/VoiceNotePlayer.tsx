@@ -56,14 +56,14 @@ export function VoiceNotePlayer({ audioUrl }: { audioUrl: string }) {
   };
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] max-w-xs sm:max-w-sm w-full">
+    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated max-w-xs sm:max-w-sm w-full">
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
       <button
         type="button"
         onClick={togglePlay}
         title={isPlaying ? t(language, 'pauseVoiceNote') : t(language, 'playVoiceNote')}
         aria-label={isPlaying ? t(language, 'pauseVoiceNote') : t(language, 'playVoiceNote')}
-        className="w-9 h-9 rounded-full bg-nexus hover:bg-nexus-hover text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
+        className="w-9 h-9 rounded-full bg-accent hover:bg-majlis-hover text-text flex items-center justify-center transition-colors shrink-0 shadow-sm"
       >
         {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ms-0.5" />}
       </button>
@@ -80,17 +80,17 @@ export function VoiceNotePlayer({ audioUrl }: { audioUrl: string }) {
                 style={{ height: `${Math.max(20, barPct)}%` }}
                 className={`flex-1 rounded-full transition-colors duration-150 ${
                   isPassed
-                    ? 'bg-nexus'
-                    : 'bg-slate-300 dark:bg-zinc-600'
+                    ? 'bg-accent'
+                    : 'bg-hover dark:bg-hover'
                 }`}
               />
             );
           })}
         </div>
 
-        <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-zinc-400 tabular-nums">
+        <div className="flex items-center justify-between text-[10px] text-text-muted dark:text-text-muted tabular-nums">
           <span className="flex items-center gap-1 font-medium">
-            <Volume2 className="w-3 h-3 text-nexus" />
+            <Volume2 className="w-3 h-3 text-link" />
             <span>{t(language, 'voiceNote')}</span>
           </span>
           <span>

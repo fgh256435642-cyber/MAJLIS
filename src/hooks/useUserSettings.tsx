@@ -8,13 +8,14 @@ import {
   registerCurrentSession,
   saveDetailedUserSettings,
   updateCustomStatus,
-} from '../services/nexusService';
+} from '../services/majlisService';
+import { normalizeAppearanceMode, normalizeThemeMode } from '../types/majlis';
 import type {
   BlockedUser,
   NotificationMode,
   UserSession,
   UserSettings,
-} from '../types/nexus';
+} from '../types/majlis';
 import {
   darkenHexColor,
   getAccentContrast,
@@ -50,29 +51,40 @@ const UserSettingsContext = createContext<UserSettingsContextValue | null>(null)
 function loadCachedSettings(uid?: string): UserSettings {
   const base = createDefaultUserSettings(uid || 'guest');
   if (typeof localStorage !== 'undefined') {
-    const savedTheme = localStorage.getItem('nexus_theme');
-    if (
-      savedTheme === 'basic' ||
-      savedTheme === 'warm' ||
-      savedTheme === 'royal' ||
-      savedTheme === 'forest' ||
-      savedTheme === 'ocean'
-    ) {
-      base.themeMode = savedTheme;
+    const savedTheme = localStorage.getItem('majlis_theme');
+    if (savedTheme) base.themeMode = normalizeThemeMode(savedTheme);
+    const savedAppearanceMode = localStorage.getItem('majlis_appearance_mode');
+    if (savedAppearanceMode) {
+      base.appearanceMode = normalizeAppearanceMode(savedAppearanceMode);
+    } else if (savedTheme === 'ivory') {
+      base.appearanceMode = 'light';
     }
-    const savedLang = localStorage.getItem('nexus_lang');
+    const savedLang = localStorage.getItem('majlis_lang');
     if (savedLang === 'en' || savedLang === 'ar') {
       base.language = savedLang;
     }
   }
   if (!uid) return base;
   try {
-    const raw = localStorage.getItem(`nexus_user_settings_${uid}`);
+    const raw = localStorage.getItem(`majlis_user_settings_${uid}`);
     if (!raw) return base;
-    const parsed = JSON.parse(raw) as Partial<UserSettings>;
+    const parsed = JSON.parse(raw) as Omit<Partial<UserSettings>, 'themeMode'> & {
+      themeMode?: unknown;
+      darkMode?: unknown;
+    };
+    delete parsed.darkMode;
+    const legacyIvory = parsed.themeMode === 'ivory';
     return {
       ...base,
       ...parsed,
+      themeMode: parsed.themeMode
+        ? normalizeThemeMode(parsed.themeMode)
+        : base.themeMode,
+      appearanceMode: parsed.appearanceMode
+        ? normalizeAppearanceMode(parsed.appearanceMode)
+        : legacyIvory
+          ? 'light'
+          : base.appearanceMode,
       uid,
       shortcuts: { ...base.shortcuts, ...(parsed.shortcuts || {}) },
       serverNotifications: parsed.serverNotifications || {},
@@ -90,8 +102,8 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
     preferredStatus,
     language,
     setLocalTheme,
+    setLocalAppearanceMode,
     setLocalLanguage,
-    changeAccentColor,
     logout,
   } = useAuth();
   const { pushToast } = useToast();
@@ -158,7 +170,21 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
       (snap) => {
         if (snap.exists()) {
           hasRemotePrefsRef.current = true;
-          const data = snap.data() as Partial<UserSettings>;
+          const rawData = snap.data() as Omit<Partial<UserSettings>, 'themeMode' | 'appearanceMode'> & {
+            themeMode?: unknown;
+            appearanceMode?: unknown;
+            darkMode?: unknown;
+          };
+          const legacyIvory = rawData.themeMode === 'ivory';
+          const data = {
+            ...rawData,
+            themeMode: normalizeThemeMode(rawData.themeMode),
+            appearanceMode: normalizeAppearanceMode(
+              rawData.appearanceMode,
+              legacyIvory ? 'light' : settingsRef.current.appearanceMode
+            ),
+          };
+          delete data.darkMode;
           const defaults = createDefaultUserSettings(uid);
           const inFlight = inFlightPatchRef.current;
           const queued = pendingPatchRef.current;
@@ -188,7 +214,7 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
           settingsRef.current = merged;
           setSettings(merged);
           try {
-            localStorage.setItem(`nexus_user_settings_${uid}`, JSON.stringify(merged));
+            localStorage.setItem(`majlis_user_settings_${uid}`, JSON.stringify(merged));
           } catch {
             // Ignore quota errors
           }
@@ -248,46 +274,41 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
 
     if (uid && settingsLoaded && hasRemotePrefsRef.current) {
       setLocalTheme(settings.themeMode);
+      setLocalAppearanceMode(settings.appearanceMode);
       setLocalLanguage(settings.language);
-      if (settings.accentPreset !== 'custom') {
-        changeAccentColor(settings.accentPreset);
-      }
     }
 
     if (settings.accentPreset === 'custom' && isValidHexColor(settings.customAccentHex)) {
-      root.setAttribute('data-accent', 'custom');
-      root.style.setProperty('--nexus-accent', settings.customAccentHex);
-      root.style.setProperty('--nexus-accent-hover', darkenHexColor(settings.customAccentHex));
       root.style.setProperty('--accent', settings.customAccentHex);
       root.style.setProperty('--accent-hover', darkenHexColor(settings.customAccentHex));
-      root.style.setProperty('--nexus-accent-hover', darkenHexColor(settings.customAccentHex));
       root.style.setProperty('--accent-contrast', getAccentContrast(settings.customAccentHex));
-      root.style.setProperty('--lk-accent', settings.customAccentHex);
-      localStorage.setItem('nexus_accent_custom', settings.customAccentHex);
+      root.removeAttribute('data-accent-preset');
+      localStorage.setItem('majlis_accent_custom', settings.customAccentHex);
+      localStorage.setItem('majlis_accent', 'custom');
     } else {
-      root.style.removeProperty('--nexus-accent');
-      root.style.removeProperty('--nexus-accent-hover');
-      const presetHex: Record<string, string> = {
-        indigo: '#5865F2',
-        blue: '#2563EB',
-        green: '#10B981',
-        violet: '#8B5CF6',
-        rose: '#E11D48',
-        amber: '#D97706',
-        cyan: '#0891B2',
-        pink: '#DB2777',
-      };
-      const hex = presetHex[settings.accentPreset] || '#5865F2';
-      root.style.setProperty('--accent', hex);
-      root.style.setProperty('--nexus-accent', hex);
-      root.style.setProperty('--accent-hover', darkenHexColor(hex));
-      root.style.setProperty('--nexus-accent-hover', darkenHexColor(hex));
-      root.style.setProperty('--accent-contrast', getAccentContrast(hex));
-      root.style.setProperty('--lk-accent', hex);
-      localStorage.removeItem('nexus_accent_custom');
-      root.setAttribute('data-accent', settings.accentPreset === 'custom' ? 'indigo' : settings.accentPreset);
+      root.style.removeProperty('--accent');
+      root.style.removeProperty('--accent-hover');
+      root.style.removeProperty('--accent-contrast');
+      localStorage.removeItem('majlis_accent_custom');
+      if (settings.accentPreset === 'theme' || settings.accentPreset === 'custom') {
+        root.removeAttribute('data-accent-preset');
+        localStorage.setItem('majlis_accent', 'theme');
+      } else {
+        root.setAttribute('data-accent-preset', settings.accentPreset);
+        localStorage.setItem('majlis_accent', settings.accentPreset);
+      }
     }
 
+    const darkModeEnabled = settings.appearanceMode === 'dark';
+    root.setAttribute('data-theme', settings.themeMode);
+    root.setAttribute('data-theme-mode', settings.appearanceMode);
+    root.removeAttribute('data-dark-mode');
+    root.classList.toggle('dark', darkModeEnabled);
+    root.style.colorScheme = darkModeEnabled ? 'dark' : 'light';
+    const themeColor = getComputedStyle(root).getPropertyValue('--main').trim();
+    if (themeColor) {
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+    }
     root.setAttribute('data-font-size', settings.fontSize);
     root.setAttribute('data-density', settings.density);
     root.setAttribute('data-avatar-shape', settings.avatarShape);
@@ -295,7 +316,7 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
     root.setAttribute('data-high-contrast', String(settings.highContrast));
     root.setAttribute('data-reduce-transparency', String(settings.reduceTransparency));
     root.setAttribute('data-large-controls', String(settings.largeControls));
-  }, [settings, uid, settingsLoaded, setLocalTheme, setLocalLanguage, changeAccentColor]);
+  }, [settings, uid, settingsLoaded, setLocalTheme, setLocalAppearanceMode, setLocalLanguage]);
 
   // Clear expired custom status automatically
   useEffect(() => {
@@ -363,7 +384,7 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
           setSettings(reconciled);
           try {
             localStorage.setItem(
-              `nexus_user_settings_${targetUid}`,
+              `majlis_user_settings_${targetUid}`,
               JSON.stringify(reconciled)
             );
           } catch {
@@ -405,17 +426,27 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
 
       if (partial.themeMode !== undefined) {
         setLocalTheme(partial.themeMode);
+        try {
+          localStorage.setItem('majlis_theme', partial.themeMode);
+        } catch {
+          // Ignore storage error
+        }
+      }
+      if (partial.appearanceMode !== undefined) {
+        setLocalAppearanceMode(partial.appearanceMode);
+        try {
+          localStorage.setItem('majlis_appearance_mode', partial.appearanceMode);
+        } catch {
+          // Ignore storage error
+        }
       }
       if (partial.language !== undefined) {
         setLocalLanguage(partial.language);
       }
-      if (partial.accentPreset !== undefined && partial.accentPreset !== 'custom') {
-        changeAccentColor(partial.accentPreset);
-      }
 
       if (!uid) return;
       try {
-        localStorage.setItem(`nexus_user_settings_${uid}`, JSON.stringify(optimistic));
+        localStorage.setItem(`majlis_user_settings_${uid}`, JSON.stringify(optimistic));
       } catch {
         // Ignore storage error
       }
@@ -455,7 +486,7 @@ export function UserSettingsProvider({ children }: { children: React.ReactNode }
         waiters.forEach((done) => done());
       });
     },
-    [uid, flushPendingWrite, setLocalTheme, setLocalLanguage, changeAccentColor]
+    [uid, flushPendingWrite, setLocalTheme, setLocalAppearanceMode, setLocalLanguage]
   );
 
   const blockedUserIds = useMemo(

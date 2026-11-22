@@ -11,19 +11,19 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
   };
 
   return (
-    <div className="my-1.5 rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#1E1F22] max-w-2xl">
-      <div className="flex items-center justify-between px-3 py-1.5 text-xs text-slate-500 dark:text-zinc-400 border-b border-slate-200 dark:border-white/10">
+    <div className="my-1.5 rounded-lg overflow-hidden border border-border dark:border-border bg-main dark:bg-main max-w-2xl">
+      <div className="flex items-center justify-between px-3 py-1.5 text-link text-text-muted dark:text-text-muted border-accent border-border dark:border-border">
         <span className="font-mono">{language || 'code'}</span>
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1 hover:text-slate-900 dark:hover:text-white transition-colors"
+          className="inline-flex items-center gap-1 hover:text-text dark:hover:text-text transition-colors"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
           <span>{copied ? 'Copied' : 'Copy'}</span>
         </button>
       </div>
-      <pre className="p-3 overflow-x-auto text-xs leading-relaxed font-mono text-slate-800 dark:text-zinc-200">
+      <pre className="p-3 overflow-x-auto text-link leading-relaxed font-mono text-text dark:text-text">
         <code>{code}</code>
       </pre>
     </div>
@@ -54,14 +54,14 @@ function renderInline(
       parts.push(
         <code
           key={key}
-          className="px-1.5 py-0.5 mx-0.5 rounded bg-slate-200/80 dark:bg-[#1E1F22] font-mono text-[0.85em] text-slate-900 dark:text-zinc-100"
+          className="px-1.5 py-0.5 mx-0.5 rounded bg-hover/80 dark:bg-hover/80 font-mono text-[0.85em] text-text dark:text-text"
         >
           {token.slice(1, -1)}
         </code>
       );
     } else if (token.startsWith('**') && token.endsWith('**')) {
       parts.push(
-        <strong key={key} className="font-semibold text-slate-950 dark:text-white">
+        <strong key={key} className="font-semibold text-text dark:text-text">
           {renderInline(token.slice(2, -2), currentUsername, `${key}-b`, onExternalLinkClick)}
         </strong>
       );
@@ -88,8 +88,8 @@ function renderInline(
           key={key}
           className={`px-1 py-0.5 rounded font-medium ${
             isSelf
-              ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-              : 'bg-nexus/15 text-nexus'
+              ? 'bg-warning/20 text-warning dark:text-warning'
+              : 'bg-accent/15 text-link'
           }`}
         >
           {token}
@@ -108,7 +108,7 @@ function renderInline(
               onExternalLinkClick(token);
             }
           }}
-          className="text-[#006CE7] dark:text-[#00A8FC] hover:underline break-all"
+          className="text-link dark:text-link hover:underline break-all"
         >
           {token}
         </a>
@@ -188,7 +188,7 @@ function renderTextLines(
           return (
             <div
               key={`${keyPrefix}-l-${i}`}
-              className="pl-2.5 my-0.5 text-slate-600 dark:text-zinc-300 bg-slate-100/70 dark:bg-white/5 rounded py-0.5 pr-2"
+              className="pl-2.5 my-0.5 text-text dark:text-text bg-main/70 dark:bg-main/70 rounded py-0.5 pr-2"
             >
               {renderInline(
                 line.slice(2),
@@ -244,18 +244,18 @@ export function LinkEmbedCard({
           onExternalLinkClick(url);
         }
       }}
-      className="mt-1.5 flex items-center justify-between gap-3 max-w-md rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-[#32353B] transition-colors group"
+      className="mt-1.5 flex items-center justify-between gap-3 max-w-md rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated px-3 py-2.5 hover:bg-main dark:hover:bg-main transition-colors group"
     >
       <div className="min-w-0">
-        <div className="text-xs font-medium text-slate-500 dark:text-zinc-400 truncate">
+        <div className="text-link font-medium text-text-muted dark:text-text-muted truncate">
           {hostname}
         </div>
-        <div className="text-sm font-medium text-[#006CE7] dark:text-[#00A8FC] truncate group-hover:underline">
+        <div className="text-link font-medium text-link dark:text-link truncate group-hover:underline">
           {hostname}
           {pathPreview}
         </div>
       </div>
-      <ExternalLink className="w-4 h-4 shrink-0 text-slate-400 dark:text-zinc-500 group-hover:text-slate-700 dark:group-hover:text-zinc-200" />
+      <ExternalLink className="w-4 h-4 shrink-0 text-text-muted dark:text-text-muted group-hover:text-text dark:group-hover:text-text-muted" />
     </a>
   );
 }

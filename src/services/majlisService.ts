@@ -41,6 +41,7 @@ import type {
   Friendship,
   GroupDm,
   Invite,
+  AppearanceMode,
   Language,
   PublicUser,
   Role,
@@ -52,7 +53,8 @@ import type {
   UserSession,
   UserSettings,
   UserStatus,
-} from '../types/nexus';
+} from '../types/majlis';
+import { normalizeAppearanceMode, normalizeThemeMode } from '../types/majlis';
 import {
   computeCustomStatusExpiryMs,
   extractInviteCode,
@@ -193,8 +195,8 @@ async function ensureUserProfileInternal(
         ? firebaseUser.photoURL.slice(0, LIMITS.URL_MAX)
         : '';
 
-    const rawEmail = (firebaseUser.email || `${uid}@nexus.local`).trim().slice(0, 254);
-    const email = rawEmail.length >= 3 ? rawEmail : `${uid}@nexus.local`;
+    const rawEmail = (firebaseUser.email || `${uid}@majlis.local`).trim().slice(0, 254);
+    const email = rawEmail.length >= 3 ? rawEmail : `${uid}@majlis.local`;
 
     const batch = writeBatch(db);
 
@@ -1379,34 +1381,21 @@ export async function searchDiscoverableUsers(searchQuery: string): Promise<Publ
   }
 }
 
-export function resolveThemeMode(theme: ThemeMode): 'dark' | 'light' {
-  return theme === 'warm' || theme === 'royal' ? 'light' : 'dark';
-}
-
-export function applyDocumentThemeAndDirection(theme: ThemeMode, language: Language) {
+export function applyDocumentThemeAndDirection(
+  theme: ThemeMode,
+  language: Language,
+  appearanceMode: AppearanceMode
+) {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
-  const resolved = resolveThemeMode(theme);
+  const darkModeEnabled = appearanceMode === 'dark';
   root.setAttribute('data-theme', theme);
-  root.style.setProperty('color-scheme', resolved);
-  root.setAttribute('data-theme-mode', resolved);
-  const themeColor =
-    theme === 'warm'
-      ? '#FFF6EB'
-      : theme === 'royal'
-      ? '#F9FCFF'
-      : theme === 'forest'
-      ? '#162A2C'
-      : theme === 'ocean'
-      ? '#323D42'
-      : '#07192D';
+  root.style.setProperty('color-scheme', appearanceMode);
+  root.setAttribute('data-theme-mode', appearanceMode);
+  const themeColor = getComputedStyle(root).getPropertyValue('--main').trim();
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', themeColor);
-  if (resolved === 'dark') {
-    root.classList.add('dark');
-  } else {
-    root.classList.remove('dark');
-  }
+  if (meta && themeColor) meta.setAttribute('content', themeColor);
+  root.classList.toggle('dark', darkModeEnabled);
   root.dir = language === 'ar' ? 'rtl' : 'ltr';
   root.lang = language;
   document.title =
@@ -2003,9 +1992,10 @@ export function createDefaultUserSettings(uid: string): UserSettings {
       : 'Asia/Riyadh';
   return {
     uid,
-    themeMode: 'basic',
-    accentPreset: 'indigo',
-    customAccentHex: '#5865F2',
+    themeMode: 'classic',
+    appearanceMode: 'dark',
+    accentPreset: 'theme',
+    customAccentHex: '#7482FF',
     fontSize: 'normal',
     density: 'comfortable',
     messageStyle: 'normal',
@@ -2069,15 +2059,10 @@ export async function saveDetailedUserSettings(
 
   const merged: UserSettings = {
     uid,
-    themeMode:
-      raw.themeMode === 'warm' ||
-      raw.themeMode === 'royal' ||
-      raw.themeMode === 'forest' ||
-      raw.themeMode === 'ocean'
-        ? raw.themeMode
-        : 'basic',
-    accentPreset: String(raw.accentPreset || 'indigo').slice(0, 16) as UserSettings['accentPreset'],
-    customAccentHex: isValidHexColor(raw.customAccentHex) ? raw.customAccentHex : '#5865F2',
+    themeMode: normalizeThemeMode(raw.themeMode),
+    appearanceMode: normalizeAppearanceMode(raw.appearanceMode),
+    accentPreset: String(raw.accentPreset || 'theme').slice(0, 16) as UserSettings['accentPreset'],
+    customAccentHex: isValidHexColor(raw.customAccentHex) ? raw.customAccentHex : '#7482FF',
     fontSize: raw.fontSize,
     density: raw.density,
     messageStyle: raw.messageStyle,
@@ -2138,8 +2123,8 @@ export async function saveDetailedUserSettings(
     const legacyUpdates: Partial<
       Pick<UserPrivate, 'theme' | 'language' | 'notificationsEnabled' | 'soundEnabled' | 'mentionsOnly'>
     > = {};
-    if (partial.themeMode !== undefined) {
-      legacyUpdates.theme = resolveThemeMode(merged.themeMode);
+    if (partial.themeMode !== undefined || partial.appearanceMode !== undefined) {
+      legacyUpdates.theme = merged.appearanceMode;
     }
     if (partial.language !== undefined) {
       legacyUpdates.language = merged.language;
@@ -2256,7 +2241,7 @@ export async function unblockUser(myUid: string, targetUid: string): Promise<voi
 }
 
 export function getOrCreateLocalSessionId(): string {
-  const key = 'nexus_device_session_id';
+  const key = 'majlis_device_session_id';
   let id = localStorage.getItem(key);
   if (!id || !/^[a-zA-Z0-9_-]{8,64}$/.test(id)) {
     const bytes = new Uint8Array(12);
@@ -2268,7 +2253,7 @@ export function getOrCreateLocalSessionId(): string {
 }
 
 export function getLocalSessionCreatedAtMs(): number {
-  const key = 'nexus_device_session_created_ms';
+  const key = 'majlis_device_session_created_ms';
   const raw = localStorage.getItem(key);
   const parsed = raw ? Number(raw) : NaN;
   if (Number.isFinite(parsed) && parsed > 0) return Math.round(parsed);
@@ -2345,7 +2330,7 @@ export async function revokeAllOtherSessions(
   const now = Date.now();
   // Preserve current device session timestamp so signing out *other* devices doesn't log out the current browser
   if (currentSessionId && typeof localStorage !== 'undefined') {
-    localStorage.setItem('nexus_device_session_created_ms', String(now));
+    localStorage.setItem('majlis_device_session_created_ms', String(now));
   }
   const snap = await getDocs(collection(db, 'users', uid, 'sessions'));
   const batch = writeBatch(db);
@@ -2576,7 +2561,7 @@ export function clearAppLocalCacheAndReload(): void {
   const keysToRemove: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith('nexus_') && k !== 'nexus_device_session_id' && k !== 'nexus_device_session_created_ms') {
+    if (k && k.startsWith('majlis_') && k !== 'majlis_device_session_id' && k !== 'majlis_device_session_created_ms') {
       keysToRemove.push(k);
     }
   }

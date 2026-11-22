@@ -1,47 +1,61 @@
 <!doctype html>
-<html lang="ar" dir="rtl" class="dark">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#07192D" />
+    <meta name="theme-color" content="#242832" />
     <script>
       (function () {
         try {
-          var theme = localStorage.getItem('nexus_theme');
-          var allowed = ['basic', 'warm', 'royal', 'forest', 'ocean'];
-          if (allowed.indexOf(theme) === -1) theme = 'basic';
+          var theme = localStorage.getItem('majlis_theme');
+          var savedAppearanceMode = localStorage.getItem('majlis_appearance_mode');
+          var oldIvoryTheme = theme === 'ivory';
+          var migrations = {
+            basic: 'classic',
+            gold: 'classic',
+            ruby: 'classic',
+            warm: 'classic',
+            forest: 'emerald',
+            royal: 'sapphire',
+            ocean: 'sapphire'
+          };
+          var allowed = ['classic', 'emerald', 'sapphire', 'amethyst'];
+          if (migrations[theme]) theme = migrations[theme];
+          if (allowed.indexOf(theme) === -1) theme = 'classic';
+          var appearanceMode = savedAppearanceMode === 'light' || savedAppearanceMode === 'dark'
+            ? savedAppearanceMode
+            : oldIvoryTheme ? 'light' : 'dark';
           var root = document.documentElement;
           root.setAttribute('data-theme', theme);
-          var dark = theme === 'basic' || theme === 'forest' || theme === 'ocean';
+          root.setAttribute('data-theme-mode', appearanceMode);
+          localStorage.setItem('majlis_theme', theme);
+          localStorage.setItem('majlis_appearance_mode', appearanceMode);
+          var dark = appearanceMode === 'dark';
           root.classList.toggle('dark', dark);
           root.style.colorScheme = dark ? 'dark' : 'light';
-          var colors = {
-            basic: '#07192D',
-            warm: '#FFF6EB',
-            royal: '#F9FCFF',
-            forest: '#162A2C',
-            ocean: '#323D42'
-          };
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', colors[theme]);
-          var accent = localStorage.getItem('nexus_accent');
-          var presetHex = {
-            indigo: '#5865F2',
-            blue: '#2563EB',
-            green: '#10B981',
-            violet: '#8B5CF6',
-            rose: '#E11D48',
-            amber: '#D97706',
-            cyan: '#0891B2',
-            pink: '#DB2777'
-          };
-          var customHex = localStorage.getItem('nexus_accent_custom');
-          var hex = accent === 'custom' && /^#[0-9A-Fa-f]{6}$/.test(customHex || '') ? customHex : (presetHex[accent] || colors.basic && '#5865F2');
-          if (hex) {
-            root.style.setProperty('--accent', hex);
-            root.style.setProperty('--nexus-accent', hex);
-            root.style.setProperty('--lk-accent', hex);
+          var accent = localStorage.getItem('majlis_accent') || 'theme';
+          var accentPresets = ['indigo', 'blue', 'green', 'violet', 'rose', 'amber', 'cyan', 'pink'];
+          var customHex = localStorage.getItem('majlis_accent_custom');
+          if (accent === 'custom' && /^#[0-9A-Fa-f]{6}$/.test(customHex || '')) {
+            root.style.setProperty('--accent', customHex);
+            var rgb = parseInt(customHex.slice(1), 16);
+            var linear = function (channel) {
+              channel /= 255;
+              return channel <= 0.04045 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+            };
+            var luminance =
+              0.2126 * linear((rgb >> 16) & 255) +
+              0.7152 * linear((rgb >> 8) & 255) +
+              0.0722 * linear(rgb & 255);
+            root.style.setProperty('--accent-contrast', luminance > 0.179 ? '#000000' : '#FFFFFF');
+          } else if (accentPresets.indexOf(accent) !== -1) {
+            root.setAttribute('data-accent-preset', accent);
           }
+          document.addEventListener('DOMContentLoaded', function () {
+            var main = getComputedStyle(root).getPropertyValue('--main').trim();
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (main && meta) meta.setAttribute('content', main);
+          }, { once: true });
         } catch (_) {}
       })();
     </script>
@@ -59,7 +73,7 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-white dark:bg-[#1E1F22] text-slate-900 dark:text-[#F2F3F5] antialiased selection:bg-nexus/30">
+  <body class="antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

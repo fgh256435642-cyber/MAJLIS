@@ -1,0 +1,189 @@
+@theme inline {
+  --color-rail: var(--rail);
+  --color-sidebar: var(--sidebar);
+  --color-main: var(--main);
+  --color-elevated: var(--elevated);
+  --color-input: var(--input);
+  --color-hover: var(--hover);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-soft: var(--accent-soft);
+  --color-link: var(--link);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-majlis: var(--accent);
+  --color-majlis-hover: var(--accent-hover);
+  --color-preset-indigo: var(--preset-indigo);
+  --color-preset-blue: var(--preset-blue);
+  --color-preset-green: var(--preset-green);
+  --color-preset-violet: var(--preset-violet);
+  --color-preset-rose: var(--preset-rose);
+  --color-preset-amber: var(--preset-amber);
+  --color-preset-cyan: var(--preset-cyan);
+  --color-preset-pink: var(--preset-pink);
+}
+
+:root,
+:root[data-theme='classic'],
+.theme-preview[data-theme='classic'] {
+  --rail: #15171D;
+  --sidebar: #1C1F27;
+  --main: #242832;
+  --elevated: #2C313D;
+  --input: #1E222B;
+  --hover: #363C49;
+  --border: rgba(235, 240, 255, 0.10);
+  --text: #F3F4F7;
+  --text-muted: #A7AFBD;
+  --accent: #7482FF;
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, black);
+  --accent-contrast: #FFFFFF;
+  --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+  --link: #AAB5FF;
+  --success: #42C98A;
+  --warning: #F2BB56;
+  --danger: #F27676;
+  color-scheme: dark;
+}
+
+:root[data-theme='emerald'],
+.theme-preview[data-theme='emerald'] {
+  --rail: #101A18;
+  --sidebar: #17231F;
+  --main: #1D2D27;
+  --elevated: #26382F;
+  --input: #17251F;
+  --hover: #30483B;
+  --border: rgba(183, 226, 200, 0.12);
+  --text: #EEF7F0;
+  --text-muted: #A9C3B1;
+  --accent: #4DB985;
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, black);
+  --accent-contrast: #10251A;
+  --accent-soft: color-mix(in srgb, var(--accent) 17%, transparent);
+  --link: #83D6AA;
+  --success: #58CC91;
+  --warning: #E7BD68;
+  --danger: #EF817C;
+  color-scheme: dark;
+}
+
+:root[data-theme='sapphire'],
+.theme-preview[data-theme='sapphire'] {
+  --rail: #111722;
+  --sidebar: #192130;
+  --main: #202D40;
+  --elevated: #293A52;
+  --input: #192638;
+  --hover: #344967;
+  --border: rgba(188, 213, 246, 0.12);
+  --text: #EFF5FD;
+  --text-muted: #ADC0D8;
+  --accent: #639BE8;
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, black);
+  --accent-contrast: #101E31;
+  --accent-soft: color-mix(in srgb, var(--accent) 17%, transparent);
+  --link: #91B9F2;
+  --success: #59C894;
+  --warning: #E9BB60;
+  --danger: #F17D83;
+  color-scheme: dark;
+}
+
+:root[data-theme='amethyst'],
+.theme-preview[data-theme='amethyst'] {
+  --rail: #191522;
+  --sidebar: #211B2E;
+  --main: #2B233B;
+  --elevated: #352C48;
+  --input: #231C31;
+  --hover: #433757;
+  --border: rgba(218, 198, 246, 0.12);
+  --text: #F5F0FB;
+  --text-muted: #C1B2D6;
+  --accent: #A884E8;
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, black);
+  --accent-contrast: #24183B;
+  --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
+  --link: #C5A8F5;
+  --success: #60CA97;
+  --warning: #E7B95F;
+  --danger: #EF7C89;
+  color-scheme: dark;
+}
+
+:root[data-theme-mode='light'],
+.theme-preview[data-theme-mode='light'] {
+  --rail: #E5E7EB;
+  --sidebar: #F1F3F6;
+  --main: #F8FAFC;
+  --elevated: #FFFFFF;
+  --input: #EEF1F5;
+  --hover: #E5E9EF;
+  --border: rgba(31, 41, 55, 0.14);
+  --text: #1F2937;
+  --text-muted: #667085;
+  color-scheme: light;
+}
+
+:root {
+  --preset-indigo: #5865F2;
+  --preset-blue: #2563EB;
+  --preset-green: #10B981;
+  --preset-violet: #8B5CF6;
+  --preset-rose: #E11D48;
+  --preset-amber: #D97706;
+  --preset-cyan: #0891B2;
+  --preset-pink: #DB2777;
+  --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, black);
+  --lk-bg: var(--main);
+  --lk-fg: var(--text);
+  --lk-control-bg: var(--elevated);
+  --lk-accent-bg: var(--accent);
+}
+
+:root[data-accent-preset='indigo'] {
+  --accent: var(--preset-indigo);
+  --accent-contrast: #FFFFFF;
+}
+
+:root[data-accent-preset='blue'] {
+  --accent: var(--preset-blue);
+  --accent-contrast: #FFFFFF;
+}
+
+:root[data-accent-preset='green'] {
+  --accent: var(--preset-green);
+  --accent-contrast: #10251A;
+}
+
+:root[data-accent-preset='violet'] {
+  --accent: var(--preset-violet);
+  --accent-contrast: #FFFFFF;
+}
+
+:root[data-accent-preset='rose'] {
+  --accent: var(--preset-rose);
+  --accent-contrast: #FFFFFF;
+}
+
+:root[data-accent-preset='amber'] {
+  --accent: var(--preset-amber);
+  --accent-contrast: #21190D;
+}
+
+:root[data-accent-preset='cyan'] {
+  --accent: var(--preset-cyan);
+  --accent-contrast: #10232A;
+}
+
+:root[data-accent-preset='pink'] {
+  --accent: var(--preset-pink);
+  --accent-contrast: #FFFFFF;
+}

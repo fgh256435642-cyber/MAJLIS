@@ -1,4 +1,4 @@
-import type { AccentColor, GroupDm, Language, PublicUser, Role, UserStatus } from '../types/nexus';
+import type { AccentColor, GroupDm, Language, PublicUser, Role, UserStatus } from '../types/majlis';
 
 export const LIMITS = {
   ID_MAX: 128,
@@ -152,13 +152,13 @@ export function hasPermission(role: Role | undefined, permission: Permission): b
 export function getRoleColorClass(role?: Role): string {
   switch (role) {
     case 'owner':
-      return 'text-amber-600 dark:text-amber-400';
+      return 'text-warning dark:text-warning';
     case 'admin':
-      return 'text-rose-600 dark:text-rose-400';
+      return 'text-danger dark:text-danger';
     case 'moderator':
-      return 'text-emerald-600 dark:text-emerald-400';
+      return 'text-success dark:text-success';
     default:
-      return 'text-slate-900 dark:text-[#F2F3F5]';
+      return 'text-text dark:text-link';
   }
 }
 
@@ -182,13 +182,13 @@ export const IDLE_TIMEOUT_MS = 180_000;
 export function getStatusDotClass(status?: UserStatus): string {
   switch (status) {
     case 'online':
-      return 'bg-emerald-500';
+      return 'bg-success';
     case 'idle':
-      return 'bg-amber-400 dark:bg-amber-500';
+      return 'bg-warning dark:bg-warning';
     case 'dnd':
-      return 'bg-rose-500';
+      return 'bg-danger';
     default:
-      return 'bg-zinc-400 dark:bg-zinc-500';
+      return 'bg-hover dark:bg-sidebar';
   }
 }
 
@@ -232,14 +232,14 @@ export const ACCENT_PRESETS: ReadonlyArray<{
     | 'accentPink';
   swatchClass: string;
 }> = [
-  { id: 'indigo', labelKey: 'accentIndigo', swatchClass: 'bg-[#5865F2]' },
-  { id: 'blue', labelKey: 'accentBlue', swatchClass: 'bg-[#2563EB]' },
-  { id: 'green', labelKey: 'accentGreen', swatchClass: 'bg-[#10B981]' },
-  { id: 'violet', labelKey: 'accentViolet', swatchClass: 'bg-[#8B5CF6]' },
-  { id: 'rose', labelKey: 'accentRose', swatchClass: 'bg-[#E11D48]' },
-  { id: 'amber', labelKey: 'accentAmber', swatchClass: 'bg-[#D97706]' },
-  { id: 'cyan', labelKey: 'accentCyan', swatchClass: 'bg-[#0891B2]' },
-  { id: 'pink', labelKey: 'accentPink', swatchClass: 'bg-[#DB2777]' },
+  { id: 'indigo', labelKey: 'accentIndigo', swatchClass: 'bg-preset-indigo' },
+  { id: 'blue', labelKey: 'accentBlue', swatchClass: 'bg-preset-blue' },
+  { id: 'green', labelKey: 'accentGreen', swatchClass: 'bg-preset-green' },
+  { id: 'violet', labelKey: 'accentViolet', swatchClass: 'bg-preset-violet' },
+  { id: 'rose', labelKey: 'accentRose', swatchClass: 'bg-preset-rose' },
+  { id: 'amber', labelKey: 'accentAmber', swatchClass: 'bg-preset-amber' },
+  { id: 'cyan', labelKey: 'accentCyan', swatchClass: 'bg-preset-cyan' },
+  { id: 'pink', labelKey: 'accentPink', swatchClass: 'bg-preset-pink' },
 ];
 
 export function isValidAccentColor(value: string | null): value is AccentColor {
@@ -295,11 +295,15 @@ export function darkenHexColor(hex: string, amount = 0.14): string {
 export function getAccentContrast(hex: string): '#FFFFFF' | '#000000' {
   if (!isValidHexColor(hex)) return '#FFFFFF';
   const clean = hex.slice(1);
-  const r = parseInt(clean.slice(0, 2), 16);
-  const g = parseInt(clean.slice(2, 4), 16);
-  const b = parseInt(clean.slice(4, 6), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.72 ? '#000000' : '#FFFFFF';
+  const toLinear = (value: string) => {
+    const channel = parseInt(value, 16) / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  };
+  const luminance =
+    0.2126 * toLinear(clean.slice(0, 2)) +
+    0.7152 * toLinear(clean.slice(2, 4)) +
+    0.0722 * toLinear(clean.slice(4, 6));
+  return luminance > 0.179 ? '#000000' : '#FFFFFF';
 }
 
 export function getActiveCustomStatus(

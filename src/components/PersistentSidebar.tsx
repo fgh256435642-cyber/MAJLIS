@@ -15,7 +15,7 @@ import type {
   ServerMember,
   SettingsCategoryId,
   VoiceParticipant,
-} from '../types/nexus';
+} from '../types/majlis';
 import { ChannelSidebar } from './ChannelSidebar';
 import { FriendsAndDmSidebar } from './FriendsAndDmSidebar';
 import { ServerRail } from './ServerRail';
@@ -332,7 +332,7 @@ export function PersistentSidebar({
         }`}
       >
         <div
-          className={`fixed inset-0 bg-black/60 backdrop-blur-[1px] transition-opacity duration-200 ease-out ${
+          className={`fixed inset-0 bg-rail/60 backdrop-blur-[1px] transition-opacity duration-200 ease-out ${
             mobileOpen ? 'opacity-100' : 'opacity-0'
           }`}
           onClick={onCloseMobile}
@@ -348,7 +348,7 @@ export function PersistentSidebar({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="m-2 h-8 w-8 rounded-full bg-black/60 text-white flex items-center justify-center self-start hover:bg-black/80 transition-colors"
+            className="m-2 h-8 w-8 rounded-full bg-rail/60 text-text flex items-center justify-center self-start hover:bg-rail/80 transition-colors"
             aria-label={t(language, 'closeMenu')}
           >
             <X className="w-4 h-4" />

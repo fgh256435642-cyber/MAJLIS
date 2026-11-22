@@ -7,10 +7,10 @@ import {
   ensureUserProfile,
   updateCustomStatus,
   updateUserProfile,
-} from '../../services/nexusService';
-import type { CustomStatusDuration, SelectableUserStatus } from '../../types/nexus';
+} from '../../services/majlisService';
+import type { CustomStatusDuration, SelectableUserStatus } from '../../types/majlis';
 import { getActiveCustomStatus, isValidHexColor } from '../../utils/validation';
-import { StatusIndicator, UserAvatar } from '../NexusLogo';
+import { StatusIndicator, UserAvatar } from '../MajlisLogo';
 import { ProfileBanner } from '../ProfileBanner';
 import type { UnsavedBarState } from './AccountSection';
 
@@ -187,10 +187,10 @@ export function ProfileStatusSection({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <h2 className="text-link font-bold text-text dark:text-text">
           {t(language, 'profileAndStatus')}
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'profileAndStatusSubtitle')}
         </p>
       </div>
@@ -199,8 +199,8 @@ export function ProfileStatusSection({
         {/* Editors */}
         <div className="lg:col-span-3 space-y-5">
           {/* Online Presence Selector */}
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] p-4 space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+          <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated p-4 space-y-3">
+            <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
               {t(language, 'statusLabel')}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -211,17 +211,17 @@ export function ProfileStatusSection({
                     key={opt.id}
                     type="button"
                     onClick={() => void changePresenceStatus(opt.id)}
-                    className={`p-3 rounded-xl border text-start transition-colors ${
+                    className={`p-3 rounded-xl border text-link transition-colors ${
                       selected
-                        ? 'border-nexus bg-nexus/10'
-                        : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
                     }`}
                   >
-                    <div className="flex items-center gap-2 font-semibold text-xs text-slate-900 dark:text-white">
+                    <div className="flex items-center gap-2 font-semibold text-link text-text dark:text-text">
                       <StatusIndicator status={opt.id} className="w-2.5 h-2.5 shrink-0" />
                       <span>{opt.label}</span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 line-clamp-2">
+                    <p className="text-[11px] text-text-muted dark:text-text-muted mt-1 line-clamp-2">
                       {opt.desc}
                     </p>
                   </button>
@@ -231,17 +231,17 @@ export function ProfileStatusSection({
           </div>
 
           {/* Custom Status */}
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] p-4 space-y-4">
+          <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated p-4 space-y-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-                <Smile className="w-4 h-4 text-nexus" />
+              <div className="flex items-center gap-2 text-link font-bold text-text dark:text-text">
+                <Smile className="w-4 h-4 text-link" />
                 <span>{t(language, 'customStatus')}</span>
               </div>
               {(statusEmoji || statusText || existingCustom) && (
                 <button
                   type="button"
                   onClick={() => void handleClearCustomStatus()}
-                  className="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 font-medium"
+                  className="inline-flex items-center gap-1 text-link text-danger hover:text-danger font-medium"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>{t(language, 'clearCustomStatus')}</span>
@@ -255,10 +255,10 @@ export function ProfileStatusSection({
                   key={em}
                   type="button"
                   onClick={() => setStatusEmoji(em)}
-                  className={`w-8 h-8 rounded-lg border text-base flex items-center justify-center transition-colors ${
+                  className={`w-8 h-8 rounded-lg border text-link flex items-center justify-center transition-colors ${
                     statusEmoji === em
-                      ? 'border-nexus bg-nexus/15'
-                      : 'border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5'
+                      ? 'border-accent bg-accent/15'
+                      : 'border-border dark:border-border hover:bg-main dark:hover:bg-main'
                   }`}
                 >
                   {em}
@@ -274,7 +274,7 @@ export function ProfileStatusSection({
                 onChange={(e) => setStatusEmoji(e.target.value)}
                 placeholder="😀"
                 aria-label={t(language, 'statusEmoji')}
-                className="w-16 text-center px-2 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-base"
+                className="w-16 text-link px-2 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link"
               />
               <input
                 type="text"
@@ -282,19 +282,19 @@ export function ProfileStatusSection({
                 value={statusText}
                 onChange={(e) => setStatusText(e.target.value)}
                 placeholder={t(language, 'customStatusPlaceholder')}
-                className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                className="flex-1 px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link focus:outline-accent focus:ring-2 focus:ring-accent"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1">
+                <label className="block text-link font-semibold text-text dark:text-text mb-1">
                   {t(language, 'clearAfter')}
                 </label>
                 <select
                   value={duration}
                   onChange={(e) => setDuration(e.target.value as CustomStatusDuration)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link"
                 >
                   <option value="none">{t(language, 'durationDontClear')}</option>
                   <option value="30m">{t(language, 'duration30m')}</option>
@@ -304,23 +304,23 @@ export function ProfileStatusSection({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1">
+                <label className="block text-link font-semibold text-text dark:text-text mb-1">
                   {t(language, 'profileColor')}
                 </label>
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22]">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated">
                   <input
                     type="color"
                     value={isValidHexColor(profileColor) ? profileColor : '#5865F2'}
                     onChange={(e) => setProfileColor(e.target.value)}
-                    className="w-6 h-6 rounded cursor-pointer bg-transparent border-0 p-0"
+                    className="w-6 h-6 rounded cursor-pointer bg-accent border-0 p-0"
                   />
-                  <span className="text-xs font-mono uppercase">{profileColor}</span>
+                  <span className="text-link font-mono uppercase">{profileColor}</span>
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1">
+              <label className="block text-link font-semibold text-text dark:text-text mb-1">
                 {t(language, 'bio')}
               </label>
               <textarea
@@ -329,7 +329,7 @@ export function ProfileStatusSection({
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder={t(language, 'bioPlaceholder')}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link"
               />
             </div>
 
@@ -337,7 +337,7 @@ export function ProfileStatusSection({
               type="button"
               disabled={!isDirty || saving}
               onClick={() => void handleSave()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-40 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-40 text-text text-link font-semibold transition-colors"
             >
               {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>{t(language, 'save')}</span>
@@ -347,10 +347,10 @@ export function ProfileStatusSection({
 
         {/* Live Profile Card Preview */}
         <div className="lg:col-span-2">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-2">
+          <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted mb-2">
             {t(language, 'livePreview')}
           </div>
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] overflow-hidden shadow-lg">
+          <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated overflow-hidden shadow-lg">
             <ProfileBanner
               bannerUrl={publicUser?.bannerUrl}
               profileColor={profileColor}
@@ -374,32 +374,32 @@ export function ProfileStatusSection({
                 </div>
               </div>
 
-              <div className="rounded-xl bg-slate-50 dark:bg-[#1E1F22] p-3.5 space-y-2 border border-slate-200/80 dark:border-white/5">
+              <div className="rounded-xl bg-elevated dark:bg-elevated p-3.5 space-y-2 border border-border dark:border-border">
                 <div>
-                  <div className="text-base font-bold text-slate-900 dark:text-white truncate">
+                  <div className="text-link font-bold text-text dark:text-text truncate">
                     {publicUser?.displayName ||
                       firebaseUser?.displayName ||
                       firebaseUser?.email?.split('@')[0] ||
                       '—'}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                  <div className="text-link text-text-muted dark:text-text-muted truncate">
                     @{publicUser?.username || firebaseUser?.email?.split('@')[0] || 'username'}
                   </div>
                 </div>
 
                 {(statusEmoji || statusText) && (
-                  <div className="px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#2B2D31] border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-zinc-200 flex items-center gap-1.5">
+                  <div className="px-2.5 py-1.5 rounded-lg bg-elevated dark:bg-elevated border border-border dark:border-border text-link text-text dark:text-text flex items-center gap-1.5">
                     {statusEmoji && <span>{statusEmoji}</span>}
                     <span className="truncate">{statusText}</span>
                   </div>
                 )}
 
                 {bio.trim() && (
-                  <div className="pt-2 border-t border-slate-200 dark:border-white/10">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500 mb-1">
+                  <div className="pt-2 border-accent border-border dark:border-border">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-text-muted dark:text-text-muted mb-1">
                       {t(language, 'bio')}
                     </div>
-                    <p className="text-xs text-slate-700 dark:text-zinc-300 whitespace-pre-wrap break-words">
+                    <p className="text-link text-text dark:text-text whitespace-pre-wrap break-words">
                       {bio}
                     </p>
                   </div>

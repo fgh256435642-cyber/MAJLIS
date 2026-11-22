@@ -20,7 +20,7 @@ import type {
   PublicUser,
   SelectableUserStatus,
   SettingsCategoryId,
-} from '../types/nexus';
+} from '../types/majlis';
 import {
   getActiveCustomStatus,
   getEffectiveUserStatus,
@@ -32,13 +32,13 @@ import {
   ServerIcon,
   StatusIndicator,
   UserAvatar,
-} from './NexusLogo';
+} from './MajlisLogo';
 import {
-  NexusPopover,
-  NexusPopoverContent,
-  NexusPopoverTrigger,
-  NexusTooltip,
-} from './ui/NexusUI';
+  MajlisPopover,
+  MajlisPopoverContent,
+  MajlisPopoverTrigger,
+  MajlisTooltip,
+} from './ui/MajlisUI';
 
 interface ServerRailProps {
   joinedServers: JoinedServerRef[];
@@ -169,14 +169,14 @@ export function ServerRail({
   return (
     <nav
       aria-label={t(language, 'serversLabel')}
-      className="w-[72px] shrink-0 h-full bg-slate-200 dark:bg-[#1E1F22] flex flex-col items-center border-e border-slate-300/70 dark:border-black/30 select-none"
+      className="w-[72px] shrink-0 h-full bg-hover dark:bg-hover flex flex-col items-center border-accent border-border dark:border-border select-none"
     >
       {/* Scrollable Navigation Rail */}
       <div className="flex-1 w-full overflow-y-auto no-scrollbar flex flex-col items-center py-3 gap-2">
         {/* 1. App Logo / Home Button */}
         <div className="relative group flex items-center justify-center w-full shrink-0">
           <span
-            className={`absolute start-0 w-1 rounded-e-full bg-slate-900 dark:bg-white transition-all duration-150 ${
+            className={`absolute start-0 w-1 rounded-e-full bg-rail dark:bg-rail transition-all duration-150 ${
               isHomeFriendsActive
                 ? 'h-9'
                 : activeView === 'home'
@@ -184,7 +184,7 @@ export function ServerRail({
                 : 'h-0 group-hover:h-5'
             }`}
           />
-          <NexusTooltip
+          <MajlisTooltip
             content={`${t(language, 'home')} · ${t(language, 'friendsAndDms')}`}
             side={tooltipSide}
           >
@@ -192,21 +192,17 @@ export function ServerRail({
               type="button"
               onClick={onSelectHome}
               aria-label={t(language, 'home')}
-              className={`relative w-12 h-12 flex items-center justify-center transition-all duration-150 ${
-                activeView === 'home'
-                  ? 'rounded-2xl bg-nexus text-white shadow-sm'
-                  : 'rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
-              }`}
+              className="relative w-12 h-12 flex items-center justify-center text-accent transition-colors duration-150 hover:text-accent-hover"
             >
               <MajlisBrandIcon className="w-11 h-11" />
             </button>
-          </NexusTooltip>
+          </MajlisTooltip>
         </div>
 
         {/* 2. Search / Quick Switcher (Ctrl+K) */}
         <div className="relative group flex items-center justify-center w-full shrink-0">
-          <span className="absolute start-0 w-1 rounded-e-full bg-slate-900 dark:bg-white transition-all duration-150 h-0 group-hover:h-4" />
-          <NexusTooltip
+          <span className="absolute start-0 w-1 rounded-e-full bg-rail dark:bg-rail transition-all duration-150 h-0 group-hover:h-4" />
+          <MajlisTooltip
             content={`${t(language, 'quickSwitcher')} (Ctrl+K)`}
             side={tooltipSide}
           >
@@ -215,39 +211,39 @@ export function ServerRail({
               onClick={onOpenQuickSwitcher}
               aria-label={t(language, 'quickSwitcher')}
               aria-keyshortcuts="Control+k"
-              className="w-12 h-12 rounded-2xl bg-white dark:bg-[#313338] text-slate-600 dark:text-zinc-300 hover:bg-nexus hover:text-white flex items-center justify-center transition-colors duration-150"
+              className="w-12 h-12 rounded-2xl bg-elevated dark:bg-elevated text-text dark:text-text hover:bg-accent-hover hover:text-text flex items-center justify-center transition-colors duration-150"
             >
               <Search className="w-5 h-5" />
             </button>
-          </NexusTooltip>
+          </MajlisTooltip>
         </div>
 
         {/* 3. Friends Icon with Red Pending Badge */}
         <div className="relative group flex items-center justify-center w-full shrink-0">
           <span
-            className={`absolute start-0 w-1 rounded-e-full bg-slate-900 dark:bg-white transition-all duration-150 ${
+            className={`absolute start-0 w-1 rounded-e-full bg-rail dark:bg-rail transition-all duration-150 ${
               isHomeFriendsActive ? 'h-8' : 'h-0 group-hover:h-5'
             }`}
           />
-          <NexusTooltip content={t(language, 'friends')} side={tooltipSide}>
+          <MajlisTooltip content={t(language, 'friends')} side={tooltipSide}>
             <button
               type="button"
               onClick={onSelectFriends}
               aria-label={t(language, 'friends')}
               className={`relative w-12 h-12 flex items-center justify-center transition-all duration-150 ${
                 isHomeFriendsActive
-                  ? 'rounded-2xl bg-nexus text-white shadow-sm'
-                  : 'rounded-2xl bg-white dark:bg-[#313338] text-slate-700 dark:text-zinc-200 hover:bg-nexus hover:text-white'
+                  ? 'rounded-2xl bg-accent text-text shadow-sm'
+                  : 'rounded-2xl bg-elevated dark:bg-elevated text-text dark:text-text hover:bg-accent-hover hover:text-text'
               }`}
             >
               <Users className="w-5 h-5" />
               {pendingFriendCount > 0 && (
-                <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-200 dark:border-[#1E1F22] tabular-nums">
+                <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-text text-[10px] font-bold flex items-center justify-center border-2 border-border dark:border-border tabular-nums">
                   {pendingFriendCount > 99 ? '99+' : pendingFriendCount}
                 </span>
               )}
             </button>
-          </NexusTooltip>
+          </MajlisTooltip>
         </div>
 
         {/* 4. Recent Direct Messages & Groups */}
@@ -266,7 +262,7 @@ export function ServerRail({
                 className="relative group flex items-center justify-center w-full shrink-0"
               >
                 <span
-                  className={`absolute start-0 w-1 rounded-e-full bg-slate-900 dark:bg-white transition-all duration-150 ${
+                  className={`absolute start-0 w-1 rounded-e-full bg-rail dark:bg-rail transition-all duration-150 ${
                     isActive
                       ? 'h-9'
                       : hasUnread
@@ -274,14 +270,14 @@ export function ServerRail({
                       : 'h-0 group-hover:h-5'
                   }`}
                 />
-                <NexusTooltip content={gLabel} side={tooltipSide}>
+                <MajlisTooltip content={gLabel} side={tooltipSide}>
                   <button
                     type="button"
                     onClick={() => onSelectGroup(g.id)}
                     aria-label={gLabel}
                     className={`relative rounded-2xl transition-colors duration-150 ${
                       isActive
-                        ? 'bg-nexus/15'
+                        ? 'bg-accent/15'
                         : ''
                     }`}
                   >
@@ -292,12 +288,12 @@ export function ServerRail({
                       className="w-11 h-11"
                     />
                     {hasUnread && (
-                      <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-200 dark:border-[#1E1F22] tabular-nums">
+                      <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-text text-[10px] font-bold flex items-center justify-center border-2 border-border dark:border-border tabular-nums">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}
                   </button>
-                </NexusTooltip>
+                </MajlisTooltip>
               </div>
             );
           }
@@ -320,7 +316,7 @@ export function ServerRail({
               className="relative group flex items-center justify-center w-full shrink-0"
             >
               <span
-                className={`absolute start-0 w-1 rounded-e-full bg-slate-900 dark:bg-white transition-all duration-150 ${
+                className={`absolute start-0 w-1 rounded-e-full bg-rail dark:bg-rail transition-all duration-150 ${
                   isActive
                     ? 'h-9'
                     : hasUnread
@@ -328,14 +324,14 @@ export function ServerRail({
                     : 'h-0 group-hover:h-5'
                 }`}
               />
-              <NexusTooltip content={dmLabel} side={tooltipSide}>
+              <MajlisTooltip content={dmLabel} side={tooltipSide}>
                 <button
                   type="button"
                   onClick={() => onSelectDm(dm.id)}
                   aria-label={dmLabel}
                   className={`relative rounded-2xl transition-colors duration-150 ${
                     isActive
-                      ? 'bg-nexus/15'
+                      ? 'bg-accent/15'
                       : ''
                   }`}
                 >
@@ -348,18 +344,18 @@ export function ServerRail({
                     className="w-11 h-11"
                   />
                   {hasUnread && (
-                    <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-200 dark:border-[#1E1F22] tabular-nums">
+                    <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-text text-[10px] font-bold flex items-center justify-center border-2 border-border dark:border-border tabular-nums">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </button>
-              </NexusTooltip>
+              </MajlisTooltip>
             </div>
           );
         })}
 
         {/* 5. Thin Divider */}
-        <div className="w-8 h-[2px] rounded-full bg-slate-300 dark:bg-white/10 my-0.5 shrink-0" />
+        <div className="w-8 h-[2px] rounded-full bg-hover dark:bg-hover my-0.5 shrink-0" />
 
         {/* 6. Draggable Server List */}
         {joinedServers.map((srv) => {
@@ -411,12 +407,12 @@ export function ServerRail({
               }}
             >
               {showDropBefore && (
-                <div className="w-8 h-0.5 rounded-full bg-nexus mb-1 transition-opacity" />
+                <div className="w-8 h-0.5 rounded-full bg-accent mb-1 transition-opacity" />
               )}
 
               <div className="relative flex items-center justify-center w-full">
                 <span
-                  className={`absolute start-0 w-1 rounded-e-full bg-slate-900 dark:bg-white transition-all duration-150 ${
+                  className={`absolute start-0 w-1 rounded-e-full bg-rail dark:bg-rail transition-all duration-150 ${
                     isActive
                       ? 'h-10'
                       : hasUnread
@@ -424,7 +420,7 @@ export function ServerRail({
                       : 'h-0 group-hover:h-5'
                   }`}
                 />
-                <NexusTooltip content={srv.serverName} side={tooltipSide}>
+                <MajlisTooltip content={srv.serverName} side={tooltipSide}>
                   <button
                     type="button"
                     draggable
@@ -443,7 +439,7 @@ export function ServerRail({
                       isDragging ? 'opacity-45 scale-95' : ''
                     } ${
                       isActive
-                        ? 'rounded-2xl bg-nexus/15'
+                        ? 'rounded-2xl bg-accent/15'
                         : 'rounded-2xl'
                     }`}
                   >
@@ -456,45 +452,45 @@ export function ServerRail({
                       }
                     />
                   </button>
-                </NexusTooltip>
+                </MajlisTooltip>
               </div>
 
               {showDropAfter && (
-                <div className="w-8 h-0.5 rounded-full bg-nexus mt-1 transition-opacity" />
+                <div className="w-8 h-0.5 rounded-full bg-accent mt-1 transition-opacity" />
               )}
             </div>
           );
         })}
 
         {/* 7. Add / Join Server (+) */}
-        <NexusTooltip content={t(language, 'addServer')} side={tooltipSide}>
+        <MajlisTooltip content={t(language, 'addServer')} side={tooltipSide}>
           <button
             type="button"
             onClick={onOpenCreateJoin}
             aria-label={t(language, 'addServer')}
-            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#313338] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors duration-150 shrink-0"
+            className="w-12 h-12 rounded-2xl bg-elevated dark:bg-elevated text-success dark:text-success hover:bg-success hover:text-text flex items-center justify-center transition-colors duration-150 shrink-0"
           >
             <Plus className="w-6 h-6" />
           </button>
-        </NexusTooltip>
+        </MajlisTooltip>
 
         {/* 8. Discover Public Servers (Compass) */}
-        <NexusTooltip content={t(language, 'discoverServers')} side={tooltipSide}>
+        <MajlisTooltip content={t(language, 'discoverServers')} side={tooltipSide}>
           <button
             type="button"
             onClick={onOpenDiscover}
             aria-label={t(language, 'discoverServers')}
-            className="w-12 h-12 rounded-2xl bg-white dark:bg-[#313338] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors duration-150 shrink-0"
+            className="w-12 h-12 rounded-2xl bg-elevated dark:bg-elevated text-success dark:text-success hover:bg-success hover:text-text flex items-center justify-center transition-colors duration-150 shrink-0"
           >
             <Compass className="w-5 h-5" />
           </button>
-        </NexusTooltip>
+        </MajlisTooltip>
       </div>
 
       {/* 9 & 10. Bottom User Avatar (with Account Menu) + Settings Button */}
-      <div className="shrink-0 w-full py-2.5 border-t border-slate-300/70 dark:border-black/30 bg-slate-200/95 dark:bg-[#1E1F22] flex flex-col items-center gap-2">
-        <NexusPopover open={accountMenuOpen} onOpenChange={setAccountMenuOpen}>
-          <NexusTooltip
+      <div className="shrink-0 w-full py-2.5 border-accent border-border dark:border-border bg-hover/95 dark:bg-hover/95 flex flex-col items-center gap-2">
+        <MajlisPopover open={accountMenuOpen} onOpenChange={setAccountMenuOpen}>
+          <MajlisTooltip
             content={
               accountMenuOpen
                 ? undefined
@@ -502,13 +498,13 @@ export function ServerRail({
             }
             side={tooltipSide}
           >
-            <NexusPopoverTrigger asChild>
+            <MajlisPopoverTrigger asChild>
               <button
                 type="button"
                 aria-expanded={accountMenuOpen}
                 aria-haspopup="menu"
                 aria-label={t(language, 'accountMenu')}
-                className="p-1 rounded-full hover:bg-slate-300/70 dark:hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+                className="p-1 rounded-full hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors focus-visible:outline-accent focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <UserAvatar
                   src={publicUser?.avatarUrl}
@@ -518,17 +514,17 @@ export function ServerRail({
                   showStatus
                 />
               </button>
-            </NexusPopoverTrigger>
-          </NexusTooltip>
+            </MajlisPopoverTrigger>
+          </MajlisTooltip>
 
-          <NexusPopoverContent
+          <MajlisPopoverContent
             side={tooltipSide}
             align="end"
             sideOffset={12}
-            className="w-64 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] shadow-2xl py-1.5 text-sm"
+            className="w-64 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl py-1.5 text-link"
           >
             {/* User summary header */}
-            <div className="px-3 py-2 border-b border-slate-200 dark:border-white/10 flex items-center gap-2.5">
+            <div className="px-3 py-2 border-accent border-border dark:border-border flex items-center gap-2.5">
               <UserAvatar
                 src={publicUser?.avatarUrl}
                 name={publicUser?.displayName || 'User'}
@@ -536,14 +532,14 @@ export function ServerRail({
                 size="sm"
                 showStatus
               />
-              <div className="min-w-0 flex-1 text-start">
-                <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+              <div className="min-w-0 flex-1 text-link">
+                <div className="text-link font-semibold text-text dark:text-text truncate">
                   {publicUser?.displayName || t(language, 'loading')}
                 </div>
-                <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
-                  @{publicUser?.username || 'majlis'}
+                <div className="text-[10px] text-text-muted dark:text-text-muted truncate">
+                  <bdi dir="ltr">@{publicUser?.username || 'majlis'}</bdi>
                 </div>
-                <div className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5 truncate mt-0.5">
+                <div className="text-[11px] text-text-muted dark:text-text-muted flex items-center gap-1.5 truncate mt-0.5">
                   <StatusIndicator
                     status={settings.hideOnlineStatus ? 'offline' : effectiveSelfStatus}
                     className="w-2.5 h-2.5 shrink-0"
@@ -551,7 +547,7 @@ export function ServerRail({
                   <span className="truncate">{statusLabelText}</span>
                 </div>
                 {activeCustomStatus && (
-                  <div className="text-[11px] text-slate-600 dark:text-zinc-300 truncate mt-0.5">
+                  <div className="text-[11px] text-text dark:text-text truncate mt-0.5">
                     {activeCustomStatus.emoji ? `${activeCustomStatus.emoji} ` : ''}
                     {activeCustomStatus.text}
                   </div>
@@ -560,8 +556,8 @@ export function ServerRail({
             </div>
 
             {/* Real-time Presence Status Selector */}
-            <div className="px-2 py-1.5 border-b border-slate-200 dark:border-white/10 space-y-0.5">
-              <div className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+            <div className="px-2 py-1.5 border-accent border-border dark:border-border space-y-0.5">
+              <div className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted">
                 {t(language, 'statusLabel')}
               </div>
               {statusOptions.map((opt) => {
@@ -576,10 +572,10 @@ export function ServerRail({
                       void changePresenceStatus(opt.id);
                       setAccountMenuOpen(false);
                     }}
-                    className={`w-full px-2 py-1.5 rounded-lg flex items-center justify-between gap-2 text-start transition-colors ${
+                    className={`w-full px-2 py-1.5 rounded-lg flex items-center justify-between gap-2 text-link transition-colors ${
                       isSelected
-                        ? 'bg-slate-100 dark:bg-white/10 text-slate-950 dark:text-white'
-                        : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                        ? 'bg-main dark:bg-main text-text dark:text-text'
+                        : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -588,16 +584,16 @@ export function ServerRail({
                         className="w-3 h-3 shrink-0"
                       />
                       <div className="min-w-0">
-                        <div className="text-xs font-medium truncate">
+                        <div className="text-link font-medium truncate">
                           {opt.label}
                         </div>
-                        <div className="text-[10px] text-slate-400 dark:text-zinc-500 truncate">
+                        <div className="text-[10px] text-text-muted dark:text-text-muted truncate">
                           {opt.desc}
                         </div>
                       </div>
                     </div>
                     {isSelected && (
-                      <Check className="w-3.5 h-3.5 text-nexus shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-link shrink-0" />
                     )}
                   </button>
                 );
@@ -613,7 +609,7 @@ export function ServerRail({
                   setAccountMenuOpen(false);
                   onOpenUserSettings('profileStatus');
                 }}
-                className="w-full px-3 py-2 flex items-center gap-2.5 text-start text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-nexus dark:hover:text-white transition-colors"
+                className="w-full px-3 py-2 flex items-center gap-2.5 text-link text-text dark:text-text hover:bg-main dark:hover:bg-main dark:hover:text-text transition-colors"
               >
                 <User className="w-4 h-4 shrink-0" />
                 <span>{t(language, 'profile')}</span>
@@ -626,7 +622,7 @@ export function ServerRail({
                   setAccountMenuOpen(false);
                   onOpenUserSettings('account');
                 }}
-                className="w-full px-3 py-2 flex items-center gap-2.5 text-start text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-nexus dark:hover:text-white transition-colors"
+                className="w-full px-3 py-2 flex items-center gap-2.5 text-link text-text dark:text-text hover:bg-main dark:hover:bg-main dark:hover:text-text transition-colors"
               >
                 <Settings className="w-4 h-4 shrink-0" />
                 <span>{t(language, 'settings')}</span>
@@ -639,19 +635,19 @@ export function ServerRail({
                   setAccountMenuOpen(false);
                   void updateSetting({ language: language === 'ar' ? 'en' : 'ar' }, { silent: true });
                 }}
-                className="w-full px-3 py-2 flex items-center justify-between gap-2.5 text-start text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-nexus dark:hover:text-white transition-colors"
+                className="w-full px-3 py-2 flex items-center justify-between gap-2.5 text-link text-text dark:text-text hover:bg-main dark:hover:bg-main dark:hover:text-text transition-colors"
               >
                 <span className="flex items-center gap-2.5">
                   <Globe className="w-4 h-4 shrink-0" />
                   <span>{t(language, 'switchLanguage')}</span>
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-zinc-300">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-hover/80 dark:bg-hover/80 text-text dark:text-text">
                   {language === 'ar' ? 'EN' : 'عربي'}
                 </span>
               </button>
             </div>
 
-            <div className="my-1 border-t border-slate-200 dark:border-white/10" />
+            <div className="my-1 border-accent border-border dark:border-border" />
 
             <button
               type="button"
@@ -660,24 +656,24 @@ export function ServerRail({
                 setAccountMenuOpen(false);
                 void logout();
               }}
-              className="w-full px-3 py-2 flex items-center gap-2.5 text-start text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-colors"
+              className="w-full px-3 py-2 flex items-center gap-2.5 text-link text-danger dark:text-danger hover:bg-danger hover:text-text transition-colors"
             >
               <LogOut className="w-4 h-4 shrink-0" />
               <span>{t(language, 'signOut')}</span>
             </button>
-          </NexusPopoverContent>
-        </NexusPopover>
+          </MajlisPopoverContent>
+        </MajlisPopover>
 
-        <NexusTooltip content={t(language, 'userSettings')} side={tooltipSide}>
+        <MajlisTooltip content={t(language, 'userSettings')} side={tooltipSide}>
           <button
             type="button"
             onClick={() => onOpenUserSettings('account')}
             aria-label={t(language, 'userSettings')}
-            className="w-10 h-10 rounded-2xl text-slate-600 dark:text-zinc-300 hover:bg-slate-300/70 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+            className="w-10 h-10 rounded-2xl text-text dark:text-text hover:bg-hover/70 dark:hover:bg-hover/70 hover:text-text dark:hover:text-text flex items-center justify-center transition-colors"
           >
             <Settings className="w-5 h-5" />
           </button>
-        </NexusTooltip>
+        </MajlisTooltip>
       </div>
     </nav>
   );

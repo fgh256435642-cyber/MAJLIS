@@ -31,7 +31,7 @@ import {
   updateChannel,
   updateMemberRole,
   updateServer,
-} from '../services/nexusService';
+} from '../services/majlisService';
 import { uploadFileToStorage } from '../services/storageService';
 import type {
   Channel,
@@ -42,8 +42,8 @@ import type {
   Server,
   ServerBan,
   ServerMember,
-} from '../types/nexus';
-import { ServerIcon, UserAvatar } from './NexusLogo';
+} from '../types/majlis';
+import { ServerIcon, UserAvatar } from './MajlisLogo';
 
 function ModalBackdrop({
   onClose,
@@ -65,11 +65,11 @@ function ModalBackdrop({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-[2px] flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-rail/70 backdrop-blur-[2px] flex items-center justify-center p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full ${maxWidth} rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#313338] text-slate-900 dark:text-[#F2F3F5] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col`}
+        className={`w-full ${maxWidth} rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text shadow-2xl overflow-hidden max-h-[90vh] flex flex-col`}
       >
         {children}
       </div>
@@ -151,15 +151,15 @@ export function CreateJoinServerModal({
 
   return (
     <ModalBackdrop onClose={onClose} maxWidth="max-w-md">
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+      <div className="px-5 py-4 border-accent border-border dark:border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setTab('create')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-link font-semibold transition-colors ${
               tab === 'create'
-                ? 'bg-nexus text-white'
-                : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                ? 'bg-accent text-text'
+                : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
             }`}
           >
             {t(language, 'createServer')}
@@ -167,10 +167,10 @@ export function CreateJoinServerModal({
           <button
             type="button"
             onClick={() => setTab('join')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-link font-semibold transition-colors ${
               tab === 'join'
-                ? 'bg-nexus text-white'
-                : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                ? 'bg-accent text-text'
+                : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
             }`}
           >
             {t(language, 'joinServer')}
@@ -179,7 +179,7 @@ export function CreateJoinServerModal({
         <button
           type="button"
           onClick={onClose}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white"
+          className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text"
         >
           <X className="w-5 h-5" />
         </button>
@@ -190,7 +190,7 @@ export function CreateJoinServerModal({
           <div className="flex items-center gap-4">
             <label className="cursor-pointer group relative">
               <ServerIcon src={iconPreview} name={name || 'NX'} size="lg" />
-              <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+              <div className="absolute inset-0 rounded-2xl bg-rail/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-text transition-opacity">
                 <Upload className="w-5 h-5" />
               </div>
               <input
@@ -200,13 +200,13 @@ export function CreateJoinServerModal({
                 className="hidden"
               />
             </label>
-            <div className="text-xs text-slate-500 dark:text-zinc-400">
+            <div className="text-link text-text-muted dark:text-text-muted">
               {t(language, 'uploadIcon')} (PNG, JPG)
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1">
               {t(language, 'serverName')}
             </label>
             <input
@@ -217,12 +217,12 @@ export function CreateJoinServerModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Design Builders"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1">
               {t(language, 'serverDescription')}
             </label>
             <textarea
@@ -231,17 +231,17 @@ export function CreateJoinServerModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="A space to collaborate and hang out."
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
             />
           </div>
 
-          <label className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] cursor-pointer">
-            <span className="text-xs font-medium">{t(language, 'publicServer')}</span>
+          <label className="flex items-center justify-between p-3 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated cursor-pointer">
+            <span className="text-link font-medium">{t(language, 'publicServer')}</span>
             <input
               type="checkbox"
               checked={isPublic}
               onChange={(e) => setIsPublic(e.target.checked)}
-              className="w-4 h-4 accent-nexus"
+              className="w-4 h-4 accent-accent"
             />
           </label>
 
@@ -249,14 +249,14 @@ export function CreateJoinServerModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-white/10"
+              className="px-4 py-2 rounded-lg text-link font-medium hover:bg-main dark:hover:bg-main"
             >
               {t(language, 'cancel')}
             </button>
             <button
               type="submit"
               disabled={submitting || name.trim().length < 2}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               <span>{t(language, 'create')}</span>
@@ -266,7 +266,7 @@ export function CreateJoinServerModal({
       ) : (
         <form onSubmit={handleJoin} className="p-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1">
               {t(language, 'inviteCode')}
             </label>
             <input
@@ -275,21 +275,21 @@ export function CreateJoinServerModal({
               value={inviteInput}
               onChange={(e) => setInviteInput(e.target.value)}
               placeholder="e.g. aB3x9K2m or https://.../?invite=aB3x9K2m"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-white/10"
+              className="px-4 py-2 rounded-lg text-link font-medium hover:bg-main dark:hover:bg-main"
             >
               {t(language, 'cancel')}
             </button>
             <button
               type="submit"
               disabled={submitting || !inviteInput.trim()}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               <span>{t(language, 'join')}</span>
@@ -366,14 +366,14 @@ export function ChannelModal({
 
   return (
     <ModalBackdrop onClose={onClose} maxWidth="max-w-md">
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-        <h3 className="font-bold text-base">
+      <div className="px-5 py-4 border-accent border-border dark:border-border flex items-center justify-between">
+        <h3 className="font-bold text-link">
           {editingChannel ? t(language, 'rename') : t(language, 'createChannel')}
         </h3>
         <button
           type="button"
           onClick={onClose}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white"
+          className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text"
         >
           <X className="w-5 h-5" />
         </button>
@@ -388,10 +388,10 @@ export function ChannelModal({
                 setType('text');
                 setCategory('Text Channels');
               }}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border text-sm font-medium transition-colors ${
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border text-link font-medium transition-colors ${
                 type === 'text'
-                  ? 'border-nexus bg-nexus/15 text-nexus'
-                  : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                  ? 'border-accent bg-accent/15 text-link'
+                  : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
               }`}
             >
               <Hash className="w-4 h-4" />
@@ -403,10 +403,10 @@ export function ChannelModal({
                 setType('voice');
                 setCategory('Voice Channels');
               }}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border text-sm font-medium transition-colors ${
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border text-link font-medium transition-colors ${
                 type === 'voice'
-                  ? 'border-nexus bg-nexus/15 text-nexus'
-                  : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                  ? 'border-accent bg-accent/15 text-link'
+                  : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
               }`}
             >
               <Volume2 className="w-4 h-4" />
@@ -416,7 +416,7 @@ export function ChannelModal({
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+          <label className="block text-link font-semibold text-text dark:text-text mb-1">
             {t(language, 'channelName')}
           </label>
           <input
@@ -426,12 +426,12 @@ export function ChannelModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={type === 'text' ? 'announcements' : 'Gaming Voice'}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+            className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+          <label className="block text-link font-semibold text-text dark:text-text mb-1">
             {t(language, 'channelCategory')}
           </label>
           <input
@@ -440,12 +440,12 @@ export function ChannelModal({
             maxLength={48}
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+            className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+          <label className="block text-link font-semibold text-text dark:text-text mb-1">
             {t(language, 'channelTopic')}
           </label>
           <input
@@ -453,7 +453,7 @@ export function ChannelModal({
             maxLength={256}
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+            className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
           />
         </div>
 
@@ -461,14 +461,14 @@ export function ChannelModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-white/10"
+            className="px-4 py-2 rounded-lg text-link font-medium hover:bg-main dark:hover:bg-main"
           >
             {t(language, 'cancel')}
           </button>
           <button
             type="submit"
             disabled={submitting || !name.trim()}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             <span>{editingChannel ? t(language, 'save') : t(language, 'create')}</span>
@@ -530,14 +530,14 @@ export function InviteModal({
 
   return (
     <ModalBackdrop onClose={onClose} maxWidth="max-w-md">
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-        <h3 className="font-bold text-base truncate">
+      <div className="px-5 py-4 border-accent border-border dark:border-border flex items-center justify-between">
+        <h3 className="font-bold text-link truncate">
           {t(language, 'invitePeople')} — {server.name}
         </h3>
         <button
           type="button"
           onClick={onClose}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white"
+          className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text"
         >
           <X className="w-5 h-5" />
         </button>
@@ -548,14 +548,14 @@ export function InviteModal({
           type="button"
           disabled={creating}
           onClick={handleGenerate}
-          className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-sm font-semibold transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-accent hover:bg-majlis-hover text-text text-link font-semibold transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Generate Invite Link</span>
         </button>
 
         {invites.length === 0 ? (
-          <p className="text-xs text-center text-slate-500 dark:text-zinc-400 py-4">
+          <p className="text-link text-link text-text-muted dark:text-text-muted py-4">
             Click above to generate a shareable invite link.
           </p>
         ) : (
@@ -563,13 +563,13 @@ export function InviteModal({
             {invites.map((inv) => (
               <div
                 key={inv.code}
-                className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22]"
+                className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated"
               >
                 <div className="min-w-0">
-                  <div className="font-mono text-sm font-semibold text-slate-900 dark:text-white">
+                  <div className="font-mono text-link font-semibold text-text dark:text-text">
                     {inv.code}
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-zinc-400 tabular-nums">
+                  <div className="text-[11px] text-text-muted dark:text-text-muted tabular-nums">
                     {inv.uses} uses
                   </div>
                 </div>
@@ -577,7 +577,7 @@ export function InviteModal({
                   <button
                     type="button"
                     onClick={() => copyLink(inv.code)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-nexus hover:bg-nexus-hover text-white text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-accent hover:bg-majlis-hover text-text text-link font-medium transition-colors"
                   >
                     {copiedCode === inv.code ? (
                       <Check className="w-3.5 h-3.5" />
@@ -589,7 +589,7 @@ export function InviteModal({
                   <button
                     type="button"
                     onClick={() => revokeInvite(inv.code)}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-rose-500"
+                    className="p-1.5 rounded-md text-text-muted hover:text-danger"
                     title="Revoke"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -682,30 +682,30 @@ export function ServerSettingsModal({
 
   return (
     <ModalBackdrop onClose={onClose} maxWidth="max-w-2xl">
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-        <h3 className="font-bold text-base truncate">
+      <div className="px-5 py-4 border-accent border-border dark:border-border flex items-center justify-between">
+        <h3 className="font-bold text-link truncate">
           {t(language, 'serverSettings')} — {server.name}
         </h3>
         <button
           type="button"
           onClick={onClose}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white"
+          className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        <div className="w-40 shrink-0 border-e border-slate-200 dark:border-white/10 p-2 space-y-1 bg-slate-50 dark:bg-[#2B2D31]">
+        <div className="w-40 shrink-0 border-accent border-border dark:border-border p-2 space-y-1 bg-elevated dark:bg-elevated">
           {(['overview', 'roles', 'bans'] as const).map((k) => (
             <button
               key={k}
               type="button"
               onClick={() => setTab(k)}
-              className={`w-full text-start px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+              className={`w-full text-link px-3 py-2 rounded-md text-link font-medium transition-colors ${
                 tab === k
-                  ? 'bg-slate-200 dark:bg-[#404249] text-slate-950 dark:text-white'
-                  : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                  ? 'bg-hover dark:bg-hover text-text dark:text-text'
+                  : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
               }`}
             >
               {t(language, k)}
@@ -724,7 +724,7 @@ export function ServerSettingsModal({
                       name={name || server.name}
                       size="lg"
                     />
-                    <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                    <div className="absolute inset-0 rounded-2xl bg-rail/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-text transition-opacity">
                       <Upload className="w-5 h-5" />
                     </div>
                     <input
@@ -737,13 +737,13 @@ export function ServerSettingsModal({
                       className="hidden"
                     />
                   </label>
-                  <div className="text-xs text-slate-500 dark:text-zinc-400">
+                  <div className="text-link text-text-muted dark:text-text-muted">
                     {t(language, 'uploadIcon')}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">
+                  <label className="block text-link font-semibold mb-1">
                     {t(language, 'serverName')}
                   </label>
                   <input
@@ -753,12 +753,12 @@ export function ServerSettingsModal({
                     maxLength={80}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+                    className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">
+                  <label className="block text-link font-semibold mb-1">
                     {t(language, 'serverDescription')}
                   </label>
                   <textarea
@@ -766,35 +766,35 @@ export function ServerSettingsModal({
                     maxLength={400}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+                    className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                   />
                 </div>
 
-                <label className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] cursor-pointer">
-                  <span className="text-xs font-medium">{t(language, 'publicServer')}</span>
+                <label className="flex items-center justify-between p-3 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated cursor-pointer">
+                  <span className="text-link font-medium">{t(language, 'publicServer')}</span>
                   <input
                     type="checkbox"
                     checked={isPublic}
                     onChange={(e) => setIsPublic(e.target.checked)}
-                    className="w-4 h-4 accent-nexus"
+                    className="w-4 h-4 accent-accent"
                   />
                 </label>
 
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-sm font-semibold transition-colors"
+                  className="px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover text-text text-link font-semibold transition-colors"
                 >
                   {t(language, 'save')}
                 </button>
               </form>
 
               {myRole === 'owner' && (
-                <div className="pt-5 border-t border-slate-200 dark:border-white/10 space-y-3">
-                  <h4 className="text-sm font-bold text-rose-600 dark:text-rose-400">
+                <div className="pt-5 border-accent border-border dark:border-border space-y-3">
+                  <h4 className="text-link font-bold text-danger dark:text-danger">
                     {t(language, 'deleteServer')}
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400">
+                  <p className="text-link text-text-muted dark:text-text-muted">
                     {t(language, 'deleteServerConfirm')}
                   </p>
                   <div className="flex gap-2">
@@ -803,13 +803,13 @@ export function ServerSettingsModal({
                       value={deleteConfirm}
                       onChange={(e) => setDeleteConfirm(e.target.value)}
                       placeholder={server.name}
-                      className="flex-1 px-3 py-2 rounded-lg border border-rose-500/30 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+                      className="flex-1 px-3 py-2 rounded-lg border border-danger bg-elevated dark:bg-elevated text-link"
                     />
                     <button
                       type="button"
                       disabled={saving || deleteConfirm.trim() !== server.name}
                       onClick={handleDelete}
-                      className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-sm font-semibold"
+                      className="px-4 py-2 rounded-lg bg-danger hover:bg-danger disabled:opacity-40 text-text text-link font-semibold"
                     >
                       {t(language, 'delete')}
                     </button>
@@ -831,7 +831,7 @@ export function ServerSettingsModal({
                 return (
                   <div
                     key={m.uid}
-                    className="flex items-center justify-between gap-3 py-2 border-b border-slate-200 dark:border-white/10"
+                    className="flex items-center justify-between gap-3 py-2 border-accent border-border dark:border-border"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <UserAvatar
@@ -840,10 +840,10 @@ export function ServerSettingsModal({
                         size="sm"
                       />
                       <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">
+                        <div className="text-link font-medium truncate">
                           {pub?.displayName || m.displayName}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                        <div className="text-link text-text-muted dark:text-text-muted truncate">
                           @{pub?.username || m.username}
                         </div>
                       </div>
@@ -859,14 +859,14 @@ export function ServerSettingsModal({
                             e.target.value as Exclude<Role, 'owner'>
                           )
                         }
-                        className="px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs"
+                        className="px-2.5 py-1.5 rounded-md border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                       >
                         {myRole === 'owner' && <option value="admin">Admin</option>}
                         <option value="moderator">Moderator</option>
                         <option value="member">Member</option>
                       </select>
                     ) : (
-                      <span className="text-xs font-semibold capitalize text-slate-500 dark:text-zinc-400">
+                      <span className="text-link font-semibold capitalize text-text-muted dark:text-text-muted">
                         {m.role}
                       </span>
                     )}
@@ -879,21 +879,21 @@ export function ServerSettingsModal({
           {tab === 'bans' && (
             <div className="space-y-3">
               {bans.length === 0 ? (
-                <p className="text-xs text-slate-500 dark:text-zinc-400 py-8 text-center">
+                <p className="text-link text-text-muted dark:text-text-muted py-8 text-link">
                   No banned users in this server.
                 </p>
               ) : (
                 bans.map((b) => (
                   <div
                     key={b.uid}
-                    className="flex items-center justify-between gap-3 p-3 rounded-lg border border-slate-200 dark:border-white/10"
+                    className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border dark:border-border"
                   >
                     <div>
-                      <div className="text-sm font-semibold">
+                      <div className="text-link font-semibold">
                         {usersById[b.uid]?.displayName || b.uid}
                       </div>
                       {b.reason && (
-                        <div className="text-xs text-slate-500 dark:text-zinc-400">
+                        <div className="text-link text-text-muted dark:text-text-muted">
                           {b.reason}
                         </div>
                       )}
@@ -901,7 +901,7 @@ export function ServerSettingsModal({
                     <button
                       type="button"
                       onClick={() => unbanMember(server.id, b.uid)}
-                      className="px-3 py-1.5 rounded-md bg-slate-200 dark:bg-white/10 hover:bg-emerald-600 hover:text-white text-xs font-medium transition-colors"
+                      className="px-3 py-1.5 rounded-md bg-hover dark:bg-hover hover:bg-success hover:text-text text-link font-medium transition-colors"
                     >
                       {t(language, 'unban')}
                     </button>

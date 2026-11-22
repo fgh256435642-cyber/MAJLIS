@@ -18,7 +18,7 @@ self.addEventListener('notificationclick', (event) => {
           if ('focus' in client) {
             client.focus();
             client.postMessage({
-              type: 'NEXUS_NOTIFICATION_CLICK',
+              type: 'MAJLIS_NOTIFICATION_CLICK',
               payload,
             });
             return;

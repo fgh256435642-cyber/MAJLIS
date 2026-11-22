@@ -18,25 +18,25 @@ export function ToastContainer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.18 }}
-            className="pointer-events-auto flex items-start gap-3 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] px-4 py-3 shadow-lg"
+            className="pointer-events-auto flex items-start gap-3 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated px-4 py-3 shadow-lg"
           >
             <div className="shrink-0 mt-0.5">
               {toast.type === 'success' && (
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <CheckCircle2 className="w-4 h-4 text-success" />
               )}
               {toast.type === 'error' && (
-                <AlertCircle className="w-4 h-4 text-rose-500" />
+                <AlertCircle className="w-4 h-4 text-danger" />
               )}
               {toast.type === 'info' && (
-                <Info className="w-4 h-4 text-nexus" />
+                <Info className="w-4 h-4 text-link" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-slate-900 dark:text-white">
+              <div className="text-link font-medium text-text dark:text-text">
                 {toast.title}
               </div>
               {toast.description && (
-                <div className="text-xs text-slate-600 dark:text-zinc-300 mt-0.5 break-words">
+                <div className="text-link text-text dark:text-text mt-0.5 break-words">
                   {toast.description}
                 </div>
               )}
@@ -44,7 +44,7 @@ export function ToastContainer() {
             <button
               type="button"
               onClick={() => dismissToast(toast.id)}
-              className="shrink-0 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-white transition-colors"
+              className="shrink-0 text-text-muted hover:text-text dark:text-text-muted dark:hover:text-text transition-colors"
               aria-label="Dismiss notification"
             >
               <X className="w-4 h-4" />

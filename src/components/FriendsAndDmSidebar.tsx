@@ -11,12 +11,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { t } from '../i18n/translations';
-import type { DirectMessageThread, GroupDm, PublicUser } from '../types/nexus';
+import type { DirectMessageThread, GroupDm, PublicUser } from '../types/majlis';
 import { getEffectiveUserStatus, getGroupDisplayName } from '../utils/validation';
 import { CollapsibleBody } from './CollapsibleSection';
-import { GroupAvatar, UserAvatar } from './NexusLogo';
+import { GroupAvatar, UserAvatar } from './MajlisLogo';
 import { SidebarMemberSearch } from './SidebarMemberSearch';
-import { NexusTooltip } from './ui/NexusUI';
+import { MajlisTooltip } from './ui/MajlisUI';
 
 interface FriendsAndDmSidebarProps {
   activeDmId: string | null;
@@ -94,9 +94,9 @@ export function FriendsAndDmSidebar({
   ].sort((a, b) => b.sortMs - a.sortMs);
 
   return (
-    <aside className="w-60 shrink-0 h-full bg-slate-100 dark:bg-[#2B2D31] flex flex-col border-e border-slate-200 dark:border-black/25 select-none">
+    <aside className="w-60 shrink-0 h-full bg-main dark:bg-main flex flex-col border-accent border-border dark:border-border select-none">
       {/* Fixed Header with Search & Collapse Button */}
-      <div className="h-12 px-2.5 flex items-center justify-between gap-1.5 border-b border-slate-200 dark:border-black/25 shrink-0">
+      <div className="h-12 px-2.5 flex items-center justify-between gap-1.5 border-accent border-border dark:border-border shrink-0">
         <div className="flex-1 min-w-0">
           <SidebarMemberSearch
             myUid={myUid || ''}
@@ -106,7 +106,7 @@ export function FriendsAndDmSidebar({
             onAfterSelect={onAfterSelectMember}
             compact
             trailingAction={
-              <NexusTooltip
+              <MajlisTooltip
                 content={`${t(language, 'quickSwitcher')} (Ctrl+K)`}
                 side="bottom"
               >
@@ -114,17 +114,17 @@ export function FriendsAndDmSidebar({
                   type="button"
                   onClick={onOpenQuickSwitcher}
                   aria-label={t(language, 'quickSwitcher')}
-                  className="p-1.5 rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
+                  className="p-1.5 rounded-md border border-border dark:border-border bg-elevated dark:bg-elevated text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text transition-colors shrink-0"
                 >
                   <Command className="w-3.5 h-3.5" />
                 </button>
-              </NexusTooltip>
+              </MajlisTooltip>
             }
           />
         </div>
 
         {onCollapseSidebar && (
-          <NexusTooltip
+          <MajlisTooltip
             content={`${t(language, 'collapseSidebar')} (Ctrl+B)`}
             side="bottom"
           >
@@ -134,11 +134,11 @@ export function FriendsAndDmSidebar({
               aria-label={t(language, 'collapseSidebar')}
               aria-expanded={true}
               aria-keyshortcuts="Control+b"
-              className="p-1.5 rounded-md border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#1E1F22] text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white shadow-xs transition-colors shrink-0"
+              className="p-1.5 rounded-md border border-border bg-elevated text-text hover:bg-hover hover:text-text shadow-xs transition-colors shrink-0"
             >
               <PanelLeftClose className="w-4 h-4 rtl:rotate-180" />
             </button>
-          </NexusTooltip>
+          </MajlisTooltip>
         )}
       </div>
 
@@ -148,10 +148,10 @@ export function FriendsAndDmSidebar({
         <button
           type="button"
           onClick={onSelectFriends}
-          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-link font-medium transition-colors ${
             activeDmId === null && activeGroupId === null
-              ? 'bg-nexus/10 text-nexus'
-              : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-200/60 dark:hover:bg-[#35373C]'
+              ? 'bg-accent/10 text-link'
+              : 'text-text dark:text-text hover:bg-hover/60 dark:hover:bg-hover/60'
           }`}
         >
           <span className="flex items-center gap-2.5">
@@ -159,7 +159,7 @@ export function FriendsAndDmSidebar({
             <span>{t(language, 'friends')}</span>
           </span>
           {pendingFriendCount > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold tabular-nums">
+            <span className="px-1.5 py-0.5 rounded-full bg-danger text-text text-[10px] font-bold tabular-nums">
               {pendingFriendCount}
             </span>
           )}
@@ -168,33 +168,33 @@ export function FriendsAndDmSidebar({
         {/* Collapsible Direct Messages & Groups Section */}
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-1 px-1.5 py-1">
-            <div className="flex-1 min-w-0 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 tabular-nums">
+            <div className="flex-1 min-w-0 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted tabular-nums">
               <span className="truncate">
                 {t(language, 'directMessages')} — {combinedItems.length}
               </span>
             </div>
 
             {onOpenCreateGroup && (
-              <NexusTooltip content={t(language, 'createGroup')} side="top">
+              <MajlisTooltip content={t(language, 'createGroup')} side="top">
                 <button
                   type="button"
                   onClick={onOpenCreateGroup}
                   aria-label={t(language, 'createGroup')}
-                  className="p-1 rounded hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-zinc-400 hover:text-nexus transition-colors shrink-0"
+                  className="p-1 rounded hover:bg-hover dark:hover:bg-hover text-text-muted dark:text-text-muted hover:text-link transition-colors shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
-              </NexusTooltip>
+              </MajlisTooltip>
             )}
           </div>
 
           {combinedItems.length === 0 ? (
             <CollapsibleBody isOpen={!dmsCollapsed}>
-              <div className="px-3 py-8 text-center">
-                <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-nexus/10 text-nexus flex items-center justify-center">
+              <div className="px-3 py-6 text-center">
+                <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-accent-soft text-accent flex items-center justify-center">
                   <Users className="w-5 h-5" />
                 </div>
-                <p className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
+                <p className="text-sm leading-6 text-text-muted break-words">
                   {t(language, 'noDmsYet')}
                 </p>
               </div>
@@ -213,28 +213,28 @@ export function FriendsAndDmSidebar({
                     <button
                       type="button"
                       onClick={() => onSelectGroup?.(group.id)}
-                      className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-start transition-colors ${
+                      className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-link transition-colors ${
                         isActive
-                          ? 'bg-slate-200/90 dark:bg-[#404249] text-slate-950 dark:text-white font-medium'
+                          ? 'bg-hover/90 dark:bg-hover/90 text-text dark:text-text font-medium'
                           : unreadCount > 0
-                          ? 'text-slate-950 dark:text-white font-semibold hover:bg-slate-200/60 dark:hover:bg-[#35373C]'
-                          : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-200/60 dark:hover:bg-[#35373C] hover:text-slate-900 dark:hover:text-zinc-200'
+                          ? 'text-text dark:text-text font-semibold hover:bg-hover/60 dark:hover:bg-hover/60'
+                          : 'text-text dark:text-text hover:bg-hover/60 dark:hover:bg-hover/60 hover:text-text dark:hover:text-text'
                       }`}
                     >
                       <GroupAvatar src={group.iconUrl} name={groupTitle} size="sm" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
-                          <span className="text-sm truncate">{groupTitle}</span>
+                          <span className="text-link truncate">{groupTitle}</span>
                           <div className="flex items-center gap-1 shrink-0">
                             {isMuted && (
-                              <BellOff className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
+                              <BellOff className="w-3 h-3 text-text-muted dark:text-text-muted" />
                             )}
                             {unreadCount > 0 ? (
-                              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center tabular-nums">
+                              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-text text-[10px] font-bold flex items-center justify-center tabular-nums">
                                 {unreadCount > 99 ? '99+' : unreadCount}
                               </span>
                             ) : (
-                              <span className="text-[10px] text-slate-400 dark:text-zinc-500 tabular-nums">
+                              <span className="text-[10px] text-text-muted dark:text-text-muted tabular-nums">
                                 {group.memberIds.length}
                               </span>
                             )}
@@ -267,12 +267,12 @@ export function FriendsAndDmSidebar({
                   <button
                     type="button"
                     onClick={() => onSelectDm(dm.id)}
-                    className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-start transition-colors ${
+                    className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-link transition-colors ${
                       isActive
-                        ? 'bg-slate-200/90 dark:bg-[#404249] text-slate-950 dark:text-white font-medium'
+                        ? 'bg-hover/90 dark:bg-hover/90 text-text dark:text-text font-medium'
                         : unreadCount > 0
-                        ? 'text-slate-950 dark:text-white font-semibold hover:bg-slate-200/60 dark:hover:bg-[#35373C]'
-                        : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-200/60 dark:hover:bg-[#35373C] hover:text-slate-900 dark:hover:text-zinc-200'
+                        ? 'text-text dark:text-text font-semibold hover:bg-hover/60 dark:hover:bg-hover/60'
+                        : 'text-text dark:text-text hover:bg-hover/60 dark:hover:bg-hover/60 hover:text-text dark:hover:text-text'
                     }`}
                   >
                     <UserAvatar
@@ -284,11 +284,11 @@ export function FriendsAndDmSidebar({
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1">
-                        <span className="text-sm truncate">
+                        <span className="text-link truncate">
                           {otherUser?.displayName || 'User'}
                         </span>
                         {unreadCount > 0 && (
-                          <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center tabular-nums shrink-0">
+                          <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-text text-[10px] font-bold flex items-center justify-center tabular-nums shrink-0">
                             {unreadCount > 99 ? '99+' : unreadCount}
                           </span>
                         )}
@@ -307,7 +307,7 @@ export function FriendsAndDmSidebar({
         </div>
       </div>
 
-      <div className="h-[62px] px-2.5 border-t border-slate-200/80 dark:border-black/25 bg-slate-100/95 dark:bg-[#232428] flex items-center gap-2 shrink-0">
+      <div className="h-[62px] px-2.5 border-accent border-border dark:border-border bg-main/95 dark:bg-main/95 flex items-center gap-2 shrink-0">
         <UserAvatar
           src={publicUser?.avatarUrl}
           name={publicUser?.displayName || 'User'}
@@ -320,34 +320,34 @@ export function FriendsAndDmSidebar({
           showStatus
         />
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
-            {publicUser?.username ? `@${publicUser.username}` : '@majlis'}
+          <div className="text-[10px] text-text-muted dark:text-text-muted truncate">
+            <bdi dir="ltr">{publicUser?.username ? `@${publicUser.username}` : '@majlis'}</bdi>
           </div>
-          <div className="text-xs font-semibold text-slate-900 dark:text-white truncate mt-0.5">
+          <div className="text-link font-semibold text-text dark:text-text truncate mt-0.5">
             {publicUser?.displayName || t(language, 'myAccount')}
           </div>
         </div>
         <div className="flex items-center gap-0.5">
           {onToggleMute && (
-            <NexusTooltip content={voiceMuted ? t(language, 'unmute') : t(language, 'mute')} side="top">
-              <button type="button" onClick={onToggleMute} aria-label={voiceMuted ? t(language, 'unmute') : t(language, 'mute')} className="w-8 h-8 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
+            <MajlisTooltip content={voiceMuted ? t(language, 'unmute') : t(language, 'mute')} side="top">
+              <button type="button" onClick={onToggleMute} aria-label={voiceMuted ? t(language, 'unmute') : t(language, 'mute')} className="w-8 h-8 rounded-md text-text-muted dark:text-text-muted hover:bg-hover dark:hover:bg-hover hover:text-text dark:hover:text-text flex items-center justify-center">
                 {voiceMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
               </button>
-            </NexusTooltip>
+            </MajlisTooltip>
           )}
           {onToggleDeafen && (
-            <NexusTooltip content={voiceDeafened ? t(language, 'undeafen') : t(language, 'deafen')} side="top">
-              <button type="button" onClick={onToggleDeafen} aria-label={voiceDeafened ? t(language, 'undeafen') : t(language, 'deafen')} className="w-8 h-8 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
-                <Headphones className={`w-4 h-4 ${voiceDeafened ? 'text-rose-500' : ''}`} />
+            <MajlisTooltip content={voiceDeafened ? t(language, 'undeafen') : t(language, 'deafen')} side="top">
+              <button type="button" onClick={onToggleDeafen} aria-label={voiceDeafened ? t(language, 'undeafen') : t(language, 'deafen')} className="w-8 h-8 rounded-md text-text-muted dark:text-text-muted hover:bg-hover dark:hover:bg-hover hover:text-text dark:hover:text-text flex items-center justify-center">
+                <Headphones className={`w-4 h-4 ${voiceDeafened ? 'text-danger' : ''}`} />
               </button>
-            </NexusTooltip>
+            </MajlisTooltip>
           )}
           {onOpenUserSettings && (
-            <NexusTooltip content={t(language, 'settings')} side="top">
-              <button type="button" onClick={onOpenUserSettings} aria-label={t(language, 'settings')} className="w-8 h-8 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
+            <MajlisTooltip content={t(language, 'settings')} side="top">
+              <button type="button" onClick={onOpenUserSettings} aria-label={t(language, 'settings')} className="w-8 h-8 rounded-md text-text-muted dark:text-text-muted hover:bg-hover dark:hover:bg-hover hover:text-text dark:hover:text-text flex items-center justify-center">
                 <Settings className="w-4 h-4" />
               </button>
-            </NexusTooltip>
+            </MajlisTooltip>
           )}
         </div>
       </div>

@@ -1,6 +1,6 @@
 export type NotificationPermissionState = NotificationPermission | 'unsupported';
 
-export interface NexusNotificationPayload {
+export interface MajlisNotificationPayload {
   kind: 'dm' | 'channel' | 'group';
   serverId?: string;
   channelId?: string;
@@ -13,7 +13,7 @@ export interface ShowWebNotificationOptions {
   body: string;
   icon?: string;
   tag?: string;
-  payload?: NexusNotificationPayload;
+  payload?: MajlisNotificationPayload;
   onClick?: () => void;
 }
 
@@ -31,7 +31,7 @@ export function getNotificationPermission(): NotificationPermissionState {
 }
 
 export function ensureServiceWorkerMessageListener(
-  onNavigate?: (payload: NexusNotificationPayload) => void
+  onNavigate?: (payload: MajlisNotificationPayload) => void
 ) {
   if (
     typeof navigator === 'undefined' ||
@@ -43,9 +43,9 @@ export function ensureServiceWorkerMessageListener(
   messageListenerAttached = true;
   navigator.serviceWorker.addEventListener('message', (event) => {
     const data = event.data as
-      | { type?: string; payload?: NexusNotificationPayload }
+      | { type?: string; payload?: MajlisNotificationPayload }
       | undefined;
-    if (data?.type === 'NEXUS_NOTIFICATION_CLICK' && data.payload) {
+    if (data?.type === 'MAJLIS_NOTIFICATION_CLICK' && data.payload) {
       onNavigate?.(data.payload);
     }
   });
@@ -97,7 +97,7 @@ export async function showWebNotification({
   }
 
   const safeBody = body.trim().slice(0, 220);
-  const notifTag = tag || `nexus-${Date.now()}`;
+  const notifTag = tag || `majlis-${Date.now()}`;
 
   if (onClick) {
     clickHandlers.set(notifTag, onClick);

@@ -61,7 +61,7 @@ import {
   toggleMuteGroup,
   transferGroupOwnership,
   updateMemberRole,
-} from '../services/nexusService';
+} from '../services/majlisService';
 import { ActiveCallOverlay } from './ActiveCallOverlay';
 import { GroupMembersSidebar } from './GroupMembersSidebar';
 import { CreateGroupModal, GroupSettingsModal } from './GroupModals';
@@ -86,7 +86,7 @@ import type {
   SettingsCategoryId,
   TypingUser,
   VoiceParticipant,
-} from '../types/nexus';
+} from '../types/majlis';
 import { getGroupDisplayName, matchesShortcutEvent } from '../utils/validation';
 import { ChatArea } from './ChatArea';
 import { FriendsDashboard } from './FriendsDashboard';
@@ -107,7 +107,7 @@ import { VoiceStage } from './VoiceStage';
 
 const PAGE_SIZE = 35;
 
-export function NexusWorkspace() {
+export function MajlisWorkspace() {
   const { firebaseUser, userPrivate, publicUser, language, effectiveSelfStatus } = useAuth();
   const { settings, blockedUserIds, isEffectivelyDnd } = useUserSettings();
   const { pushToast } = useToast();
@@ -128,10 +128,10 @@ export function NexusWorkspace() {
 
   const membersPanelKey =
     activeView === 'server' && activeServerId
-      ? `nexus_members_panel_${activeServerId}`
+      ? `majlis_members_panel_${activeServerId}`
       : activeView === 'home' && activeGroupId
-      ? `nexus_members_panel_grp_${activeGroupId}`
-      : 'nexus_members_panel_default';
+      ? `majlis_members_panel_grp_${activeGroupId}`
+      : 'majlis_members_panel_default';
   const [showMembersPanel, setShowMembersPanel] = usePersistentBool(
     membersPanelKey,
     true
@@ -139,8 +139,8 @@ export function NexusWorkspace() {
 
   const secondarySidebarKey =
     activeView === 'server' && activeServerId
-      ? `nexus_secondary_open_${activeServerId}`
-      : 'nexus_secondary_open_home';
+      ? `majlis_secondary_open_${activeServerId}`
+      : 'majlis_secondary_open_home';
   const [secondarySidebarOpen, setSecondarySidebarOpen] = usePersistentBool(
     secondarySidebarKey,
     true
@@ -179,7 +179,7 @@ export function NexusWorkspace() {
   const [notifPermission, setNotifPermission] =
     useState<NotificationPermissionState>(() => getNotificationPermission());
   const [notifPromptDismissed, setNotifPromptDismissed] = useState<boolean>(
-    () => localStorage.getItem('nexus_notif_prompt_dismissed') === '1'
+    () => localStorage.getItem('majlis_notif_prompt_dismissed') === '1'
   );
 
   // Active server state
@@ -204,7 +204,7 @@ export function NexusWorkspace() {
   const [convReadAtMs, setConvReadAtMs] = useState<Record<string, number>>({});
   const [serverOrder, setServerOrder] = useState<string[]>(() => {
     try {
-      const raw = localStorage.getItem(`nexus_server_order_${uid}`);
+      const raw = localStorage.getItem(`majlis_server_order_${uid}`);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
@@ -1129,7 +1129,7 @@ export function NexusWorkspace() {
       currentIds.splice(insertAt, 0, fromServerId);
       setServerOrder(currentIds);
       try {
-        localStorage.setItem(`nexus_server_order_${uid}`, JSON.stringify(currentIds));
+        localStorage.setItem(`majlis_server_order_${uid}`, JSON.stringify(currentIds));
       } catch {
         // Ignore storage quota errors
       }
@@ -1306,7 +1306,7 @@ export function NexusWorkspace() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-white dark:bg-[#313338] text-slate-900 dark:text-[#F2F3F5]">
+    <div className="h-screen w-screen overflow-hidden flex bg-elevated dark:bg-elevated text-text dark:text-text">
       <PersistentSidebar
         mobileOpen={mobileNavOpen}
         onCloseMobile={() => setMobileNavOpen(false)}
@@ -1419,9 +1419,9 @@ export function NexusWorkspace() {
         {notifPermission === 'default' &&
           (userPrivate?.notificationsEnabled ?? true) &&
           !notifPromptDismissed && (
-            <div className="px-4 py-2 bg-nexus/10 border-b border-nexus/20 flex items-center justify-between gap-3 text-xs shrink-0">
-              <div className="flex items-center gap-2 min-w-0 text-slate-800 dark:text-zinc-200">
-                <Bell className="w-4 h-4 text-nexus shrink-0" />
+            <div className="px-4 py-2 bg-accent/10 border-accent border-accent flex items-center justify-between gap-3 text-link shrink-0">
+              <div className="flex items-center gap-2 min-w-0 text-text dark:text-text">
+                <Bell className="w-4 h-4 text-link shrink-0" />
                 <span className="truncate">
                   {t(language, 'browserNotificationsPrompt')}
                 </span>
@@ -1433,7 +1433,7 @@ export function NexusWorkspace() {
                     const res = await requestNotificationPermission();
                     setNotifPermission(res);
                   }}
-                  className="px-2.5 py-1 rounded-md bg-nexus hover:bg-nexus-hover text-white font-semibold transition-colors"
+                  className="px-2.5 py-1 rounded-md bg-accent hover:bg-majlis-hover text-text font-semibold transition-colors"
                 >
                   {t(language, 'enableBrowserNotifications')}
                 </button>
@@ -1441,10 +1441,10 @@ export function NexusWorkspace() {
                   type="button"
                   onClick={() => {
                     setNotifPromptDismissed(true);
-                    localStorage.setItem('nexus_notif_prompt_dismissed', '1');
+                    localStorage.setItem('majlis_notif_prompt_dismissed', '1');
                   }}
                   aria-label={t(language, 'cancel')}
-                  className="p-1 rounded text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                  className="p-1 rounded text-text-muted hover:text-text dark:text-text-muted dark:hover:text-text transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -1600,7 +1600,7 @@ export function NexusWorkspace() {
                 }`}
               >
                 <div
-                  className={`fixed inset-0 bg-black/50 backdrop-blur-[1px] transition-opacity duration-200 ease-out ${
+                  className={`fixed inset-0 bg-rail/50 backdrop-blur-[1px] transition-opacity duration-200 ease-out ${
                     mobileMembersOpen ? 'opacity-100' : 'opacity-0'
                   }`}
                   onClick={() => setMobileMembersOpen(false)}
@@ -1824,7 +1824,7 @@ export function NexusWorkspace() {
                 }`}
               >
                 <div
-                  className={`fixed inset-0 bg-black/50 backdrop-blur-[1px] transition-opacity duration-200 ease-out ${
+                  className={`fixed inset-0 bg-rail/50 backdrop-blur-[1px] transition-opacity duration-200 ease-out ${
                     mobileMembersOpen ? 'opacity-100' : 'opacity-0'
                   }`}
                   onClick={() => setMobileMembersOpen(false)}
@@ -1892,7 +1892,7 @@ export function NexusWorkspace() {
             </>
           )
         ) : (
-          <div className="flex-1 flex items-center justify-center text-sm text-slate-500 dark:text-zinc-400">
+          <div className="flex-1 flex items-center justify-center text-link text-text-muted dark:text-text-muted">
             {t(language, 'loadingServer')}
           </div>
         )}

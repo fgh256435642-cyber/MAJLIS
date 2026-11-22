@@ -29,14 +29,14 @@ import {
   submitProblemReport,
   unblockUser,
   updatePrivacySettings,
-} from '../../services/nexusService';
+} from '../../services/majlisService';
 import type {
   DmPermission,
   FriendRequestPermission,
   ShortcutActionId,
-} from '../../types/nexus';
+} from '../../types/majlis';
 import { formatKeyboardShortcutFromEvent } from '../../utils/validation';
-import { UserAvatar } from '../NexusLogo';
+import { UserAvatar } from '../MajlisLogo';
 
 export function PrivacySafetySection() {
   const { firebaseUser, language, preferredStatus } = useAuth();
@@ -163,19 +163,19 @@ export function PrivacySafetySection() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Shield className="w-5 h-5 text-nexus" />
+        <h2 className="text-link font-bold text-text dark:text-text flex items-center gap-2">
+          <Shield className="w-5 h-5 text-link" />
           <span>{t(language, 'privacyAndSafety')}</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'privacyAndSafetySubtitle')}
         </p>
       </div>
 
       {/* Who can send friend requests & DMs */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-5">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-5">
         <div className="space-y-2">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white">
+          <div className="text-link font-semibold text-text dark:text-text">
             {t(language, 'whoCanSendFriendRequests')}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -190,10 +190,10 @@ export function PrivacySafetySection() {
                 key={id}
                 type="button"
                 onClick={() => void handleFriendPermission(id)}
-                className={`p-2.5 rounded-xl border text-xs font-semibold text-start transition-colors ${
+                className={`p-2.5 rounded-xl border text-link font-semibold text-link transition-colors ${
                   settings.friendRequestPermission === id
-                    ? 'border-nexus bg-nexus/10 text-slate-950 dark:text-white'
-                    : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                    ? 'border-accent bg-accent/10 text-text dark:text-text'
+                    : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
                 }`}
               >
                 {label}
@@ -202,8 +202,8 @@ export function PrivacySafetySection() {
           </div>
         </div>
 
-        <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-white/10">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white">
+        <div className="space-y-2 pt-3 border-accent border-border dark:border-border">
+          <div className="text-link font-semibold text-text dark:text-text">
             {t(language, 'whoCanSendDms')}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -217,10 +217,10 @@ export function PrivacySafetySection() {
                 key={id}
                 type="button"
                 onClick={() => void handleDmPermission(id)}
-                className={`p-2.5 rounded-xl border text-xs font-semibold text-start transition-colors ${
+                className={`p-2.5 rounded-xl border text-link font-semibold text-link transition-colors ${
                   settings.dmPermission === id
-                    ? 'border-nexus bg-nexus/10 text-slate-950 dark:text-white'
-                    : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                    ? 'border-accent bg-accent/10 text-text dark:text-text'
+                    : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
                 }`}
               >
                 {label}
@@ -229,12 +229,12 @@ export function PrivacySafetySection() {
           </div>
         </div>
 
-        <label className="flex items-center justify-between gap-4 pt-3 border-t border-slate-200 dark:border-white/10 cursor-pointer">
+        <label className="flex items-center justify-between gap-4 pt-3 border-accent border-border dark:border-border cursor-pointer">
           <div>
-            <div className="text-sm font-semibold text-slate-900 dark:text-white">
+            <div className="text-link font-semibold text-text dark:text-text">
               {t(language, 'hideOnlineStatus')}
             </div>
-            <div className="text-xs text-slate-500 dark:text-zinc-400">
+            <div className="text-link text-text-muted dark:text-text-muted">
               {t(language, 'hideOnlineStatusDesc')}
             </div>
           </div>
@@ -242,16 +242,16 @@ export function PrivacySafetySection() {
             type="checkbox"
             checked={settings.hideOnlineStatus}
             onChange={(e) => void handleHideOnline(e.target.checked)}
-            className="w-4 h-4 accent-nexus"
+            className="w-4 h-4 accent-accent"
           />
         </label>
 
-        <label className="flex items-center justify-between gap-4 pt-3 border-t border-slate-200 dark:border-white/10 cursor-pointer">
+        <label className="flex items-center justify-between gap-4 pt-3 border-accent border-border dark:border-border cursor-pointer">
           <div>
-            <div className="text-sm font-semibold text-slate-900 dark:text-white">
+            <div className="text-link font-semibold text-text dark:text-text">
               {t(language, 'profileVisible')}
             </div>
-            <div className="text-xs text-slate-500 dark:text-zinc-400">
+            <div className="text-link text-text-muted dark:text-text-muted">
               {t(language, 'profileVisibleDesc')}
             </div>
           </div>
@@ -259,34 +259,34 @@ export function PrivacySafetySection() {
             type="checkbox"
             checked={settings.profileVisible}
             onChange={(e) => void handleProfileVisible(e.target.checked)}
-            className="w-4 h-4 accent-nexus"
+            className="w-4 h-4 accent-accent"
           />
         </label>
       </div>
 
       {/* Blocked Users */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-          <Ban className="w-3.5 h-3.5 text-rose-500" />
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+        <div className="flex items-center gap-2 text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
+          <Ban className="w-3.5 h-3.5 text-danger" />
           <span>
             {t(language, 'blockedUsersTitle')} ({blockedUsers.length})
           </span>
         </div>
         {blockedUsers.length === 0 ? (
-          <p className="text-xs text-slate-500 dark:text-zinc-400">
+          <p className="text-link text-text-muted dark:text-text-muted">
             {t(language, 'noBlockedUsers')}
           </p>
         ) : (
-          <div className="divide-y divide-slate-200 dark:divide-white/10">
+          <div className="divide-accent border-border dark:border-border">
             {blockedUsers.map((b) => (
               <div key={b.uid} className="py-2.5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <UserAvatar src={b.avatarUrl} name={b.displayName} size="sm" />
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                    <div className="text-link font-semibold text-text dark:text-text truncate">
                       {b.displayName}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                    <div className="text-link text-text-muted dark:text-text-muted truncate">
                       @{b.username}
                     </div>
                   </div>
@@ -306,7 +306,7 @@ export function PrivacySafetySection() {
                       });
                     }
                   }}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-semibold"
+                  className="px-3 py-1.5 rounded-lg border border-border dark:border-border hover:bg-main dark:hover:bg-main text-link font-semibold"
                 >
                   {t(language, 'unblockUser')}
                 </button>
@@ -317,10 +317,10 @@ export function PrivacySafetySection() {
       </div>
 
       {/* Connected Devices / Sessions */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-4">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-            <Laptop className="w-3.5 h-3.5 text-nexus" />
+          <div className="flex items-center gap-2 text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
+            <Laptop className="w-3.5 h-3.5 text-link" />
             <span>
               {t(language, 'activeDevicesTitle')} ({sessions.length})
             </span>
@@ -330,7 +330,7 @@ export function PrivacySafetySection() {
               type="button"
               disabled={revokingAll || sessions.length <= 1}
               onClick={() => void handleSignOutAllDevices(false)}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-40 text-xs font-semibold"
+              className="px-3 py-1.5 rounded-lg border border-border dark:border-border hover:bg-main dark:hover:bg-main disabled:opacity-40 text-link font-semibold"
             >
               {t(language, 'signOutOtherDevices')}
             </button>
@@ -338,7 +338,7 @@ export function PrivacySafetySection() {
               type="button"
               disabled={revokingAll}
               onClick={() => void handleSignOutAllDevices(true)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-600/15 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-danger/15 text-danger dark:text-danger hover:bg-danger hover:text-text text-link font-semibold transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>{t(language, 'signOutAllDevices')}</span>
@@ -346,23 +346,23 @@ export function PrivacySafetySection() {
           </div>
         </div>
 
-        <div className="divide-y divide-slate-200 dark:divide-white/10">
+        <div className="divide-accent border-border dark:border-border">
           {sessions.map((sess) => {
             const isCurrent = sess.id === currentSessionId;
             return (
               <div key={sess.id} className="py-2.5 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                    <span className="text-link font-semibold text-text dark:text-text truncate">
                       {sess.deviceName} · {sess.browser}
                     </span>
                     {isCurrent && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-success/15 text-success dark:text-success text-[10px] font-bold">
                         {t(language, 'currentDeviceBadge')}
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-zinc-400">
+                  <div className="text-link text-text-muted dark:text-text-muted">
                     {sess.platform}
                   </div>
                 </div>
@@ -382,7 +382,7 @@ export function PrivacySafetySection() {
                         });
                       }
                     }}
-                    className="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-semibold transition-colors"
+                    className="px-2.5 py-1 rounded-lg bg-danger/10 text-danger dark:text-danger hover:bg-danger hover:text-text text-link font-semibold transition-colors"
                   >
                     {t(language, 'signOutDevice')}
                   </button>
@@ -437,39 +437,39 @@ export function KeybindsSection() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Keyboard className="w-5 h-5 text-nexus" />
+          <h2 className="text-link font-bold text-text dark:text-text flex items-center gap-2">
+            <Keyboard className="w-5 h-5 text-link" />
             <span>{t(language, 'keybindsTitle')}</span>
           </h2>
-          <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+          <p className="text-link text-text-muted dark:text-text-muted mt-1">
             {t(language, 'keybindsSubtitle')}
           </p>
         </div>
         <button
           type="button"
           onClick={() => void updateSetting({ shortcuts: { ...DEFAULT_SHORTCUTS } })}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-semibold"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border dark:border-border hover:bg-main dark:hover:bg-main text-link font-semibold"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>{t(language, 'resetShortcuts')}</span>
         </button>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] divide-y divide-slate-200 dark:divide-white/10">
+      <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated divide-accent border-border dark:border-border">
         {actions.map((act) => {
           const isRec = recordingAction === act.id;
           return (
             <div key={act.id} className="p-4 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium text-slate-900 dark:text-white">
+              <span className="text-link font-medium text-text dark:text-text">
                 {act.label}
               </span>
               <button
                 type="button"
                 onClick={() => setRecordingAction(act.id)}
-                className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-semibold transition-colors ${
+                className={`px-3 py-1.5 rounded-lg border text-link font-mono font-semibold transition-colors ${
                   isRec
-                    ? 'border-rose-500 bg-rose-500/15 text-rose-500 animate-pulse'
-                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] hover:border-nexus'
+                    ? 'border-danger bg-danger/15 text-danger animate-pulse'
+                    : 'border-border dark:border-border bg-elevated dark:bg-elevated hover:border-accent'
                 }`}
               >
                 {isRec ? t(language, 'pressShortcutNow') : settings.shortcuts[act.id]}
@@ -478,15 +478,15 @@ export function KeybindsSection() {
           );
         })}
 
-        <div className="p-4 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-zinc-400">
+        <div className="p-4 flex items-center justify-between gap-3 text-link text-text-muted dark:text-text-muted">
           <span>{t(language, 'shortcutNewlineChat')}</span>
-          <kbd className="px-2 py-1 rounded bg-slate-100 dark:bg-[#1E1F22] font-mono">
+          <kbd className="px-2 py-1 rounded bg-main dark:bg-main font-mono">
             Shift + Enter
           </kbd>
         </div>
-        <div className="p-4 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-zinc-400">
+        <div className="p-4 flex items-center justify-between gap-3 text-link text-text-muted dark:text-text-muted">
           <span>{t(language, 'shortcutClosePanels')}</span>
-          <kbd className="px-2 py-1 rounded bg-slate-100 dark:bg-[#1E1F22] font-mono">Esc</kbd>
+          <kbd className="px-2 py-1 rounded bg-main dark:bg-main font-mono">Esc</kbd>
         </div>
       </div>
     </div>
@@ -510,7 +510,7 @@ export function MyDataSection() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `nexuschat-data-${firebaseUser.uid.slice(0, 6)}.json`;
+      a.download = `majlischat-data-${firebaseUser.uid.slice(0, 6)}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -530,21 +530,21 @@ export function MyDataSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Database className="w-5 h-5 text-nexus" />
+        <h2 className="text-link font-bold text-text dark:text-text flex items-center gap-2">
+          <Database className="w-5 h-5 text-link" />
           <span>{t(language, 'myDataTitle')}</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'myDataSubtitle')}
         </p>
       </div>
 
-      <div className="p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] flex flex-wrap items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-bold text-slate-900 dark:text-white">
+          <div className="text-link font-bold text-text dark:text-text">
             {t(language, 'downloadMyData')}
           </div>
-          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+          <p className="text-link text-text-muted dark:text-text-muted mt-0.5">
             {t(language, 'downloadMyDataDesc')}
           </p>
         </div>
@@ -552,7 +552,7 @@ export function MyDataSection() {
           type="button"
           disabled={exporting}
           onClick={() => void handleExport()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold shrink-0"
         >
           {exporting ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -563,20 +563,20 @@ export function MyDataSection() {
         </button>
       </div>
 
-      <div className="p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
+      <div className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-slate-900 dark:text-white">
+            <div className="text-link font-bold text-text dark:text-text">
               {t(language, 'clearCacheTitle')}
             </div>
-            <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-link text-text-muted dark:text-text-muted mt-0.5">
               {t(language, 'clearCacheDesc')}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setConfirmClear((v) => !v)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-danger text-danger dark:text-danger hover:bg-danger hover:text-text text-link font-semibold transition-colors"
           >
             <Trash2 className="w-4 h-4" />
             <span>{t(language, 'clearCacheButton')}</span>
@@ -584,22 +584,22 @@ export function MyDataSection() {
         </div>
 
         {confirmClear && (
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="font-medium text-amber-800 dark:text-amber-200">
+          <div className="p-3 rounded-xl bg-warning/10 border border-warning flex flex-wrap items-center justify-between gap-2 text-link">
+            <span className="font-medium text-warning dark:text-warning">
               {t(language, 'clearCacheConfirmText')}
             </span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => clearAppLocalCacheAndReload()}
-                className="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-semibold"
+                className="px-3 py-1.5 rounded-lg bg-danger text-text font-semibold"
               >
                 {t(language, 'confirmClearAndReload')}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmClear(false)}
-                className="px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-zinc-300"
+                className="px-2.5 py-1.5 rounded-lg text-text dark:text-text"
               >
                 {t(language, 'cancel')}
               </button>
@@ -644,37 +644,37 @@ export function AboutSection() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Info className="w-5 h-5 text-nexus" />
+        <h2 className="text-link font-bold text-text dark:text-text flex items-center gap-2">
+          <Info className="w-5 h-5 text-link" />
           <span>{t(language, 'aboutAppTitle')}</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'aboutAppSubtitle')}
         </p>
       </div>
 
       {/* Version Card */}
-      <div className="p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] flex items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated flex items-center justify-between gap-4">
         <div>
-          <div className="text-base font-bold text-slate-900 dark:text-white">
+          <div className="text-link font-bold text-text dark:text-text">
             {t(language, 'appName')}
           </div>
-          <div className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+          <div className="text-link text-text-muted dark:text-text-muted mt-0.5">
             {t(language, 'buildVersionLabel')} v{APP_VERSION}
           </div>
         </div>
-        <span className="px-3 py-1 rounded-full bg-nexus/15 text-nexus text-xs font-bold font-mono">
+        <span className="px-3 py-1 rounded-full bg-accent/15 text-link text-link font-bold font-mono">
           v{APP_VERSION}
         </span>
       </div>
 
       {/* What's New Changelog */}
-      <div className="p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-        <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-          <Sparkles className="w-4 h-4 text-nexus" />
+      <div className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+        <div className="flex items-center gap-2 text-link font-bold text-text dark:text-text">
+          <Sparkles className="w-4 h-4 text-link" />
           <span>{t(language, 'whatsNewTitle')}</span>
         </div>
-        <ul className="space-y-2 text-xs text-slate-600 dark:text-zinc-300 list-disc ps-5">
+        <ul className="space-y-2 text-link text-text dark:text-text list-disc ps-5">
           <li>{t(language, 'changelogItem1')}</li>
           <li>{t(language, 'changelogItem2')}</li>
           <li>{t(language, 'changelogItem3')}</li>
@@ -685,15 +685,15 @@ export function AboutSection() {
       {/* Report a Problem */}
       <form
         onSubmit={handleSubmitReport}
-        className="p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-4"
+        className="p-5 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-4"
       >
-        <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-          <Bug className="w-4 h-4 text-nexus" />
+        <div className="flex items-center gap-2 text-link font-bold text-text dark:text-text">
+          <Bug className="w-4 h-4 text-link" />
           <span>{t(language, 'reportProblemTitle')}</span>
         </div>
 
         {submitted && (
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-success/10 border border-success text-link text-success dark:text-success flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>{t(language, 'reportSubmittedToast')}</span>
           </div>
@@ -701,11 +701,11 @@ export function AboutSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">{t(language, 'reportCategory')}</label>
+            <label className="block text-link font-semibold mb-1">{t(language, 'reportCategory')}</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
             >
               <option value="bug">{t(language, 'reportCatBug')}</option>
               <option value="voice">{t(language, 'reportCatVoice')}</option>
@@ -714,7 +714,7 @@ export function AboutSection() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold mb-1">{t(language, 'reportSubject')}</label>
+            <label className="block text-link font-semibold mb-1">{t(language, 'reportSubject')}</label>
             <input
               type="text"
               required
@@ -723,13 +723,13 @@ export function AboutSection() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder={t(language, 'reportSubjectPlaceholder')}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold mb-1">{t(language, 'reportDescription')}</label>
+          <label className="block text-link font-semibold mb-1">{t(language, 'reportDescription')}</label>
           <textarea
             rows={4}
             required
@@ -738,14 +738,14 @@ export function AboutSection() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t(language, 'reportDescriptionPlaceholder')}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+            className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
           />
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold"
         >
           {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           <span>{t(language, 'submitReport')}</span>

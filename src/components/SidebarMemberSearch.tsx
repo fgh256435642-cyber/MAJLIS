@@ -13,10 +13,10 @@ import { t } from '../i18n/translations';
 import {
   findUserByUsername,
   searchDiscoverableUsers,
-} from '../services/nexusService';
-import type { PublicUser, Role, ServerMember } from '../types/nexus';
+} from '../services/majlisService';
+import type { PublicUser, Role, ServerMember } from '../types/majlis';
 import { getEffectiveUserStatus, getRoleColorClass } from '../utils/validation';
-import { UserAvatar } from './NexusLogo';
+import { UserAvatar } from './MajlisLogo';
 
 interface SidebarMemberSearchProps {
   myUid: string;
@@ -164,7 +164,7 @@ export function SidebarMemberSearch({
     <div className="relative shrink-0">
       <div className="flex items-center gap-1.5">
         <div className="relative flex-1 min-w-0">
-          <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-text-muted dark:text-text-muted absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={queryText}
@@ -180,15 +180,15 @@ export function SidebarMemberSearch({
             className={`w-full ps-8 ${
               queryText ? 'pe-7' : 'pe-2.5'
             } ${
-              compact ? 'py-1.5 text-xs' : 'py-1.5 text-xs'
-            } rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] text-slate-900 dark:text-[#F2F3F5] placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-nexus transition-colors`}
+              compact ? 'py-1.5 text-link' : 'py-1.5 text-link'
+            } rounded-md border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text placeholder:text-text-muted dark:placeholder:text-text-muted focus:outline-accent focus:ring-2 focus:ring-accent transition-colors`}
           />
           {queryText && (
             <button
               type="button"
               onClick={() => setQueryText('')}
               aria-label={t(language, 'clearSearch')}
-              className="absolute end-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="absolute end-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text dark:hover:text-text transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -198,21 +198,21 @@ export function SidebarMemberSearch({
       </div>
 
       {hasQuery && (
-        <div className="mt-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] shadow-xl max-h-72 overflow-y-auto p-1.5 space-y-2 z-30">
+        <div className="mt-1.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated shadow-xl max-h-72 overflow-y-auto p-1.5 space-y-2 z-30">
           {searchingRemote && totalResults === 0 ? (
-            <div className="flex items-center justify-center gap-2 py-4 text-xs text-slate-500 dark:text-zinc-400">
+            <div className="flex items-center justify-center gap-2 py-4 text-link text-text-muted dark:text-text-muted">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               <span>{t(language, 'searchMembers')}...</span>
             </div>
           ) : totalResults === 0 ? (
-            <div className="py-4 px-2 text-center space-y-1.5">
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
+            <div className="py-4 px-2 text-link space-y-1.5">
+              <p className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'noMatchingMembers')}
               </p>
               <button
                 type="button"
                 onClick={() => setQueryText('')}
-                className="text-[11px] font-medium text-nexus hover:underline"
+                className="text-[11px] font-medium text-link hover:underline"
               >
                 {t(language, 'clearSearch')}
               </button>
@@ -221,7 +221,7 @@ export function SidebarMemberSearch({
             <>
               {matchingServerMembers.length > 0 && (
                 <div className="space-y-0.5">
-                  <div className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 tabular-nums">
+                  <div className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted tabular-nums">
                     {t(language, 'serverMembers')} · {matchingServerMembers.length}
                   </div>
                   {matchingServerMembers.map((m) => {
@@ -241,13 +241,13 @@ export function SidebarMemberSearch({
                     return (
                       <div
                         key={m.uid}
-                        className="group flex items-center justify-between gap-1.5 px-2 py-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#2B2D31] transition-colors"
+                        className="group flex items-center justify-between gap-1.5 px-2 py-1.5 rounded-md hover:bg-main dark:hover:bg-main transition-colors"
                       >
                         <button
                           type="button"
                           disabled={isSelf}
                           onClick={() => handleSelectUser(m.uid)}
-                          className="flex items-center gap-2 min-w-0 flex-1 text-start disabled:cursor-default"
+                          className="flex items-center gap-2 min-w-0 flex-1 text-link disabled:cursor-default"
                         >
                           <UserAvatar
                             src={avatarUrl}
@@ -259,20 +259,20 @@ export function SidebarMemberSearch({
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1">
                               <span
-                                className={`text-xs font-medium truncate ${getRoleColorClass(
+                                className={`text-link font-medium truncate ${getRoleColorClass(
                                   m.role
                                 )}`}
                               >
                                 {displayName}
                               </span>
                               {m.role === 'owner' && (
-                                <Crown className="w-3 h-3 text-amber-500 shrink-0" />
+                                <Crown className="w-3 h-3 text-warning shrink-0" />
                               )}
                               {(m.role === 'admin' || m.role === 'moderator') && (
-                                <Shield className="w-3 h-3 text-emerald-500 shrink-0" />
+                                <Shield className="w-3 h-3 text-success shrink-0" />
                               )}
                             </div>
-                            <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                            <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
                               @{username}
                             </div>
                           </div>
@@ -284,7 +284,7 @@ export function SidebarMemberSearch({
                               type="button"
                               onClick={() => handleSelectUser(m.uid)}
                               title={t(language, 'messageUser')}
-                              className="p-1 rounded text-slate-500 dark:text-zinc-400 hover:text-nexus hover:bg-slate-200/70 dark:hover:bg-white/10 transition-colors"
+                              className="p-1 rounded text-text-muted dark:text-text-muted hover:text-link hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors"
                             >
                               <MessageSquare className="w-3.5 h-3.5" />
                             </button>
@@ -297,7 +297,7 @@ export function SidebarMemberSearch({
                                   onAfterSelect?.();
                                 }}
                                 title={t(language, 'addFriend')}
-                                className="p-1 rounded text-slate-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-200/70 dark:hover:bg-white/10 transition-colors"
+                                className="p-1 rounded text-text-muted dark:text-text-muted hover:text-success dark:hover:text-success hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors"
                               >
                                 <UserPlus className="w-3.5 h-3.5" />
                               </button>
@@ -312,7 +312,7 @@ export function SidebarMemberSearch({
 
               {matchingOtherUsers.length > 0 && (
                 <div className="space-y-0.5">
-                  <div className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 tabular-nums">
+                  <div className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted tabular-nums">
                     {t(language, 'workspaceUsers')} · {matchingOtherUsers.length}
                   </div>
                   {matchingOtherUsers.slice(0, 12).map((u) => {
@@ -325,12 +325,12 @@ export function SidebarMemberSearch({
                     return (
                       <div
                         key={u.uid}
-                        className="group flex items-center justify-between gap-1.5 px-2 py-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#2B2D31] transition-colors"
+                        className="group flex items-center justify-between gap-1.5 px-2 py-1.5 rounded-md hover:bg-main dark:hover:bg-main transition-colors"
                       >
                         <button
                           type="button"
                           onClick={() => handleSelectUser(u.uid)}
-                          className="flex items-center gap-2 min-w-0 flex-1 text-start"
+                          className="flex items-center gap-2 min-w-0 flex-1 text-link"
                         >
                           <UserAvatar
                             src={u.avatarUrl}
@@ -340,10 +340,10 @@ export function SidebarMemberSearch({
                             showStatus
                           />
                           <div className="min-w-0 flex-1">
-                            <div className="text-xs font-medium text-slate-900 dark:text-[#F2F3F5] truncate">
+                            <div className="text-link font-medium text-text dark:text-text truncate">
                               {u.displayName}
                             </div>
-                            <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                            <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
                               @{u.username}
                             </div>
                           </div>
@@ -354,7 +354,7 @@ export function SidebarMemberSearch({
                             type="button"
                             onClick={() => handleSelectUser(u.uid)}
                             title={t(language, 'messageUser')}
-                            className="p-1 rounded text-slate-500 dark:text-zinc-400 hover:text-nexus hover:bg-slate-200/70 dark:hover:bg-white/10 transition-colors"
+                            className="p-1 rounded text-text-muted dark:text-text-muted hover:text-link hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors"
                           >
                             <MessageSquare className="w-3.5 h-3.5" />
                           </button>
@@ -367,7 +367,7 @@ export function SidebarMemberSearch({
                                 onAfterSelect?.();
                               }}
                               title={t(language, 'addFriend')}
-                              className="p-1 rounded text-slate-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-200/70 dark:hover:bg-white/10 transition-colors"
+                              className="p-1 rounded text-text-muted dark:text-text-muted hover:text-success dark:hover:text-success hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors"
                             >
                               <UserPlus className="w-3.5 h-3.5" />
                             </button>

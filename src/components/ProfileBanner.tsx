@@ -25,7 +25,7 @@ export function ProfileBanner({
   return (
     <div
       ref={boxRef}
-      className={`w-full overflow-hidden bg-nexus relative shrink-0 ${className}`}
+      className={`w-full overflow-hidden bg-accent relative shrink-0 ${className}`}
     >
       {bannerUrl && (
         <img

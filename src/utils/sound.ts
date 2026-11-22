@@ -1,4 +1,4 @@
-import type { NotificationSoundId } from '../types/nexus';
+import type { NotificationSoundId } from '../types/majlis';
 
 let audioCtx: AudioContext | null = null;
 

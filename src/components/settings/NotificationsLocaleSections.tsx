@@ -16,7 +16,7 @@ import type {
   NotificationMode,
   NotificationSoundId,
   TimeFormatMode,
-} from '../../types/nexus';
+} from '../../types/majlis';
 import { formatMessageTimestamp, getCommonTimezones } from '../../utils/dateFormat';
 import { playChime } from '../../utils/sound';
 
@@ -60,27 +60,27 @@ export function NotificationsSection({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <h2 className="text-link font-bold text-text dark:text-text">
           {t(language, 'notifications')}
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'notificationsSubtitle')}
         </p>
       </div>
 
       {/* Browser Permission Card */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0 flex-1 space-y-0.5">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white">
+          <div className="text-link font-semibold text-text dark:text-text">
             {t(language, 'desktopNotifications')}
           </div>
           <p
-            className={`text-xs ${
+            className={`text-link ${
               notifPermission === 'granted'
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-success dark:text-success'
                 : notifPermission === 'denied' || notifPermission === 'unsupported'
-                ? 'text-rose-600 dark:text-rose-400'
-                : 'text-slate-500 dark:text-zinc-400'
+                ? 'text-danger dark:text-danger'
+                : 'text-text-muted dark:text-text-muted'
             }`}
           >
             {notifPermission === 'granted'
@@ -121,7 +121,7 @@ export function NotificationsSection({
                 });
               }
             }}
-            className="px-3.5 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold transition-colors shrink-0"
+            className="px-3.5 py-2 rounded-lg bg-accent hover:bg-majlis-hover text-text text-link font-semibold transition-colors shrink-0"
           >
             {t(language, 'enableBrowserNotifications')}
           </button>
@@ -135,7 +135,7 @@ export function NotificationsSection({
                 title: t(language, 'testNotificationTitle'),
                 body: t(language, 'testNotificationBody'),
                 icon: publicUser?.avatarUrl || undefined,
-                tag: 'nexus-test-notif',
+                tag: 'majlis-test-notif',
               });
               if (!shown) {
                 pushToast({
@@ -147,7 +147,7 @@ export function NotificationsSection({
                 });
               }
             }}
-            className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-semibold transition-colors shrink-0"
+            className="px-3.5 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated hover:bg-main dark:hover:bg-main text-link font-semibold transition-colors shrink-0"
           >
             {t(language, 'testNotification')}
           </button>
@@ -155,9 +155,9 @@ export function NotificationsSection({
       </div>
 
       {/* Notification Mode */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 flex items-center gap-1.5">
-          <Bell className="w-3.5 h-3.5 text-nexus" />
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+        <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted flex items-center gap-1.5">
+          <Bell className="w-3.5 h-3.5 text-link" />
           <span>{t(language, 'notificationModeLabel')}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -172,10 +172,10 @@ export function NotificationsSection({
               key={id}
               type="button"
               onClick={() => void handleModeChange(id)}
-              className={`p-3 rounded-xl border text-xs font-semibold text-start transition-colors ${
+              className={`p-3 rounded-xl border text-link font-semibold text-link transition-colors ${
                 settings.notificationMode === id
-                  ? 'border-nexus bg-nexus/10 text-slate-950 dark:text-white'
-                  : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                  ? 'border-accent bg-accent/10 text-text dark:text-text'
+                  : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
               }`}
             >
               {label}
@@ -185,15 +185,15 @@ export function NotificationsSection({
       </div>
 
       {/* Notification Sound & Volume */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-4">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-4">
         <label className="flex items-center justify-between gap-4 cursor-pointer">
           <div className="flex items-center gap-2.5">
-            <Volume2 className="w-4 h-4 text-nexus" />
+            <Volume2 className="w-4 h-4 text-link" />
             <div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="text-link font-semibold text-text dark:text-text">
                 {t(language, 'soundEffects')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'soundEffectsDesc')}
               </div>
             </div>
@@ -204,12 +204,12 @@ export function NotificationsSection({
             onChange={(e) => {
               void updateSetting({ soundEnabled: e.target.checked });
             }}
-            className="w-4 h-4 accent-nexus"
+            className="w-4 h-4 accent-accent"
           />
         </label>
 
-        <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
-          <div className="text-xs font-semibold text-slate-600 dark:text-zinc-300">
+        <div className="space-y-2 pt-2 border-accent border-border dark:border-border">
+          <div className="text-link font-semibold text-text dark:text-text">
             {t(language, 'notificationSoundPreset')}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -226,10 +226,10 @@ export function NotificationsSection({
                     });
                   }
                 }}
-                className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${
+                className={`px-3 py-1.5 rounded-lg border text-link font-semibold transition-colors ${
                   settings.notificationSound === preset.id
-                    ? 'border-nexus bg-nexus text-white'
-                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] hover:bg-slate-100 dark:hover:bg-white/10'
+                    ? 'border-accent bg-accent text-text'
+                    : 'border-border dark:border-border bg-elevated dark:bg-elevated hover:bg-main dark:hover:bg-main'
                 }`}
               >
                 {t(language, preset.labelKey)}
@@ -239,11 +239,11 @@ export function NotificationsSection({
         </div>
 
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-slate-600 dark:text-zinc-300">
+          <div className="flex items-center justify-between text-link">
+            <span className="font-semibold text-text dark:text-text">
               {t(language, 'notificationVolume')}
             </span>
-            <span className="font-mono font-semibold text-nexus tabular-nums">
+            <span className="font-mono font-semibold text-link tabular-nums">
               {settings.notificationVolume}%
             </span>
           </div>
@@ -257,7 +257,7 @@ export function NotificationsSection({
               onChange={(e) =>
                 void updateSetting({ notificationVolume: Number(e.target.value) }, { silent: true })
               }
-              className="flex-1 accent-nexus"
+              className="flex-1 accent-accent"
             />
             <button
               type="button"
@@ -267,7 +267,7 @@ export function NotificationsSection({
                   volume: settings.notificationVolume,
                 })
               }
-              className="px-3 py-1 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-white/10"
+              className="px-3 py-1 rounded-lg border border-border dark:border-border text-link font-semibold hover:bg-main dark:hover:bg-main"
             >
               {t(language, 'previewSound')}
             </button>
@@ -276,15 +276,15 @@ export function NotificationsSection({
       </div>
 
       {/* Scheduled Do Not Disturb */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-4">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-4">
         <label className="flex items-center justify-between gap-4 cursor-pointer">
           <div className="flex items-center gap-2.5">
-            <Moon className="w-4 h-4 text-nexus" />
+            <Moon className="w-4 h-4 text-link" />
             <div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="text-link font-semibold text-text dark:text-text">
                 {t(language, 'scheduledDnd')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'scheduledDndDesc')}
               </div>
             </div>
@@ -293,18 +293,18 @@ export function NotificationsSection({
             type="checkbox"
             checked={settings.dndScheduleEnabled}
             onChange={(e) => void updateSetting({ dndScheduleEnabled: e.target.checked })}
-            className="w-4 h-4 accent-nexus"
+            className="w-4 h-4 accent-accent"
           />
         </label>
 
         {settings.dndScheduleEnabled && (
-          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-white/10">
+          <div className="grid grid-cols-2 gap-3 pt-2 border-accent border-border dark:border-border">
             <div>
-              <label className="block text-xs font-semibold mb-1">{t(language, 'dndFrom')}</label>
+              <label className="block text-link font-semibold mb-1">{t(language, 'dndFrom')}</label>
               <select
                 value={settings.dndStartHour}
                 onChange={(e) => void updateSetting({ dndStartHour: Number(e.target.value) })}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
               >
                 {Array.from({ length: 24 }, (_, h) => (
                   <option key={h} value={h}>
@@ -314,11 +314,11 @@ export function NotificationsSection({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-1">{t(language, 'dndTo')}</label>
+              <label className="block text-link font-semibold mb-1">{t(language, 'dndTo')}</label>
               <select
                 value={settings.dndEndHour}
                 onChange={(e) => void updateSetting({ dndEndHour: Number(e.target.value) })}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
               >
                 {Array.from({ length: 24 }, (_, h) => (
                   <option key={h} value={h}>
@@ -332,16 +332,16 @@ export function NotificationsSection({
       </div>
 
       {/* Per-Server Notification Overrides */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+        <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
           {t(language, 'perServerNotifications')}
         </div>
         {joinedServers.length === 0 ? (
-          <p className="text-xs text-slate-500 dark:text-zinc-400">
+          <p className="text-link text-text-muted dark:text-text-muted">
             {t(language, 'noServersJoinedYet')}
           </p>
         ) : (
-          <div className="divide-y divide-slate-200 dark:divide-white/10">
+          <div className="divide-accent border-border dark:border-border">
             {joinedServers.map((srv) => {
               const mode = getServerNotificationMode(srv.serverId);
               const muted = isServerMuted(srv.serverId);
@@ -351,11 +351,11 @@ export function NotificationsSection({
                   className="py-2.5 flex flex-wrap items-center justify-between gap-2"
                 >
                   <div className="min-w-0 flex items-center gap-2">
-                    <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                    <span className="text-link font-medium text-text dark:text-text truncate">
                       {srv.serverName}
                     </span>
                     {muted && (
-                      <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-warning/15 text-warning dark:text-warning text-[10px] font-bold">
                         {t(language, 'mutedBadge')}
                       </span>
                     )}
@@ -369,7 +369,7 @@ export function NotificationsSection({
                           e.target.value as NotificationMode
                         )
                       }
-                      className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs"
+                      className="px-2.5 py-1 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                     >
                       <option value="all">{t(language, 'notifModeAllShort')}</option>
                       <option value="mentions">{t(language, 'notifModeMentionsShort')}</option>
@@ -379,7 +379,7 @@ export function NotificationsSection({
                       <button
                         type="button"
                         onClick={() => void muteServer(srv.serverId, 'unmute')}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 text-xs font-semibold"
+                        className="px-2.5 py-1 rounded-lg bg-success/15 text-success dark:text-success text-link font-semibold"
                       >
                         {t(language, 'unmuteServer')}
                       </button>
@@ -392,7 +392,7 @@ export function NotificationsSection({
                           if (v === '8h') void muteServer(srv.serverId, 28_800_000);
                           if (v === 'forever') void muteServer(srv.serverId, 'forever');
                         }}
-                        className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs"
+                        className="px-2.5 py-1 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                       >
                         <option value="">{t(language, 'muteLabel')}</option>
                         <option value="1h">{t(language, 'mute1h')}</option>
@@ -408,9 +408,9 @@ export function NotificationsSection({
         )}
 
         {mutedChannelIds.length > 0 && (
-          <div className="pt-3 border-t border-slate-200 dark:border-white/10 space-y-2">
-            <div className="text-xs font-semibold text-slate-500 dark:text-zinc-400 flex items-center gap-1.5">
-              <BellOff className="w-3.5 h-3.5 text-amber-500" />
+          <div className="pt-3 border-accent border-border dark:border-border space-y-2">
+            <div className="text-link font-semibold text-text-muted dark:text-text-muted flex items-center gap-1.5">
+              <BellOff className="w-3.5 h-3.5 text-warning" />
               <span>{t(language, 'mutedChannelsList')}</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -419,7 +419,7 @@ export function NotificationsSection({
                   key={chId}
                   type="button"
                   onClick={() => void muteChannel(chId, 'unmute')}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-medium hover:bg-amber-500/20"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-warning/10 text-warning dark:text-warning text-link font-medium hover:bg-warning/20"
                 >
                   <span>#{chId.slice(0, 8)}</span>
                   <span className="underline">{t(language, 'unmuteChannel')}</span>
@@ -449,63 +449,63 @@ export function LanguageTimeSection() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Globe className="w-5 h-5 text-nexus" />
+        <h2 className="text-link font-bold text-text dark:text-text flex items-center gap-2">
+          <Globe className="w-5 h-5 text-link" />
           <span>{t(language, 'languageAndTime')}</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'languageAndTimeSubtitle')}
         </p>
       </div>
 
       {/* Live Preview */}
-      <div className="p-4 rounded-2xl border border-nexus/30 bg-nexus/5 flex items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl border border-accent bg-accent/5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <Clock className="w-4 h-4 text-nexus shrink-0" />
-          <span className="text-xs font-semibold text-slate-600 dark:text-zinc-300">
+          <Clock className="w-4 h-4 text-link shrink-0" />
+          <span className="text-link font-semibold text-text dark:text-text">
             {t(language, 'timestampPreview')}
           </span>
         </div>
-        <span className="text-sm font-bold text-slate-900 dark:text-white tabular-nums">
+        <span className="text-link font-bold text-text dark:text-text tabular-nums">
           {liveSample}
         </span>
       </div>
 
       {/* Language Switch */}
       <div className="space-y-3">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+        <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
           {t(language, 'languageRtl')}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => void updateSetting({ language: 'ar' })}
-            className={`p-4 rounded-xl border text-start transition-colors ${
+            className={`p-4 rounded-xl border text-link transition-colors ${
               settings.language === 'ar'
-                ? 'border-nexus bg-nexus/10 text-slate-950 dark:text-white'
-                : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] hover:bg-slate-50 dark:hover:bg-white/5'
+                ? 'border-accent bg-accent/10 text-text dark:text-text'
+                : 'border-border dark:border-border bg-elevated dark:bg-elevated hover:bg-elevated dark:hover:bg-elevated'
             }`}
           >
-            <div className="text-sm font-semibold">{t(language, 'languageAr')}</div>
+            <div className="text-link font-semibold">{t(language, 'languageAr')}</div>
           </button>
           <button
             type="button"
             onClick={() => void updateSetting({ language: 'en' })}
-            className={`p-4 rounded-xl border text-start transition-colors ${
+            className={`p-4 rounded-xl border text-link transition-colors ${
               settings.language === 'en'
-                ? 'border-nexus bg-nexus/10 text-slate-950 dark:text-white'
-                : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] hover:bg-slate-50 dark:hover:bg-white/5'
+                ? 'border-accent bg-accent/10 text-text dark:text-text'
+                : 'border-border dark:border-border bg-elevated dark:bg-elevated hover:bg-elevated dark:hover:bg-elevated'
             }`}
           >
-            <div className="text-sm font-semibold">{t(language, 'languageEn')}</div>
+            <div className="text-link font-semibold">{t(language, 'languageEn')}</div>
           </button>
         </div>
       </div>
 
       {/* Time Format & Calendar */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+        <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+          <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
             {t(language, 'timeFormatLabel')}
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -519,10 +519,10 @@ export function LanguageTimeSection() {
                 key={id}
                 type="button"
                 onClick={() => void updateSetting({ timeFormat: id })}
-                className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-colors ${
+                className={`py-2 px-3 rounded-lg text-link font-semibold border transition-colors ${
                   settings.timeFormat === id
-                    ? 'border-nexus bg-nexus text-white'
-                    : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                    ? 'border-accent bg-accent text-text'
+                    : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
                 }`}
               >
                 {label}
@@ -531,8 +531,8 @@ export function LanguageTimeSection() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+        <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+          <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
             {t(language, 'calendarSystemLabel')}
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -546,10 +546,10 @@ export function LanguageTimeSection() {
                 key={id}
                 type="button"
                 onClick={() => void updateSetting({ calendar: id })}
-                className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-colors ${
+                className={`py-2 px-3 rounded-lg text-link font-semibold border transition-colors ${
                   settings.calendar === id
-                    ? 'border-nexus bg-nexus text-white'
-                    : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                    ? 'border-accent bg-accent text-text'
+                    : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
                 }`}
               >
                 {label}
@@ -560,14 +560,14 @@ export function LanguageTimeSection() {
       </div>
 
       {/* Timezone */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-2">
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-2">
+        <label className="block text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
           {t(language, 'timezoneLabel')}
         </label>
         <select
           value={settings.timezone}
           onChange={(e) => void updateSetting({ timezone: e.target.value })}
-          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+          className="w-full px-3 py-2.5 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
         >
           {!timezones.includes(settings.timezone) && (
             <option value={settings.timezone}>{settings.timezone}</option>

@@ -1,4 +1,4 @@
-# Nexus Security Specification (Phase 0 TDD)
+# Majlis Security Specification (Phase 0 TDD)
 
 ## 1. Data Invariants
 1. **PII Isolation**: User emails and private settings in `/users/{userId}` can ONLY be read and written by `request.auth.uid == userId`. Public profiles in `/publicUsers/{userId}` contain zero PII.

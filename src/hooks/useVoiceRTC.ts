@@ -18,7 +18,7 @@ import type {
   PublicUser,
   VoiceParticipant,
   VoiceSignal,
-} from '../types/nexus';
+} from '../types/majlis';
 import { playChime } from '../utils/sound';
 import { matchesShortcutEvent } from '../utils/validation';
 

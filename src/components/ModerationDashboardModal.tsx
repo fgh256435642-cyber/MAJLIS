@@ -4,8 +4,8 @@ import { collection, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase
 import { db } from '../services/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { t } from '../i18n/translations';
-import type { AuditLog, Server, ServerBan, ServerMember } from '../types/nexus';
-import { UserAvatar } from './NexusLogo';
+import type { AuditLog, Server, ServerBan, ServerMember } from '../types/majlis';
+import { UserAvatar } from './MajlisLogo';
 
 interface ModerationDashboardModalProps {
   server: Server;
@@ -62,23 +62,23 @@ export function ModerationDashboardModal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-rail/75 flex items-center justify-center p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl bg-white dark:bg-[#313338] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-slate-200 dark:border-white/10"
+        className="w-full max-w-3xl bg-elevated dark:bg-elevated rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-border dark:border-border"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-[#2B2D31]">
+        <div className="px-6 py-4 border-accent border-border dark:border-border flex items-center justify-between bg-elevated dark:bg-elevated">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-nexus/15 text-nexus flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-accent/15 text-link flex items-center justify-center">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h2 className="text-link font-bold text-text dark:text-text">
                 {t(language, 'moderationDashboard')}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
+              <p className="text-link text-text-muted dark:text-text-muted">
                 {server.name} — {t(language, 'moderationPanel')}
               </p>
             </div>
@@ -86,21 +86,21 @@ export function ModerationDashboardModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white"
+            className="p-2 rounded-lg text-text-muted hover:text-text dark:hover:text-text"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-2 px-6 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-[#2B2D31]/50">
+        <div className="flex items-center gap-2 px-6 py-3 border-accent border-border dark:border-border bg-elevated/50 dark:bg-elevated/50">
           <button
             type="button"
             onClick={() => setTab('audit')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+            className={`px-4 py-2 rounded-lg text-link font-semibold transition-colors ${
               tab === 'audit'
-                ? 'bg-nexus text-white'
-                : 'bg-slate-200 dark:bg-[#1E1F22] text-slate-700 dark:text-zinc-300 hover:bg-slate-300 dark:hover:bg-[#35373C]'
+                ? 'bg-accent text-text'
+                : 'bg-hover dark:bg-hover text-text dark:text-text hover:bg-hover dark:hover:bg-hover'
             }`}
           >
             {t(language, 'auditLogs')} ({auditLogs.length})
@@ -108,10 +108,10 @@ export function ModerationDashboardModal({
           <button
             type="button"
             onClick={() => setTab('members')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+            className={`px-4 py-2 rounded-lg text-link font-semibold transition-colors ${
               tab === 'members'
-                ? 'bg-nexus text-white'
-                : 'bg-slate-200 dark:bg-[#1E1F22] text-slate-700 dark:text-zinc-300 hover:bg-slate-300 dark:hover:bg-[#35373C]'
+                ? 'bg-accent text-text'
+                : 'bg-hover dark:bg-hover text-text dark:text-text hover:bg-hover dark:hover:bg-hover'
             }`}
           >
             {t(language, 'members')} ({members.length})
@@ -119,10 +119,10 @@ export function ModerationDashboardModal({
           <button
             type="button"
             onClick={() => setTab('bans')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+            className={`px-4 py-2 rounded-lg text-link font-semibold transition-colors ${
               tab === 'bans'
-                ? 'bg-nexus text-white'
-                : 'bg-slate-200 dark:bg-[#1E1F22] text-slate-700 dark:text-zinc-300 hover:bg-slate-300 dark:hover:bg-[#35373C]'
+                ? 'bg-accent text-text'
+                : 'bg-hover dark:bg-hover text-text dark:text-text hover:bg-hover dark:hover:bg-hover'
             }`}
           >
             {t(language, 'bans')} ({bans.length})
@@ -134,34 +134,34 @@ export function ModerationDashboardModal({
           {tab === 'audit' && (
             <div className="space-y-3">
               {auditLogs.length === 0 ? (
-                <div className="py-12 text-center text-sm text-slate-500 dark:text-zinc-400">
+                <div className="py-12 text-link text-link text-text-muted dark:text-text-muted">
                   {t(language, 'noAuditLogs')}
                 </div>
               ) : (
                 auditLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="flex items-start justify-between p-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] text-xs"
+                    className="flex items-start justify-between p-3.5 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 dark:text-white">
+                        <span className="font-bold text-text dark:text-text">
                           {log.actorName}
                         </span>
-                        <span className="px-2 py-0.5 rounded bg-nexus/15 text-nexus font-semibold">
+                        <span className="px-2 py-0.5 rounded bg-accent/15 text-link font-semibold">
                           {log.action}
                         </span>
                         {log.targetName && (
-                          <span className="text-slate-600 dark:text-zinc-300">
+                          <span className="text-text dark:text-text">
                             → {log.targetName}
                           </span>
                         )}
                       </div>
                       {log.details && (
-                        <p className="text-slate-600 dark:text-zinc-400">{log.details}</p>
+                        <p className="text-text dark:text-text">{log.details}</p>
                       )}
                     </div>
-                    <span className="text-[10px] text-slate-400 dark:text-zinc-500 tabular-nums shrink-0">
+                    <span className="text-[10px] text-text-muted dark:text-text-muted tabular-nums shrink-0">
                       {formatTimestamp(log.createdAt)}
                     </span>
                   </div>
@@ -175,15 +175,15 @@ export function ModerationDashboardModal({
               {members.map((m) => (
                 <div
                   key={m.uid}
-                  className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31]"
+                  className="flex items-center justify-between p-3 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated"
                 >
                   <div className="flex items-center gap-3">
                     <UserAvatar src={m.avatarUrl} name={m.displayName} size="md" />
                     <div>
-                      <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                      <div className="text-link font-semibold text-text dark:text-text">
                         {m.displayName}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-zinc-400">
+                      <div className="text-link text-text-muted dark:text-text-muted">
                         @{m.username} · <span className="uppercase">{m.role}</span>
                       </div>
                     </div>
@@ -193,14 +193,14 @@ export function ModerationDashboardModal({
                       <button
                         type="button"
                         onClick={() => onKick(m.uid)}
-                        className="px-3 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold hover:bg-amber-500/20 transition-colors"
+                        className="px-3 py-1.5 rounded-lg border border-warning bg-warning/10 text-warning dark:text-warning text-link font-semibold hover:bg-warning/20 transition-colors"
                       >
                         {t(language, 'kick')}
                       </button>
                       <button
                         type="button"
                         onClick={() => onBan(m.uid)}
-                        className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-semibold hover:bg-rose-500/20 transition-colors"
+                        className="px-3 py-1.5 rounded-lg border border-danger bg-danger/10 text-danger dark:text-danger text-link font-semibold hover:bg-danger/20 transition-colors"
                       >
                         {t(language, 'ban')}
                       </button>
@@ -214,27 +214,27 @@ export function ModerationDashboardModal({
           {tab === 'bans' && (
             <div className="space-y-2">
               {bans.length === 0 ? (
-                <div className="py-12 text-center text-sm text-slate-500 dark:text-zinc-400">
+                <div className="py-12 text-link text-link text-text-muted dark:text-text-muted">
                   No banned users in this server.
                 </div>
               ) : (
                 bans.map((b) => (
                   <div
                     key={b.uid}
-                    className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31]"
+                    className="flex items-center justify-between p-3 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated"
                   >
                     <div>
-                      <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                      <div className="text-link font-semibold text-text dark:text-text">
                         User ID: {b.uid}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-zinc-400">
+                      <div className="text-link text-text-muted dark:text-text-muted">
                         {b.reason || 'Banned by moderator'}
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => onUnban(b.uid)}
-                      className="px-3 py-1.5 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-accent hover:bg-majlis-hover text-text text-link font-semibold transition-colors"
                     >
                       {t(language, 'unban')}
                     </button>

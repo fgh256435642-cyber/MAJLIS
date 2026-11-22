@@ -7,23 +7,20 @@ import {
   ensureUserProfile,
   pingUserPresence,
   updateUserSettings,
-  resolveThemeMode,
-} from '../services/nexusService';
+} from '../services/majlisService';
 import type {
-  AccentColor,
+  AppearanceMode,
   Language,
   PublicUser,
   SelectableUserStatus,
   ThemeMode,
   UserPrivate,
   UserStatus,
-} from '../types/nexus';
+} from '../types/majlis';
+import { normalizeAppearanceMode, normalizeThemeMode } from '../types/majlis';
 import {
   getSelfEffectiveStatus,
-  darkenHexColor,
-  getAccentContrast,
   IDLE_TIMEOUT_MS,
-  isValidAccentColor,
   PRESENCE_HEARTBEAT_MS,
 } from '../utils/validation';
 
@@ -34,16 +31,16 @@ interface AuthContextValue {
   userPrivate: UserPrivate | null;
   publicUser: PublicUser | null;
   theme: ThemeMode;
-  accentColor: AccentColor;
+  appearanceMode: AppearanceMode;
   language: Language;
   isNavigatorOnline: boolean;
   presenceNowMs: number;
   preferredStatus: SelectableUserStatus;
   effectiveSelfStatus: UserStatus;
   setLocalTheme: (theme: ThemeMode) => void;
+  setLocalAppearanceMode: (mode: AppearanceMode) => void;
   setLocalLanguage: (language: Language) => void;
   changeTheme: (theme: ThemeMode) => Promise<void>;
-  changeAccentColor: (accent: AccentColor) => void;
   changeLanguage: (language: Language) => Promise<void>;
   changePresenceStatus: (status: SelectableUserStatus) => Promise<void>;
   refreshVerification: () => Promise<boolean>;
@@ -62,19 +59,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
   const [presenceNowMs, setPresenceNowMs] = useState<number>(() => Date.now());
   const [localTheme, setLocalTheme] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem('nexus_theme');
-    if (saved === 'basic' || saved === 'warm' || saved === 'royal' || saved === 'forest' || saved === 'ocean') {
-      return saved;
-    }
-    return 'basic';
+    return normalizeThemeMode(localStorage.getItem('majlis_theme'));
   });
+  const [localAppearanceMode, setLocalAppearanceMode] = useState<AppearanceMode>(() =>
+    normalizeAppearanceMode(localStorage.getItem('majlis_appearance_mode'))
+  );
   const [localLanguage, setLocalLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem('nexus_lang');
+    const saved = localStorage.getItem('majlis_lang');
     return saved === 'en' ? 'en' : 'ar';
-  });
-  const [accentColor, setAccentColor] = useState<AccentColor>(() => {
-    const saved = localStorage.getItem('nexus_accent');
-    return isValidAccentColor(saved) ? saved : 'indigo';
   });
   const [preferredStatus, setPreferredStatus] = useState<SelectableUserStatus>('online');
   const [isAutoIdle, setIsAutoIdle] = useState(false);
@@ -82,39 +74,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const profileRepairKeyRef = useRef<string | null>(null);
 
   const theme = localTheme;
+  const appearanceMode = localAppearanceMode;
   const language = userPrivate?.language ?? localLanguage;
 
   useEffect(() => {
-    applyDocumentThemeAndDirection(theme, language);
-    localStorage.setItem('nexus_theme', theme);
-    localStorage.setItem('nexus_lang', language);
+    applyDocumentThemeAndDirection(theme, language, appearanceMode);
+    localStorage.setItem('majlis_theme', theme);
+    localStorage.setItem('majlis_appearance_mode', appearanceMode);
+    localStorage.setItem('majlis_lang', language);
 
-  }, [theme, language]);
-
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      root.setAttribute('data-accent', accentColor);
-      const presetHex: Record<AccentColor, string> = {
-        indigo: '#5865F2',
-        blue: '#2563EB',
-        green: '#10B981',
-        violet: '#8B5CF6',
-        rose: '#E11D48',
-        amber: '#D97706',
-        cyan: '#0891B2',
-        pink: '#DB2777',
-      };
-      const hex = presetHex[accentColor];
-      root.style.setProperty('--accent', hex);
-      root.style.setProperty('--nexus-accent', hex);
-      root.style.setProperty('--accent-hover', darkenHexColor(hex));
-      root.style.setProperty('--nexus-accent-hover', darkenHexColor(hex));
-      root.style.setProperty('--accent-contrast', getAccentContrast(hex));
-      root.style.setProperty('--lk-accent', hex);
-    }
-    localStorage.setItem('nexus_accent', accentColor);
-  }, [accentColor]);
+  }, [theme, appearanceMode, language]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -122,13 +91,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthReady(true);
 
       if (user && user.emailVerified) {
-        const pendingUsername = sessionStorage.getItem('nexus_pending_username') || undefined;
-        const pendingDisplay = sessionStorage.getItem('nexus_pending_display') || undefined;
+        const pendingUsername = sessionStorage.getItem('majlis_pending_username') || undefined;
+        const pendingDisplay = sessionStorage.getItem('majlis_pending_display') || undefined;
         try {
           const ensured = await ensureUserProfile(user, pendingUsername, pendingDisplay);
           setPublicUser((prev) => prev || ensured);
-          sessionStorage.removeItem('nexus_pending_username');
-          sessionStorage.removeItem('nexus_pending_display');
+          sessionStorage.removeItem('majlis_pending_username');
+          sessionStorage.removeItem('majlis_pending_display');
         } catch (err) {
           console.error('Failed to bootstrap profile:', err);
         }
@@ -203,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsAutoIdle(false);
       return;
     }
-    const saved = localStorage.getItem(`nexus_presence_${firebaseUser.uid}`);
+    const saved = localStorage.getItem(`majlis_presence_${firebaseUser.uid}`);
     if (saved === 'idle' || saved === 'dnd' || saved === 'online') {
       setPreferredStatus(saved);
     } else {
@@ -337,35 +306,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (nextTheme: ThemeMode) => {
       setLocalTheme(nextTheme);
       if (firebaseUser?.emailVerified) {
-        await updateUserSettings(firebaseUser.uid, { theme: resolveThemeMode(nextTheme) });
+        await updateUserSettings(firebaseUser.uid, { theme: appearanceMode });
       }
     },
-    [firebaseUser]
+    [firebaseUser, appearanceMode]
   );
-
-  const changeAccentColor = useCallback((nextAccent: AccentColor) => {
-    setAccentColor(nextAccent);
-    if (typeof document !== 'undefined') {
-      const presetHex: Record<AccentColor, string> = {
-        indigo: '#5865F2',
-        blue: '#2563EB',
-        green: '#10B981',
-        violet: '#8B5CF6',
-        rose: '#E11D48',
-        amber: '#D97706',
-        cyan: '#0891B2',
-        pink: '#DB2777',
-      };
-      const hex = presetHex[nextAccent];
-      const root = document.documentElement;
-      root.style.setProperty('--accent', hex);
-      root.style.setProperty('--nexus-accent', hex);
-      root.style.setProperty('--accent-hover', darkenHexColor(hex));
-      root.style.setProperty('--nexus-accent-hover', darkenHexColor(hex));
-      root.style.setProperty('--accent-contrast', getAccentContrast(hex));
-      root.style.setProperty('--lk-accent', hex);
-    }
-  }, []);
 
   const changeLanguage = useCallback(
     async (nextLang: Language) => {
@@ -382,7 +327,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setPreferredStatus(nextStatus);
       setIsAutoIdle(false);
       if (firebaseUser?.uid) {
-        localStorage.setItem(`nexus_presence_${firebaseUser.uid}`, nextStatus);
+        localStorage.setItem(`majlis_presence_${firebaseUser.uid}`, nextStatus);
         if (firebaseUser.emailVerified && (typeof navigator === 'undefined' || navigator.onLine)) {
           await pingUserPresence(firebaseUser.uid, nextStatus, hideOnline);
         }
@@ -398,12 +343,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setFirebaseUser(updated);
     setVerificationTick((n) => n + 1);
     if (updated.emailVerified) {
-      const pendingUsername = sessionStorage.getItem('nexus_pending_username') || undefined;
-      const pendingDisplay = sessionStorage.getItem('nexus_pending_display') || undefined;
+      const pendingUsername = sessionStorage.getItem('majlis_pending_username') || undefined;
+      const pendingDisplay = sessionStorage.getItem('majlis_pending_display') || undefined;
       const ensured = await ensureUserProfile(updated, pendingUsername, pendingDisplay);
       setPublicUser((prev) => prev || ensured);
-      sessionStorage.removeItem('nexus_pending_username');
-      sessionStorage.removeItem('nexus_pending_display');
+      sessionStorage.removeItem('majlis_pending_username');
+      sessionStorage.removeItem('majlis_pending_display');
       return true;
     }
     return false;
@@ -425,16 +370,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userPrivate,
         publicUser,
         theme,
-        accentColor,
+        appearanceMode,
         language,
         isNavigatorOnline,
         presenceNowMs,
         preferredStatus,
         effectiveSelfStatus,
         setLocalTheme,
+        setLocalAppearanceMode,
         setLocalLanguage,
         changeTheme,
-        changeAccentColor,
         changeLanguage,
         changePresenceStatus,
         refreshVerification,

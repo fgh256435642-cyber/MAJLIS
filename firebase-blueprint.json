@@ -87,7 +87,8 @@
       "type": "object",
       "properties": {
         "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "themeMode": { "type": "string", "enum": ["dark", "light", "system", "amoled"] },
+        "themeMode": { "type": "string", "enum": ["classic", "emerald", "sapphire", "amethyst"] },
+        "appearanceMode": { "type": "string", "enum": ["dark", "light"] },
         "accentPreset": { "type": "string", "maxLength": 16 },
         "customAccentHex": { "type": "string", "maxLength": 16 },
         "fontSize": { "type": "string", "enum": ["small", "normal", "large"] },
@@ -194,7 +195,7 @@
     },
     "Server": {
       "title": "Server",
-      "description": "A Nexus community guild.",
+      "description": "A Majlis community guild.",
       "type": "object",
       "properties": {
         "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },

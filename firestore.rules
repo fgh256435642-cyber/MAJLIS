@@ -51,6 +51,13 @@ service cloud.firestore {
       );
     }
 
+    function isValidAttachmentUrl(val) {
+      return isValidUrlOrEmpty(val) ||
+        (val is string
+          && val.size() <= 600000
+          && val.matches('^data:(audio/(aac|mp4|mpeg|ogg|wav|webm)|video/(mp4|mpeg|ogg|webm|quicktime)|application/octet-stream);base64,[A-Za-z0-9+/=]*$'));
+    }
+
     // =========================================================================
     // Relational & RBAC Lookups
     // =========================================================================
@@ -195,7 +202,7 @@ service cloud.firestore {
     function isValidUserSettings(data, userId) {
       return data.keys().hasAll(['uid', 'updatedAt'])
         && data.keys().hasOnly([
-          'uid', 'themeMode', 'accentPreset', 'customAccentHex', 'fontSize', 'density',
+          'uid', 'themeMode', 'appearanceMode', 'accentPreset', 'customAccentHex', 'fontSize', 'density',
           'messageStyle', 'avatarShape', 'reducedMotion', 'notificationMode', 'soundEnabled',
           'notificationSound', 'notificationVolume', 'dndScheduleEnabled', 'dndStartHour',
           'dndEndHour', 'serverNotifications', 'channelMutes', 'audioInputId', 'audioOutputId',
@@ -209,7 +216,8 @@ service cloud.firestore {
         ])
         && data.uid == userId
         && data.updatedAt == request.time
-        && (!('themeMode' in data) || data.themeMode in ['basic', 'warm', 'royal', 'forest', 'ocean'])
+        && (!('themeMode' in data) || data.themeMode in ['classic', 'emerald', 'sapphire', 'amethyst'])
+        && (!('appearanceMode' in data) || data.appearanceMode in ['dark', 'light'])
         && (!('accentPreset' in data) || (data.accentPreset is string && data.accentPreset.size() <= 16))
         && (!('customAccentHex' in data) || isValidHexOrEmpty(data.customAccentHex))
         && (!('fontSize' in data) || data.fontSize in ['small', 'normal', 'large'])
@@ -370,7 +378,7 @@ service cloud.firestore {
         && (data.authorRole == 'owner' || data.authorRole == 'admin' || data.authorRole == 'moderator' || data.authorRole == 'member')
         && data.content is string && data.content.size() <= 4000
         && (data.content.size() >= 1 || ('attachmentUrl' in data && data.attachmentUrl.size() > 0))
-        && (!('attachmentUrl' in data) || isValidUrlOrEmpty(data.attachmentUrl))
+        && (!('attachmentUrl' in data) || isValidAttachmentUrl(data.attachmentUrl))
         && (!('attachmentName' in data) || (data.attachmentName is string && data.attachmentName.size() <= 256))
         && (!('attachmentType' in data) || (data.attachmentType is string && data.attachmentType.size() <= 128))
         && (!('replyToId' in data) || (data.replyToId is string && data.replyToId.size() <= 128))
@@ -493,7 +501,7 @@ service cloud.firestore {
         && (!('authorAvatar' in data) || isValidUrlOrEmpty(data.authorAvatar))
         && data.content is string && data.content.size() <= 4000
         && (data.content.size() >= 1 || ('attachmentUrl' in data && data.attachmentUrl.size() > 0))
-        && (!('attachmentUrl' in data) || isValidUrlOrEmpty(data.attachmentUrl))
+        && (!('attachmentUrl' in data) || isValidAttachmentUrl(data.attachmentUrl))
         && (!('attachmentName' in data) || (data.attachmentName is string && data.attachmentName.size() <= 256))
         && (!('attachmentType' in data) || (data.attachmentType is string && data.attachmentType.size() <= 128))
         && (!('replyToId' in data) || (data.replyToId is string && data.replyToId.size() <= 128))
@@ -564,7 +572,7 @@ service cloud.firestore {
         && (!('isSystem' in data) || data.isSystem is bool)
         && (!('systemAction' in data) || (data.systemAction is string && data.systemAction.size() <= 32))
         && (!('systemTargetName' in data) || (data.systemTargetName is string && data.systemTargetName.size() <= 80))
-        && (!('attachmentUrl' in data) || isValidUrlOrEmpty(data.attachmentUrl))
+        && (!('attachmentUrl' in data) || isValidAttachmentUrl(data.attachmentUrl))
         && (!('attachmentName' in data) || (data.attachmentName is string && data.attachmentName.size() <= 256))
         && (!('attachmentType' in data) || (data.attachmentType is string && data.attachmentType.size() <= 128))
         && (!('replyToId' in data) || (data.replyToId is string && data.replyToId.size() <= 128))

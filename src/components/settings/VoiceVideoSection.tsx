@@ -17,7 +17,7 @@ import {
   type VoiceDiagnosticPeer,
 } from '../../hooks/useVoiceRTC';
 import { t } from '../../i18n/translations';
-import type { CameraQuality } from '../../types/nexus';
+import type { CameraQuality } from '../../types/majlis';
 
 interface DeviceOption {
   deviceId: string;
@@ -284,17 +284,17 @@ export function VoiceVideoSection({
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-link font-bold text-text dark:text-text">
             {t(language, 'voiceAndVideo')}
           </h2>
-          <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+          <p className="text-link text-text-muted dark:text-text-muted mt-1">
             {t(language, 'voiceAndVideoSubtitle')}
           </p>
         </div>
         <button
           type="button"
           onClick={() => void enumerateAllDevices(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] hover:bg-slate-50 dark:hover:bg-white/10 text-xs font-semibold"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated hover:bg-elevated dark:hover:bg-elevated text-link font-semibold"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>{t(language, 'refreshDevices')}</span>
@@ -302,16 +302,16 @@ export function VoiceVideoSection({
       </div>
 
       {/* Audio Input & Output Devices */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-4">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
               {t(language, 'inputDevice')}
             </label>
             <select
               value={settings.audioInputId}
               onChange={(e) => void updateSetting({ audioInputId: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
             >
               <option value="default">{t(language, 'defaultDevice')}</option>
               {settings.audioInputId !== 'default' &&
@@ -329,14 +329,14 @@ export function VoiceVideoSection({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
               {t(language, 'outputDevice')}
             </label>
             <select
               value={settings.audioOutputId}
               disabled={!sinkIdSupported}
               onChange={(e) => void updateSetting({ audioOutputId: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm disabled:opacity-60"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link disabled:opacity-60"
             >
               <option value="default">{t(language, 'defaultDevice')}</option>
               {settings.audioOutputId !== 'default' &&
@@ -352,7 +352,7 @@ export function VoiceVideoSection({
               ))}
             </select>
             {!sinkIdSupported && (
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-text-muted mt-1">
                 {t(language, 'outputDeviceUnsupported')}
               </p>
             )}
@@ -360,13 +360,13 @@ export function VoiceVideoSection({
         </div>
 
         {/* Output Volume 0 - 200% */}
-        <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-white/10">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-slate-600 dark:text-zinc-300 flex items-center gap-1.5">
-              <Headphones className="w-3.5 h-3.5 text-nexus" />
+        <div className="space-y-1.5 pt-2 border-accent border-border dark:border-border">
+          <div className="flex items-center justify-between text-link">
+            <span className="font-semibold text-text dark:text-text flex items-center gap-1.5">
+              <Headphones className="w-3.5 h-3.5 text-link" />
               <span>{t(language, 'outputVolume')}</span>
             </span>
-            <span className="font-mono font-semibold text-nexus tabular-nums">
+            <span className="font-mono font-semibold text-link tabular-nums">
               {settings.outputVolume}%
             </span>
           </div>
@@ -379,51 +379,51 @@ export function VoiceVideoSection({
             onChange={(e) =>
               void updateSetting({ outputVolume: Number(e.target.value) }, { silent: true })
             }
-            className="w-full accent-nexus"
+            className="w-full accent-accent"
           />
         </div>
 
         {/* Live Mic Test Meter */}
-        <div className="space-y-2.5 pt-2 border-t border-slate-200 dark:border-white/10">
+        <div className="space-y-2.5 pt-2 border-accent border-border dark:border-border">
           <div className="flex items-center justify-between gap-2">
-            <div className="text-xs font-semibold text-slate-600 dark:text-zinc-300 flex items-center gap-1.5">
-              <Mic className="w-3.5 h-3.5 text-nexus" />
+            <div className="text-link font-semibold text-text dark:text-text flex items-center gap-1.5">
+              <Mic className="w-3.5 h-3.5 text-link" />
               <span>{t(language, 'micTestLabel')}</span>
             </div>
             <button
               type="button"
               onClick={() => void startMicTest()}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              className={`px-3.5 py-1.5 rounded-lg text-link font-semibold transition-colors ${
                 micTesting
-                  ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                  : 'bg-nexus hover:bg-nexus-hover text-white'
+                  ? 'bg-danger hover:bg-danger text-text'
+                  : 'bg-accent hover:bg-majlis-hover text-text'
               }`}
             >
               {micTesting ? t(language, 'stopTest') : t(language, 'letsCheckMic')}
             </button>
           </div>
-          <div className="relative h-3 rounded-full bg-slate-200 dark:bg-[#1E1F22] overflow-hidden">
+          <div className="relative h-3 rounded-full bg-hover dark:bg-hover overflow-hidden">
             <div
               ref={micBarRef}
-              className="h-full w-0 bg-emerald-500 transition-[width] duration-75"
+              className="h-full w-0 bg-success transition-[width] duration-75"
             />
             {!settings.voiceSensitivityAuto && (
               <div
                 ref={thresholdMarkerRef}
-                className="absolute top-0 bottom-0 w-0.5 bg-amber-400"
+                className="absolute top-0 bottom-0 w-0.5 bg-warning"
               />
             )}
           </div>
         </div>
 
         {/* Voice Sensitivity */}
-        <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
+        <div className="space-y-2 pt-2 border-accent border-border dark:border-border">
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <div className="text-sm font-medium text-slate-900 dark:text-white">
+              <div className="text-link font-medium text-text dark:text-text">
                 {t(language, 'autoSensitivity')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'autoSensitivityDesc')}
               </div>
             </div>
@@ -431,12 +431,12 @@ export function VoiceVideoSection({
               type="checkbox"
               checked={settings.voiceSensitivityAuto}
               onChange={(e) => void updateSetting({ voiceSensitivityAuto: e.target.checked })}
-              className="w-4 h-4 accent-nexus"
+              className="w-4 h-4 accent-accent"
             />
           </label>
           {!settings.voiceSensitivityAuto && (
             <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-500">{t(language, 'sensitivityThreshold')}</span>
+              <span className="text-link text-text-muted">{t(language, 'sensitivityThreshold')}</span>
               <input
                 type="range"
                 min={5}
@@ -449,9 +449,9 @@ export function VoiceVideoSection({
                     { silent: true }
                   )
                 }
-                className="flex-1 accent-nexus"
+                className="flex-1 accent-accent"
               />
-              <span className="text-xs font-mono tabular-nums w-10 text-end">
+              <span className="text-link font-mono tabular-nums w-10 text-link">
                 {settings.voiceSensitivityThreshold}%
               </span>
             </div>
@@ -460,8 +460,8 @@ export function VoiceVideoSection({
       </div>
 
       {/* Audio Processing & Push-to-Talk */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
+        <div className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
           {t(language, 'voiceProcessing')}
         </div>
         {(
@@ -473,31 +473,31 @@ export function VoiceVideoSection({
         ).map(([field, label]) => (
           <label
             key={field}
-            className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-[#1E1F22] cursor-pointer"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-elevated dark:bg-elevated cursor-pointer"
           >
-            <span className="text-sm font-medium">{label}</span>
+            <span className="text-link font-medium">{label}</span>
             <input
               type="checkbox"
               checked={settings[field]}
               onChange={(e) => void updateSetting({ [field]: e.target.checked })}
-              className="w-4 h-4 accent-nexus"
+              className="w-4 h-4 accent-accent"
             />
           </label>
         ))}
 
-        <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
+        <div className="pt-2 border-accent border-border dark:border-border flex flex-wrap items-center justify-between gap-3">
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input
               type="checkbox"
               checked={settings.pushToTalkEnabled}
               onChange={(e) => void updateSetting({ pushToTalkEnabled: e.target.checked })}
-              className="w-4 h-4 accent-nexus"
+              className="w-4 h-4 accent-accent"
             />
             <div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="text-link font-semibold text-text dark:text-text">
                 {t(language, 'pushToTalk')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'pushToTalkDesc')}
               </div>
             </div>
@@ -505,10 +505,10 @@ export function VoiceVideoSection({
           <button
             type="button"
             onClick={() => setCapturingPtt(true)}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-semibold transition-colors ${
+            className={`px-3 py-1.5 rounded-lg border text-link font-mono font-semibold transition-colors ${
               capturingPtt
-                ? 'border-rose-500 bg-rose-500/15 text-rose-500 animate-pulse'
-                : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22]'
+                ? 'border-danger bg-danger/15 text-danger animate-pulse'
+                : 'border-border dark:border-border bg-elevated dark:bg-elevated'
             }`}
           >
             {capturingPtt ? t(language, 'pressAnyKey') : settings.pushToTalkKey}
@@ -516,19 +516,19 @@ export function VoiceVideoSection({
         </div>
 
         {/* VPN Compatibility Mode (Relay TCP/TLS) */}
-        <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+        <div className="pt-3 border-accent border-border dark:border-border flex items-center justify-between gap-3">
           <label className="flex items-center gap-2.5 cursor-pointer flex-1">
             <input
               type="checkbox"
               checked={Boolean(settings.vpnCompatibilityMode)}
               onChange={(e) => void updateSetting({ vpnCompatibilityMode: e.target.checked })}
-              className="w-4 h-4 accent-nexus"
+              className="w-4 h-4 accent-accent"
             />
             <div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="text-link font-semibold text-text dark:text-text">
                 {t(language, 'vpnCompatibilityMode')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'vpnCompatibilityModeDesc')}
               </div>
             </div>
@@ -537,19 +537,19 @@ export function VoiceVideoSection({
       </div>
 
       {/* Camera & Video Quality */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-4">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Camera className="w-4 h-4 text-nexus" />
+          <div className="text-link font-bold text-text dark:text-text flex items-center gap-2">
+            <Camera className="w-4 h-4 text-link" />
             <span>{t(language, 'cameraSettings')}</span>
           </div>
           <button
             type="button"
             onClick={() => void toggleCamPreview()}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-link font-semibold transition-colors ${
               camPreviewing
-                ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                : 'bg-nexus hover:bg-nexus-hover text-white'
+                ? 'bg-danger hover:bg-danger text-text'
+                : 'bg-accent hover:bg-majlis-hover text-text'
             }`}
           >
             {camPreviewing ? <VideoOff className="w-3.5 h-3.5" /> : <Video className="w-3.5 h-3.5" />}
@@ -559,13 +559,13 @@ export function VoiceVideoSection({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
               {t(language, 'cameraDevice')}
             </label>
             <select
               value={settings.videoInputId}
               onChange={(e) => void updateSetting({ videoInputId: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
             >
               <option value="default">{t(language, 'defaultDevice')}</option>
               {settings.videoInputId !== 'default' &&
@@ -582,7 +582,7 @@ export function VoiceVideoSection({
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
               {t(language, 'cameraQuality')}
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -591,10 +591,10 @@ export function VoiceVideoSection({
                   key={q}
                   type="button"
                   onClick={() => void updateSetting({ cameraQuality: q })}
-                  className={`py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                  className={`py-2 rounded-lg text-link font-semibold border transition-colors ${
                     settings.cameraQuality === q
-                      ? 'border-nexus bg-nexus text-white'
-                      : 'border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
+                      ? 'border-accent bg-accent text-text'
+                      : 'border-border dark:border-border hover:bg-elevated dark:hover:bg-elevated'
                   }`}
                 >
                   {q}
@@ -605,7 +605,7 @@ export function VoiceVideoSection({
         </div>
 
         {camPreviewing && (
-          <div className="rounded-xl overflow-hidden bg-black aspect-video max-h-64 mx-auto border border-white/10">
+          <div className="rounded-xl overflow-hidden bg-rail aspect-video max-h-64 mx-auto border border-border">
             <video
               ref={camVideoRef}
               autoPlay
@@ -618,15 +618,15 @@ export function VoiceVideoSection({
       </div>
 
       {/* WebRTC Connection Diagnostics */}
-      <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] space-y-3">
+      <div className="p-4 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-nexus" />
+            <Activity className="w-4 h-4 text-link" />
             <div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white">
+              <div className="text-link font-bold text-text dark:text-text">
                 {t(language, 'voiceDiagnostics')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'voiceDiagnosticsDesc')}
               </div>
             </div>
@@ -635,7 +635,7 @@ export function VoiceVideoSection({
             type="button"
             disabled={runningDiag}
             onClick={() => void handleRunDiagnostics()}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold"
           >
             {runningDiag && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             <span>{t(language, 'runDiagnostics')}</span>
@@ -643,27 +643,27 @@ export function VoiceVideoSection({
         </div>
 
         {stunResult && (
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10 text-xs space-y-1.5">
+          <div className="p-3 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border text-link space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="font-semibold">{t(language, 'stunStatus')}</span>
               <span
                 className={`font-bold ${
-                  stunResult.success ? 'text-emerald-500' : 'text-rose-500'
+                  stunResult.success ? 'text-success' : 'text-danger'
                 }`}
               >
                 {stunResult.success ? t(language, 'diagnosticsHealthy') : t(language, 'diagnosticsIssue')}
               </span>
             </div>
-            <div className="flex items-center justify-between text-slate-600 dark:text-zinc-400">
+            <div className="flex items-center justify-between text-text dark:text-text">
               <span>{t(language, 'iceGatherTime')}</span>
               <span className="font-mono">{stunResult.gatherTimeMs} ms</span>
             </div>
-            <div className="flex items-center justify-between text-slate-600 dark:text-zinc-400">
+            <div className="flex items-center justify-between text-text dark:text-text">
               <span>{t(language, 'iceCandidatesFound')}</span>
               <span className="font-mono">{stunResult.candidateTypes.join(', ') || 'none'}</span>
             </div>
             {stunResult.srflxAddress && (
-              <div className="flex items-center justify-between text-slate-600 dark:text-zinc-400">
+              <div className="flex items-center justify-between text-text dark:text-text">
                 <span>{t(language, 'publicReflexiveIp')}</span>
                 <span className="font-mono">{stunResult.srflxAddress}</span>
               </div>
@@ -676,22 +676,22 @@ export function VoiceVideoSection({
             {activePeerStats.map((p) => (
               <div
                 key={p.peerUid}
-                className="p-3 rounded-xl bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10 text-xs grid grid-cols-2 sm:grid-cols-4 gap-2"
+                className="p-3 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border text-link grid grid-cols-2 sm:grid-cols-4 gap-2"
               >
                 <div>
-                  <span className="text-slate-400 block">Peer</span>
+                  <span className="text-text-muted block">Peer</span>
                   <span className="font-mono">{p.peerUid.slice(0, 8)}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">ICE</span>
+                  <span className="text-text-muted block">ICE</span>
                   <span className="font-semibold">{p.iceConnectionState}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">RTT</span>
+                  <span className="text-text-muted block">RTT</span>
                   <span className="font-mono">{p.rttMs !== null ? `${p.rttMs} ms` : '—'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Codec</span>
+                  <span className="text-text-muted block">Codec</span>
                   <span className="font-mono">{p.codec}</span>
                 </div>
               </div>

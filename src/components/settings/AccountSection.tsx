@@ -25,10 +25,10 @@ import {
   startTotpMfaEnrollment,
   unenrollMfaFactor,
   updateUserProfile,
-} from '../../services/nexusService';
+} from '../../services/majlisService';
 import { uploadFileToStorage } from '../../services/storageService';
 import { isValidHexColor, isValidUsername, LIMITS } from '../../utils/validation';
-import { UserAvatar } from '../NexusLogo';
+import { UserAvatar } from '../MajlisLogo';
 import { ProfileBanner } from '../ProfileBanner';
 
 export interface UnsavedBarState {
@@ -503,20 +503,20 @@ export function AccountSection({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <h2 className="text-link font-bold text-text dark:text-text">
           {t(language, 'myAccount')}
         </h2>
-        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-link text-text-muted dark:text-text-muted mt-1">
           {t(language, 'myAccountSubtitle')}
         </p>
       </div>
 
       {/* Account Profile Card & Identity Fields */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated overflow-hidden shadow-sm">
         <div className="relative">
           <ProfileBanner bannerUrl={previewBanner} profileColor={profileColor} className="h-28" />
           <div className="absolute top-3 end-3 flex items-center gap-2">
-            <label className="cursor-pointer px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-xs font-medium inline-flex items-center gap-1.5 backdrop-blur-sm transition-colors">
+            <label className="cursor-pointer px-3 py-1.5 rounded-lg bg-rail/60 hover:bg-rail/80 text-text text-link font-medium inline-flex items-center gap-1.5 backdrop-blur-sm transition-colors">
               <Upload className="w-3.5 h-3.5" />
               <span>{t(language, 'changeBanner')}</span>
               <input
@@ -537,7 +537,7 @@ export function AccountSection({
                   setBannerFile(null);
                   setBannerUrl('');
                 }}
-                className="p-1.5 rounded-lg bg-black/60 hover:bg-rose-600 text-white transition-colors"
+                className="p-1.5 rounded-lg bg-rail/60 hover:bg-danger text-text transition-colors"
                 title={t(language, 'removeBanner')}
               >
                 <X className="w-3.5 h-3.5" />
@@ -559,11 +559,8 @@ export function AccountSection({
                   'U'
                 }
                 size="xl"
-                className="w-20 h-20"
+                className="w-20 h-20 transition-transform duration-200 group-hover:scale-105"
               />
-              <div className="absolute inset-0 rounded-full bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                <Upload className="w-5 h-5" />
-              </div>
               <input
                 type="file"
                 accept="image/*"
@@ -584,7 +581,7 @@ export function AccountSection({
                     setAvatarFile(null);
                     setAvatarUrl('');
                   }}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5"
+                  className="px-3 py-1.5 rounded-lg border border-border dark:border-border text-link font-medium text-text dark:text-text hover:bg-main dark:hover:bg-main"
                 >
                   {t(language, 'removeAvatar')}
                 </button>
@@ -593,7 +590,7 @@ export function AccountSection({
                 type="button"
                 disabled={!isDirty || savingProfile}
                 onClick={() => void handleSaveProfile()}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-40 text-white text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-40 text-text text-link font-semibold transition-colors"
               >
                 {savingProfile && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <span>{t(language, 'save')}</span>
@@ -603,7 +600,7 @@ export function AccountSection({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+              <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
                 {t(language, 'displayName')}
               </label>
               <input
@@ -611,11 +608,11 @@ export function AccountSection({
                 maxLength={64}
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link focus:outline-accent focus:ring-2 focus:ring-accent"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+              <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
                 {t(language, 'username')}
               </label>
               <input
@@ -623,13 +620,13 @@ export function AccountSection({
                 maxLength={32}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link focus:outline-accent focus:ring-2 focus:ring-accent"
               />
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="block text-xs font-semibold text-slate-600 dark:text-zinc-300 mb-1.5">
+            <label className="block text-link font-semibold text-text dark:text-text mb-1.5">
               {t(language, 'bio')}
             </label>
             <textarea
@@ -638,14 +635,14 @@ export function AccountSection({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder={t(language, 'bioPlaceholder')}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link focus:outline-accent focus:ring-2 focus:ring-accent"
             />
           </div>
 
           {/* Profile Color Picker */}
           <div className="mt-4 space-y-2">
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-zinc-300">
-              <Palette className="w-3.5 h-3.5 text-nexus" />
+            <label className="flex items-center gap-1.5 text-link font-semibold text-text dark:text-text">
+              <Palette className="w-3.5 h-3.5 text-link" />
               <span>{t(language, 'profileColor')}</span>
             </label>
             <div className="flex flex-wrap items-center gap-2">
@@ -657,20 +654,20 @@ export function AccountSection({
                     type="button"
                     aria-label={sw.hex}
                     onClick={() => setProfileColor(sw.hex)}
-                    className={`w-7 h-7 rounded-full ${sw.cls} flex items-center justify-center text-white ring-offset-2 ring-offset-white dark:ring-offset-[#2B2D31] transition-transform ${
-                      selected ? 'ring-2 ring-nexus scale-110' : 'hover:scale-105'
+                    className={`w-7 h-7 rounded-full ${sw.cls} flex items-center justify-center text-text ring-offset-2 ring-offset-elevated transition-transform ${
+                      selected ? 'ring-2 ring-accent scale-110' : 'hover:scale-105'
                     }`}
                   >
                     {selected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                   </button>
                 );
               })}
-              <label className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs cursor-pointer">
+              <label className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link cursor-pointer">
                 <input
                   type="color"
                   value={isValidHexColor(profileColor) ? profileColor : '#5865F2'}
                   onChange={(e) => setProfileColor(e.target.value)}
-                  className="w-5 h-5 rounded cursor-pointer bg-transparent border-0 p-0"
+                  className="w-5 h-5 rounded cursor-pointer bg-accent border-0 p-0"
                 />
                 <span className="font-mono uppercase">{profileColor}</span>
               </label>
@@ -678,12 +675,12 @@ export function AccountSection({
           </div>
 
           {/* Discoverable toggle */}
-          <label className="mt-4 flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] cursor-pointer">
+          <label className="mt-4 flex items-center justify-between p-3 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated cursor-pointer">
             <div>
-              <div className="text-sm font-medium text-slate-900 dark:text-white">
+              <div className="text-link font-medium text-text dark:text-text">
                 {t(language, 'discoverableAccount')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'discoverableAccountDesc')}
               </div>
             </div>
@@ -691,24 +688,24 @@ export function AccountSection({
               type="checkbox"
               checked={isDiscoverable}
               onChange={(e) => setIsDiscoverable(e.target.checked)}
-              className="w-4 h-4 accent-nexus"
+              className="w-4 h-4 accent-accent"
             />
           </label>
         </div>
       </div>
 
       {/* Email & Password Security */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] p-5 space-y-5">
+      <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated p-5 space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-nexus/15 text-nexus flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-accent/15 text-link flex items-center justify-center shrink-0">
               <Mail className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-semibold text-slate-500 dark:text-zinc-400">
+              <div className="text-link font-semibold text-text-muted dark:text-text-muted">
                 {t(language, 'email')}
               </div>
-              <div className="text-sm font-medium text-slate-900 dark:text-white truncate">
+              <div className="text-link font-medium text-text dark:text-text truncate">
                 {firebaseUser?.email}
               </div>
             </div>
@@ -716,7 +713,7 @@ export function AccountSection({
           <button
             type="button"
             onClick={() => setShowEmailForm((v) => !v)}
-            className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-semibold transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-border dark:border-border hover:bg-main dark:hover:bg-main text-link font-semibold transition-colors"
           >
             {showEmailForm ? t(language, 'cancel') : t(language, 'changeEmail')}
           </button>
@@ -725,21 +722,21 @@ export function AccountSection({
         {showEmailForm && (
           <form
             onSubmit={handleUpdateEmail}
-            className="p-4 rounded-xl bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10 space-y-3"
+            className="p-4 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border space-y-3"
           >
             <div>
-              <label className="block text-xs font-semibold mb-1">{t(language, 'newEmail')}</label>
+              <label className="block text-link font-semibold mb-1">{t(language, 'newEmail')}</label>
               <input
                 type="email"
                 required
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
               />
             </div>
             {hasPasswordProvider && (
               <div>
-                <label className="block text-xs font-semibold mb-1">
+                <label className="block text-link font-semibold mb-1">
                   {t(language, 'currentPassword')}
                 </label>
                 <input
@@ -747,14 +744,14 @@ export function AccountSection({
                   required
                   value={emailPassword}
                   onChange={(e) => setEmailPassword(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                 />
               </div>
             )}
             <button
               type="submit"
               disabled={savingEmail}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold"
             >
               {savingEmail && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>{t(language, 'sendEmailVerification')}</span>
@@ -762,16 +759,16 @@ export function AccountSection({
           </form>
         )}
 
-        <div className="border-t border-slate-200 dark:border-white/10 pt-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="border-accent border-border dark:border-border pt-5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-nexus/15 text-nexus flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-accent/15 text-link flex items-center justify-center shrink-0">
               <KeyRound className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="text-link font-semibold text-text dark:text-text">
                 {t(language, 'password')}
               </div>
-              <div className="text-xs text-slate-500 dark:text-zinc-400">
+              <div className="text-link text-text-muted dark:text-text-muted">
                 {hasPasswordProvider
                   ? t(language, 'changePasswordDesc')
                   : t(language, 'oauthPasswordHint')}
@@ -782,7 +779,7 @@ export function AccountSection({
             <button
               type="button"
               onClick={() => setShowPasswordForm((v) => !v)}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-semibold transition-colors"
+              className="px-3 py-1.5 rounded-lg border border-border dark:border-border hover:bg-main dark:hover:bg-main text-link font-semibold transition-colors"
             >
               {showPasswordForm ? t(language, 'cancel') : t(language, 'changePassword')}
             </button>
@@ -792,10 +789,10 @@ export function AccountSection({
         {showPasswordForm && hasPasswordProvider && (
           <form
             onSubmit={handleChangePassword}
-            className="p-4 rounded-xl bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10 space-y-3"
+            className="p-4 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border space-y-3"
           >
             <div>
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-link font-semibold mb-1">
                 {t(language, 'currentPassword')}
               </label>
               <input
@@ -803,12 +800,12 @@ export function AccountSection({
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold mb-1">
+                <label className="block text-link font-semibold mb-1">
                   {t(language, 'newPassword')}
                 </label>
                 <input
@@ -817,11 +814,11 @@ export function AccountSection({
                   minLength={6}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1">
+                <label className="block text-link font-semibold mb-1">
                   {t(language, 'confirmPassword')}
                 </label>
                 <input
@@ -830,14 +827,14 @@ export function AccountSection({
                   minLength={6}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                 />
               </div>
             </div>
             <button
               type="submit"
               disabled={savingPassword}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold"
             >
               {savingPassword && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>{t(language, 'updatePasswordAction')}</span>
@@ -847,24 +844,24 @@ export function AccountSection({
       </div>
 
       {/* Two-Factor Authentication (TOTP MFA via Firebase) */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] p-5 space-y-4">
+      <div className="rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated p-5 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-success/15 text-success dark:text-success flex items-center justify-center shrink-0">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                <h3 className="text-link font-bold text-text dark:text-text">
                   {t(language, 'twoFactorAuth')}
                 </h3>
                 {mfaFactors.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-success/15 text-success dark:text-success text-[10px] font-bold">
                     {t(language, 'enabledLabel')}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+              <p className="text-link text-text-muted dark:text-text-muted mt-0.5">
                 {t(language, 'twoFactorDesc')}
               </p>
             </div>
@@ -872,7 +869,7 @@ export function AccountSection({
         </div>
 
         {mfaNotSupportedNotice && (
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300">
+          <div className="p-3 rounded-xl bg-warning/10 border border-warning text-link text-warning dark:text-warning">
             {t(language, 'mfaNotEnabledProject')}
           </div>
         )}
@@ -882,13 +879,13 @@ export function AccountSection({
             {mfaFactors.map((f) => (
               <div
                 key={f.uid}
-                className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10"
+                className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border"
               >
                 <div>
-                  <div className="text-xs font-semibold text-slate-900 dark:text-white">
+                  <div className="text-link font-semibold text-text dark:text-text">
                     {f.displayName || 'Authenticator App'}
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                  <div className="text-[11px] text-text-muted dark:text-text-muted">
                     TOTP · {f.uid.slice(0, 8)}
                   </div>
                 </div>
@@ -896,7 +893,7 @@ export function AccountSection({
                   type="button"
                   disabled={mfaBusy}
                   onClick={() => void handleUnenrollMfa(f.uid)}
-                  className="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-semibold transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-danger/10 text-danger dark:text-danger hover:bg-danger hover:text-text text-link font-semibold transition-colors"
                 >
                   {t(language, 'disableTwoFactor')}
                 </button>
@@ -911,14 +908,14 @@ export function AccountSection({
                 value={mfaReauthPassword}
                 onChange={(e) => setMfaReauthPassword(e.target.value)}
                 placeholder={t(language, 'currentPassword')}
-                className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs"
+                className="px-3 py-1.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
               />
             )}
             <button
               type="button"
               disabled={mfaBusy}
               onClick={() => void handleStartMfa()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
             >
               {mfaBusy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>{t(language, 'enableTwoFactor')}</span>
@@ -927,13 +924,13 @@ export function AccountSection({
         ) : (
           <form
             onSubmit={handleVerifyMfa}
-            className="p-4 rounded-xl bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10 space-y-3"
+            className="p-4 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border space-y-3"
           >
-            <div className="text-xs text-slate-600 dark:text-zinc-300">
+            <div className="text-link text-text dark:text-text">
               {t(language, 'mfaSetupInstructions')}
             </div>
-            <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-white dark:bg-[#2B2D31] border border-slate-200 dark:border-white/10">
-              <code className="text-xs font-mono text-nexus flex-1 break-all">
+            <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-elevated dark:bg-elevated border border-border dark:border-border">
+              <code className="text-link font-mono text-link flex-1 break-all">
                 {mfaSetup.secretKey}
               </code>
               <button
@@ -942,7 +939,7 @@ export function AccountSection({
                   void navigator.clipboard.writeText(mfaSetup.secretKey);
                   pushToast({ type: 'info', title: t(language, 'copied') });
                 }}
-                className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/10 text-xs font-medium inline-flex items-center gap-1"
+                className="px-2.5 py-1 rounded-md bg-main dark:bg-main text-link font-medium inline-flex items-center gap-1"
               >
                 <Copy className="w-3.5 h-3.5" />
                 <span>{t(language, 'copy')}</span>
@@ -951,7 +948,7 @@ export function AccountSection({
             <div className="flex flex-wrap items-center gap-2">
               <a
                 href={mfaSetup.qrUrl}
-                className="text-xs text-nexus hover:underline font-medium"
+                className="text-link text-link hover:underline font-medium"
               >
                 {t(language, 'openInAuthenticator')}
               </a>
@@ -965,12 +962,12 @@ export function AccountSection({
                 value={mfaCode}
                 onChange={(e) => setMfaCode(e.target.value)}
                 placeholder="123456"
-                className="w-36 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] text-sm font-mono tracking-widest"
+                className="w-36 px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link font-mono tracking-widest"
               />
               <button
                 type="submit"
                 disabled={mfaBusy}
-                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
+                className="px-4 py-2 rounded-lg bg-success hover:bg-success text-text text-link font-semibold"
               >
                 {t(language, 'verifyAndEnable')}
               </button>
@@ -980,7 +977,7 @@ export function AccountSection({
                   setMfaSetup(null);
                   setMfaCode('');
                 }}
-                className="px-3 py-2 rounded-lg text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                className="px-3 py-2 rounded-lg text-link text-text-muted hover:text-text dark:hover:text-text"
               >
                 {t(language, 'cancel')}
               </button>
@@ -990,15 +987,15 @@ export function AccountSection({
       </div>
 
       {/* Danger Zone: Delete Account */}
-      <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-5 space-y-3">
+      <div className="rounded-2xl border border-danger bg-danger/5 p-5 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-bold text-rose-600 dark:text-rose-400">
+              <h3 className="text-link font-bold text-danger dark:text-danger">
                 {t(language, 'deleteAccount')}
               </h3>
-              <p className="text-xs text-slate-600 dark:text-zinc-400 mt-0.5">
+              <p className="text-link text-text dark:text-text mt-0.5">
                 {t(language, 'deleteAccountDesc')}
               </p>
             </div>
@@ -1006,7 +1003,7 @@ export function AccountSection({
           <button
             type="button"
             onClick={() => setShowDeleteConfirm((v) => !v)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-danger hover:bg-danger text-text text-link font-semibold transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>{t(language, 'deleteAccount')}</span>
@@ -1016,11 +1013,11 @@ export function AccountSection({
         {showDeleteConfirm && (
           <form
             onSubmit={handleDeleteAccount}
-            className="mt-3 p-4 rounded-xl bg-white dark:bg-[#1E1F22] border border-rose-500/30 space-y-3"
+            className="mt-3 p-4 rounded-xl bg-elevated dark:bg-elevated border border-danger space-y-3"
           >
-            <p className="text-xs font-medium text-slate-700 dark:text-zinc-200">
+            <p className="text-link font-medium text-text dark:text-text">
               {t(language, 'deleteAccountTypeUsername')}:{' '}
-              <span className="font-mono font-bold text-rose-500">
+              <span className="font-mono font-bold text-danger">
                 {publicUser?.username || fallbackUsername}
               </span>
             </p>
@@ -1030,7 +1027,7 @@ export function AccountSection({
               value={deleteUsernameConfirm}
               onChange={(e) => setDeleteUsernameConfirm(e.target.value)}
               placeholder={publicUser?.username || fallbackUsername}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] text-slate-900 dark:text-white text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link"
             />
             {hasPasswordProvider && (
               <input
@@ -1039,14 +1036,14 @@ export function AccountSection({
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
                 placeholder={t(language, 'currentPassword')}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] text-slate-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text text-link"
               />
             )}
             <div className="flex items-center gap-2">
               <button
                 type="submit"
                 disabled={deletingAccount}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-danger hover:bg-danger disabled:opacity-50 text-text text-link font-semibold"
               >
                 {deletingAccount && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <span>{t(language, 'confirmPermanentDelete')}</span>
@@ -1054,7 +1051,7 @@ export function AccountSection({
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-3 py-2 rounded-lg text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                className="px-3 py-2 rounded-lg text-link text-text-muted hover:text-text dark:hover:text-text"
               >
                 {t(language, 'cancel')}
               </button>

@@ -3,7 +3,45 @@ import type { Timestamp } from 'firebase/firestore';
 export type UserStatus = 'online' | 'idle' | 'dnd' | 'offline';
 export type SelectableUserStatus = 'online' | 'idle' | 'dnd';
 export type Role = 'owner' | 'admin' | 'moderator' | 'member';
-export type ThemeMode = 'basic' | 'warm' | 'royal' | 'forest' | 'ocean';
+export const THEME_MODES = [
+  'classic',
+  'emerald',
+  'sapphire',
+  'amethyst',
+] as const;
+export type ThemeMode = (typeof THEME_MODES)[number];
+export type AppearanceMode = 'dark' | 'light';
+
+export function normalizeThemeMode(value: unknown): ThemeMode {
+  switch (value) {
+    case 'classic':
+    case 'emerald':
+    case 'sapphire':
+    case 'amethyst':
+      return value;
+    case 'ivory':
+    case 'gold':
+    case 'warm':
+    case 'ruby':
+      return 'classic';
+    case 'forest':
+      return 'emerald';
+    case 'royal':
+    case 'ocean':
+      return 'sapphire';
+    case 'basic':
+    default:
+      return 'classic';
+  }
+}
+
+export function normalizeAppearanceMode(
+  value: unknown,
+  fallback: AppearanceMode = 'dark'
+): AppearanceMode {
+  return value === 'light' || value === 'dark' ? value : fallback;
+}
+
 export type AccentColor = 'indigo' | 'blue' | 'green' | 'violet' | 'rose' | 'amber' | 'cyan' | 'pink';
 export type Language = 'en' | 'ar';
 export type ChannelType = 'text' | 'voice';
@@ -49,7 +87,8 @@ export interface ServerNotificationPref {
 export interface UserSettings {
   uid: string;
   themeMode: ThemeMode;
-  accentPreset: AccentColor | 'custom';
+  appearanceMode: AppearanceMode;
+  accentPreset: AccentColor | 'custom' | 'theme';
   customAccentHex: string;
   fontSize: FontSizeLevel;
   density: DisplayDensity;

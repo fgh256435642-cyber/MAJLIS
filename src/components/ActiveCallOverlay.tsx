@@ -21,8 +21,8 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import type { VoiceConnectionStatus } from '../hooks/useVoiceRTC';
 import { t } from '../i18n/translations';
-import type { DirectCall, Friendship, PublicUser, VoiceParticipant } from '../types/nexus';
-import { UserAvatar } from './NexusLogo';
+import type { DirectCall, Friendship, PublicUser, VoiceParticipant } from '../types/majlis';
+import { UserAvatar } from './MajlisLogo';
 
 interface ActiveCallOverlayProps {
   call: DirectCall;
@@ -107,14 +107,14 @@ export function ActiveCallOverlay({
 
   if (isMinimized) {
     return (
-      <div className="fixed bottom-4 end-4 z-50 rounded-2xl bg-slate-900/90 text-white border border-white/20 shadow-2xl p-3 flex items-center gap-3 backdrop-blur-md">
+      <div className="fixed bottom-4 end-4 z-50 rounded-2xl bg-rail/90 text-text border border-border shadow-2xl p-3 flex items-center gap-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <span
             className={`w-2.5 h-2.5 rounded-full animate-pulse ${
-              connectionStatus === 'reconnecting' ? 'bg-amber-500' : 'bg-emerald-500'
+              connectionStatus === 'reconnecting' ? 'bg-warning' : 'bg-success'
             }`}
           />
-          <span className="text-xs font-semibold tabular-nums">
+          <span className="text-link font-semibold tabular-nums">
             {connectionStatus === 'reconnecting'
               ? t(language, 'voiceReconnecting')
               : formatDuration(durationSeconds)}
@@ -124,14 +124,14 @@ export function ActiveCallOverlay({
           <button
             type="button"
             onClick={onToggleMute}
-            className={`p-1.5 rounded-lg ${muted ? 'text-rose-400 bg-rose-500/20' : 'text-zinc-300 hover:bg-white/10'}`}
+            className={`p-1.5 rounded-lg ${muted ? 'text-danger bg-danger/20' : 'text-text-muted hover:bg-text/10'}`}
           >
             {muted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
           </button>
           <button
             type="button"
             onClick={() => setIsMinimized(false)}
-            className="p-1.5 rounded-lg text-zinc-300 hover:bg-white/10"
+            className="p-1.5 rounded-lg text-text-muted hover:bg-text/10"
             title="Maximize"
           >
             <Users className="w-3.5 h-3.5" />
@@ -139,7 +139,7 @@ export function ActiveCallOverlay({
           <button
             type="button"
             onClick={() => onEndCall(durationSeconds)}
-            className="p-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white"
+            className="p-1.5 rounded-lg bg-danger hover:bg-danger text-text"
             title={t(language, 'endCall')}
           >
             <PhoneOff className="w-3.5 h-3.5" />
@@ -150,15 +150,15 @@ export function ActiveCallOverlay({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 text-white select-none">
+    <div className="fixed inset-0 z-50 bg-rail/85 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 text-text select-none">
       {/* Top Header */}
       <header className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 rounded-xl bg-nexus/20 text-nexus">
+          <div className="p-2 rounded-xl bg-accent/20 text-link">
             {call.type === 'video' ? <Video className="w-5 h-5" /> : <Users className="w-5 h-5" />}
           </div>
           <div>
-            <h2 className="font-bold text-base sm:text-lg truncate">
+            <h2 className="font-bold text-link sm:text-link truncate">
               {call.isGroup
                 ? `${call.groupName || t(language, 'groupCall')} (${call.participants.length})`
                 : call.participants.length > 2
@@ -168,16 +168,16 @@ export function ActiveCallOverlay({
                   t(language, 'directMessage')
                 : call.callerName}
             </h2>
-            <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <div className="flex items-center gap-2 text-link text-text-muted">
               <span
                 className={`w-2 h-2 rounded-full animate-pulse ${
-                  connectionStatus === 'reconnecting' ? 'bg-amber-500' : 'bg-emerald-500'
+                  connectionStatus === 'reconnecting' ? 'bg-warning' : 'bg-success'
                 }`}
               />
               <span className="tabular-nums font-medium">{formatDuration(durationSeconds)}</span>
               <span>· {participants.length} {t(language, 'members')}</span>
               {connectionStatus === 'reconnecting' && (
-                <span className="text-amber-400 font-semibold">
+                <span className="text-warning font-semibold">
                   · {t(language, 'voiceReconnecting')}
                 </span>
               )}
@@ -190,7 +190,7 @@ export function ActiveCallOverlay({
             <button
               type="button"
               onClick={() => setShowAddMember(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-white/15 bg-white/10 hover:bg-white/20 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-border bg-text/10 hover:bg-text/20 text-link font-semibold transition-colors"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{t(language, 'inviteToCall')}</span>
@@ -200,7 +200,7 @@ export function ActiveCallOverlay({
           <button
             type="button"
             onClick={() => setIsMinimized(true)}
-            className="p-2 rounded-2xl border border-white/10 bg-white/10 hover:bg-white/20 text-zinc-300"
+            className="p-2 rounded-2xl border border-border bg-text/10 hover:bg-text/20 text-text-muted"
             title="Minimize"
           >
             <Minimize2 className="w-4 h-4" />
@@ -211,11 +211,11 @@ export function ActiveCallOverlay({
       {/* Main Participant Grid */}
       <main className="flex-1 flex items-center justify-center py-4 overflow-y-auto">
         {participants.length === 0 ? (
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 mx-auto rounded-full bg-nexus/20 flex items-center justify-center animate-ping">
-              <Users className="w-8 h-8 text-nexus" />
+          <div className="text-link space-y-3">
+            <div className="w-16 h-16 mx-auto rounded-full bg-accent/20 flex items-center justify-center animate-ping">
+              <Users className="w-8 h-8 text-link" />
             </div>
-            <p className="text-sm text-zinc-400">{t(language, 'calling')}</p>
+            <p className="text-link text-text-muted">{t(language, 'calling')}</p>
           </div>
         ) : (
           <div
@@ -240,10 +240,10 @@ export function ActiveCallOverlay({
               return (
                 <div
                   key={p.userId}
-                  className={`relative rounded-2xl border overflow-hidden flex flex-col items-center justify-center transition-all aspect-video bg-zinc-900 ${
+                  className={`relative rounded-2xl border overflow-hidden flex flex-col items-center justify-center transition-all aspect-video bg-rail ${
                     isSpeaking
-                      ? 'border-emerald-500 shadow-lg shadow-emerald-500/20'
-                      : 'border-white/10'
+                      ? 'border-success shadow-lg shadow-success/20'
+                      : 'border-border'
                   }`}
                 >
                   {hasVideo ? (
@@ -268,20 +268,20 @@ export function ActiveCallOverlay({
                   )}
 
                   {/* Name and State Bar */}
-                  <div className="absolute bottom-2.5 start-2.5 end-2.5 flex items-center justify-between bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-xl text-xs">
+                  <div className="absolute bottom-2.5 start-2.5 end-2.5 flex items-center justify-between bg-rail/60 backdrop-blur-sm px-3 py-1.5 rounded-xl text-link">
                     <span className="font-semibold truncate">
                       {p.displayName} {isMe ? '(You)' : ''}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      {p.muted && <MicOff className="w-3.5 h-3.5 text-rose-400" />}
-                      {p.deafened && <HeadphoneOff className="w-3.5 h-3.5 text-rose-400" />}
+                      {p.muted && <MicOff className="w-3.5 h-3.5 text-danger" />}
+                      {p.deafened && <HeadphoneOff className="w-3.5 h-3.5 text-danger" />}
                       {hasVideo && (
                         <div className="flex items-center gap-1">
                           {p.hasScreenShare && (
                             <button
                               type="button"
                               onClick={() => setFullscreenParticipantId(p.userId)}
-                              className="p-1 rounded hover:bg-white/20 text-white"
+                              className="p-1 rounded hover:bg-text/20 text-text"
                               title={t(language, 'fullscreen')}
                             >
                               <Maximize2 className="w-3 h-3" />
@@ -292,7 +292,7 @@ export function ActiveCallOverlay({
                             onClick={() =>
                               setPinnedUserId(activePinnedId === p.userId ? null : p.userId)
                             }
-                            className="p-1 rounded hover:bg-white/20 text-white"
+                            className="p-1 rounded hover:bg-text/20 text-text"
                             title={t(language, 'pinScreen')}
                           >
                             <Pin className="w-3 h-3" />
@@ -314,7 +314,7 @@ export function ActiveCallOverlay({
           type="button"
           onClick={onToggleMute}
           className={`p-3.5 rounded-2xl transition-colors ${
-            muted ? 'bg-rose-500/30 text-rose-300 border border-rose-500/50' : 'bg-white/10 hover:bg-white/20 text-white'
+            muted ? 'bg-danger/30 text-danger border border-danger' : 'bg-text/10 hover:bg-text/20 text-text'
           }`}
           title={muted ? t(language, 'unmute') : t(language, 'mute')}
         >
@@ -325,7 +325,7 @@ export function ActiveCallOverlay({
           type="button"
           onClick={onToggleDeafen}
           className={`p-3.5 rounded-2xl transition-colors ${
-            deafened ? 'bg-rose-500/30 text-rose-300 border border-rose-500/50' : 'bg-white/10 hover:bg-white/20 text-white'
+            deafened ? 'bg-danger/30 text-danger border border-danger' : 'bg-text/10 hover:bg-text/20 text-text'
           }`}
           title={deafened ? t(language, 'undeafen') : t(language, 'deafen')}
         >
@@ -336,7 +336,7 @@ export function ActiveCallOverlay({
           type="button"
           onClick={onToggleCamera}
           className={`p-3.5 rounded-2xl transition-colors ${
-            cameraActive ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/50' : 'bg-white/10 hover:bg-white/20 text-white'
+            cameraActive ? 'bg-success/30 text-success border border-success' : 'bg-text/10 hover:bg-text/20 text-text'
           }`}
           title={cameraActive ? t(language, 'stopCamera') : t(language, 'camera')}
         >
@@ -347,7 +347,7 @@ export function ActiveCallOverlay({
           type="button"
           onClick={onToggleScreenShare}
           className={`p-3.5 rounded-2xl transition-colors ${
-            screenShareActive ? 'bg-nexus/40 text-nexus border border-nexus/50' : 'bg-white/10 hover:bg-white/20 text-white'
+            screenShareActive ? 'bg-accent/40 text-link border border-accent' : 'bg-text/10 hover:bg-text/20 text-text'
           }`}
           title={screenShareActive ? t(language, 'stopScreenShare') : t(language, 'screenShare')}
         >
@@ -357,7 +357,7 @@ export function ActiveCallOverlay({
         <button
           type="button"
           onClick={() => onEndCall(durationSeconds)}
-          className="px-6 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold flex items-center gap-2 shadow-lg transition-colors"
+          className="px-6 py-3.5 rounded-2xl bg-danger hover:bg-danger text-text font-bold flex items-center gap-2 shadow-lg transition-colors"
         >
           <PhoneOff className="w-5 h-5" />
           <span>{t(language, 'endCall')}</span>
@@ -373,17 +373,17 @@ export function ActiveCallOverlay({
             : remoteVideoStreams[participant.userId];
         return (
           <div
-            className="fixed inset-0 z-[80] bg-black/95 flex flex-col"
+            className="fixed inset-0 z-[80] bg-rail/95 flex flex-col"
             onClick={() => setFullscreenParticipantId(null)}
           >
-            <div className="h-12 px-4 flex items-center justify-between text-white shrink-0">
-              <span className="text-sm font-semibold truncate">
+            <div className="h-12 px-4 flex items-center justify-between text-text shrink-0">
+              <span className="text-link font-semibold truncate">
                 {participant.displayName} · {t(language, 'screenShare')}
               </span>
               <button
                 type="button"
                 onClick={() => setFullscreenParticipantId(null)}
-                className="p-2 rounded-xl hover:bg-white/10"
+                className="p-2 rounded-xl hover:bg-text/10"
                 title=                {t(language, 'cancel')}
               >
                 <X className="w-5 h-5" />
@@ -408,32 +408,32 @@ export function ActiveCallOverlay({
       {showAddMember && (
         <div
           onClick={() => setShowAddMember(false)}
-          className="fixed inset-0 z-60 bg-black/70 flex items-center justify-center p-4"
+          className="fixed inset-0 z-60 bg-rail/70 flex items-center justify-center p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl bg-[#1E1F22] border border-white/10 p-5 space-y-4"
+            className="w-full max-w-sm rounded-2xl bg-accent border border-border p-5 space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-white">
+              <h3 className="font-bold text-link text-text">
                 {t(language, 'inviteToCall')}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddMember(false)}
-                className="text-zinc-400 hover:text-white"
+                className="text-text-muted hover:text-text"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-zinc-400">
+            <p className="text-link text-text-muted">
               {t(language, 'groupCallLimit')}
             </p>
 
             <div className="space-y-1.5 max-h-60 overflow-y-auto">
               {availableFriends.length === 0 ? (
-                <div className="py-6 text-center text-xs text-zinc-500">
+                <div className="py-6 text-link text-link text-text-muted">
                   {t(language, 'noFriendsOnline')}
                 </div>
               ) : (
@@ -445,18 +445,18 @@ export function ActiveCallOverlay({
                       onAddParticipant(f.uid);
                       setShowAddMember(false);
                     }}
-                    className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white/10 transition-colors"
+                    className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-text/10 transition-colors"
                   >
                     <div className="flex items-center gap-2.5 truncate">
                       <UserAvatar src={f.avatarUrl} name={f.displayName} size="sm" />
-                      <div className="text-start truncate">
-                        <div className="text-xs font-semibold text-white truncate">
+                      <div className="text-link truncate">
+                        <div className="text-link font-semibold text-text truncate">
                           {f.displayName}
                         </div>
-                        <div className="text-[10px] text-zinc-400">@{f.username}</div>
+                        <div className="text-[10px] text-text-muted">@{f.username}</div>
                       </div>
                     </div>
-                    <Plus className="w-4 h-4 text-nexus shrink-0" />
+                    <Plus className="w-4 h-4 text-link shrink-0" />
                   </button>
                 ))
               )}

@@ -14,7 +14,7 @@ import {
   ensureServiceWorkerMessageListener,
   getNotificationPermission,
   getOrRegisterNotificationWorker,
-  type NexusNotificationPayload,
+  type MajlisNotificationPayload,
   showWebNotification,
 } from '../services/notificationService';
 import type {
@@ -29,7 +29,7 @@ import type {
   PublicUser,
   ServerNotificationPref,
   UserStatus,
-} from '../types/nexus';
+} from '../types/majlis';
 import { getGroupDisplayName, isDndScheduleActive, isTargetMuted } from '../utils/validation';
 import { playChime } from '../utils/sound';
 
@@ -62,7 +62,7 @@ interface UseMessageNotificationsOptions {
   serverNotifications?: Record<string, ServerNotificationPref>;
   channelMutes?: Record<string, number>;
   presenceStatus?: UserStatus;
-  onNavigate: (payload: NexusNotificationPayload) => void;
+  onNavigate: (payload: MajlisNotificationPayload) => void;
   onUnreadMessage?: (info: {
     kind: 'dm' | 'group' | 'channel';
     id: string;
@@ -289,7 +289,7 @@ export function useMessageNotifications({
         msg.attachmentName ||
         t(s.language, 'sentAttachment');
 
-      const navPayload: NexusNotificationPayload =
+      const navPayload: MajlisNotificationPayload =
         context.kind === 'dm'
           ? { kind: 'dm', dmId: context.dmId }
           : context.kind === 'group'
@@ -304,7 +304,7 @@ export function useMessageNotifications({
         title,
         body,
         icon: senderAvatar,
-        tag: `nexus-msg-${msg.id}`,
+        tag: `majlis-msg-${msg.id}`,
         payload: navPayload,
         onClick: () => stateRef.current.onNavigate(navPayload),
       });

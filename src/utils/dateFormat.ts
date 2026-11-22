@@ -1,4 +1,4 @@
-import type { CalendarSystem, Language, TimeFormatMode } from '../types/nexus';
+import type { CalendarSystem, Language, TimeFormatMode } from '../types/majlis';
 
 export interface DateFormatOptions {
   language: Language;

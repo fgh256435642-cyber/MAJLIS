@@ -25,11 +25,11 @@ import {
   leaveGroupDm,
   transferGroupOwnership,
   updateGroupSettings,
-} from '../services/nexusService';
+} from '../services/majlisService';
 import { uploadFileToStorage } from '../services/storageService';
-import type { Friendship, GroupDm, PublicUser } from '../types/nexus';
+import type { Friendship, GroupDm, PublicUser } from '../types/majlis';
 import { getEffectiveUserStatus, getGroupDisplayName, LIMITS } from '../utils/validation';
-import { GroupAvatar, UserAvatar } from './NexusLogo';
+import { GroupAvatar, UserAvatar } from './MajlisLogo';
 
 function ModalBackdrop({
   onClose,
@@ -51,11 +51,11 @@ function ModalBackdrop({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-[2px] flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-rail/70 backdrop-blur-[2px] flex items-center justify-center p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full ${maxWidth} rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#313338] text-slate-900 dark:text-[#F2F3F5] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col`}
+        className={`w-full ${maxWidth} rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated text-text dark:text-text shadow-2xl overflow-hidden max-h-[90vh] flex flex-col`}
       >
         {children}
       </div>
@@ -169,20 +169,20 @@ export function CreateGroupModal({
 
   return (
     <ModalBackdrop onClose={onClose} maxWidth="max-w-lg">
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+      <div className="px-5 py-4 border-accent border-border dark:border-border flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-base flex items-center gap-2">
-            <Users className="w-4 h-4 text-nexus" />
+          <h3 className="font-bold text-link flex items-center gap-2">
+            <Users className="w-4 h-4 text-link" />
             <span>{t(language, 'createGroupTitle')}</span>
           </h3>
-          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+          <p className="text-link text-text-muted dark:text-text-muted mt-0.5">
             {t(language, 'createGroupDesc')}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white"
+          className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text"
         >
           <X className="w-5 h-5" />
         </button>
@@ -198,7 +198,7 @@ export function CreateGroupModal({
                 name={groupName || 'Group'}
                 size="lg"
               />
-              <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+              <div className="absolute inset-0 rounded-full bg-rail/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-text transition-opacity">
                 <Upload className="w-4 h-4" />
               </div>
               <input
@@ -209,7 +209,7 @@ export function CreateGroupModal({
               />
             </label>
             <div className="flex-1 min-w-0">
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-link font-semibold mb-1">
                 {t(language, 'groupNameOptional')}
               </label>
               <input
@@ -218,7 +218,7 @@ export function CreateGroupModal({
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 placeholder={t(language, 'groupNamePlaceholder')}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
               />
             </div>
             {iconPreview && (
@@ -230,7 +230,7 @@ export function CreateGroupModal({
                   setIconFile(null);
                 }}
                 title={t(language, 'removeIcon')}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -239,15 +239,15 @@ export function CreateGroupModal({
 
           {/* Selected Friends Badges */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-700 dark:text-zinc-200">
+            <div className="flex items-center justify-between text-link">
+              <span className="font-semibold text-text dark:text-text">
                 {t(language, 'selectFriendsCount')}
               </span>
               <span
                 className={`tabular-nums font-semibold ${
                   selectedUids.length >= 2
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : 'text-slate-500 dark:text-zinc-400'
+                    ? 'text-success dark:text-success'
+                    : 'text-text-muted dark:text-text-muted'
                 }`}
               >
                 {selectedUids.length} / 9 {t(language, 'selectedFriendsLabel')}
@@ -255,21 +255,21 @@ export function CreateGroupModal({
             </div>
 
             {selectedUids.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-slate-50 dark:bg-[#1E1F22] border border-slate-200 dark:border-white/10">
+              <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-elevated dark:bg-elevated border border-border dark:border-border">
                 {selectedUids.map((uid) => {
                   const friend = usersById[uid];
                   if (!friend) return null;
                   return (
                     <span
                       key={uid}
-                      className="inline-flex items-center gap-1.5 ps-1.5 pe-1 py-0.5 rounded-md bg-nexus/15 text-nexus border border-nexus/30 text-xs font-medium"
+                      className="inline-flex items-center gap-1.5 ps-1.5 pe-1 py-0.5 rounded-md bg-accent/15 text-link border border-accent text-link font-medium"
                     >
                       <UserAvatar src={friend.avatarUrl} name={friend.displayName} size="xs" />
                       <span className="truncate max-w-[120px]">{friend.displayName}</span>
                       <button
                         type="button"
                         onClick={() => toggleFriend(uid)}
-                        className="p-0.5 rounded hover:bg-nexus/20"
+                        className="p-0.5 rounded hover:bg-accent/20"
                         aria-label={t(language, 'cancel')}
                       >
                         <X className="w-3 h-3" />
@@ -283,24 +283,24 @@ export function CreateGroupModal({
 
           {/* Search Friends */}
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-text-muted absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t(language, 'searchFriendsPlaceholder')}
-              className="w-full ps-9 pe-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+              className="w-full ps-9 pe-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
             />
           </div>
 
           {/* Friend Selection List */}
           <div className="space-y-1 max-h-56 overflow-y-auto pe-1">
             {acceptedFriends.length < 2 ? (
-              <div className="py-8 text-center text-xs text-slate-500 dark:text-zinc-400">
+              <div className="py-8 text-link text-link text-text-muted dark:text-text-muted">
                 {t(language, 'noFriendsToCreateGroup')}
               </div>
             ) : filteredFriends.length === 0 ? (
-              <div className="py-8 text-center text-xs text-slate-500 dark:text-zinc-400">
+              <div className="py-8 text-link text-link text-text-muted dark:text-text-muted">
                 {t(language, 'noMatchingMembers')}
               </div>
             ) : (
@@ -319,10 +319,10 @@ export function CreateGroupModal({
                     type="button"
                     disabled={disabled}
                     onClick={() => toggleFriend(friend.uid)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-start transition-colors ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-link transition-colors ${
                       isSelected
-                        ? 'bg-nexus/15 border border-nexus/40'
-                        : 'hover:bg-slate-100 dark:hover:bg-[#2B2D31] border border-transparent'
+                        ? 'bg-accent/15 border border-accent'
+                        : 'hover:bg-main dark:hover:bg-main border border-accent'
                     } disabled:opacity-45 disabled:cursor-not-allowed`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -334,10 +334,10 @@ export function CreateGroupModal({
                         showStatus
                       />
                       <div className="min-w-0">
-                        <div className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                        <div className="text-link font-medium text-text dark:text-text truncate">
                           {friend.displayName}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                        <div className="text-link text-text-muted dark:text-text-muted truncate">
                           @{friend.username}
                         </div>
                       </div>
@@ -346,8 +346,8 @@ export function CreateGroupModal({
                     <div
                       className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
                         isSelected
-                          ? 'bg-nexus border-nexus text-white'
-                          : 'border-slate-300 dark:border-zinc-600'
+                          ? 'bg-accent border-accent text-text'
+                          : 'border-border dark:border-border'
                       }`}
                     >
                       {isSelected && <Check className="w-3.5 h-3.5" />}
@@ -359,18 +359,18 @@ export function CreateGroupModal({
           </div>
         </div>
 
-        <div className="px-5 py-3.5 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] flex items-center justify-end gap-2">
+        <div className="px-5 py-3.5 border-accent border-border dark:border-border bg-elevated dark:bg-elevated flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            className="px-4 py-2 rounded-lg border border-border dark:border-border text-link font-semibold hover:bg-main dark:hover:bg-main transition-colors"
           >
             {t(language, 'cancel')}
           </button>
           <button
             type="submit"
             disabled={submitting || selectedUids.length < 2}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
           >
             {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             <span>{t(language, 'createGroup')}</span>
@@ -550,12 +550,12 @@ export function GroupSettingsModal({
 
   return (
     <ModalBackdrop onClose={onClose} maxWidth="max-w-xl">
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+      <div className="px-5 py-4 border-accent border-border dark:border-border flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <GroupAvatar src={group.iconUrl} name={displayName} size="sm" />
           <div className="min-w-0">
-            <h3 className="font-bold text-base truncate">{displayName}</h3>
-            <p className="text-xs text-slate-500 dark:text-zinc-400 tabular-nums">
+            <h3 className="font-bold text-link truncate">{displayName}</h3>
+            <p className="text-link text-text-muted dark:text-text-muted tabular-nums">
               {group.memberIds.length} {t(language, 'members')}
             </p>
           </div>
@@ -563,21 +563,21 @@ export function GroupSettingsModal({
         <button
           type="button"
           onClick={onClose}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white shrink-0"
+          className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text shrink-0"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
       <div className="flex flex-1 min-h-0 overflow-hidden flex-col sm:flex-row">
-        <nav className="sm:w-44 shrink-0 border-b sm:border-b-0 sm:border-e border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] p-2 flex sm:flex-col gap-1 overflow-x-auto">
+        <nav className="sm:w-44 shrink-0 border-accent sm:border-b-0 sm:border-accent border-border dark:border-border bg-elevated dark:bg-elevated p-2 flex sm:flex-col gap-1 overflow-x-auto">
           <button
             type="button"
             onClick={() => setTab('overview')}
-            className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium text-start whitespace-nowrap transition-colors ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-md text-link font-medium text-link whitespace-nowrap transition-colors ${
               tab === 'overview'
-                ? 'bg-slate-200 dark:bg-[#404249] text-slate-950 dark:text-white'
-                : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                ? 'bg-hover dark:bg-hover text-text dark:text-text'
+                : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
             }`}
           >
             <Settings className="w-3.5 h-3.5 shrink-0" />
@@ -587,10 +587,10 @@ export function GroupSettingsModal({
           <button
             type="button"
             onClick={() => setTab('members')}
-            className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium text-start whitespace-nowrap transition-colors ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-md text-link font-medium text-link whitespace-nowrap transition-colors ${
               tab === 'members'
-                ? 'bg-slate-200 dark:bg-[#404249] text-slate-950 dark:text-white'
-                : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                ? 'bg-hover dark:bg-hover text-text dark:text-text'
+                : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
             }`}
           >
             <Users className="w-3.5 h-3.5 shrink-0" />
@@ -603,10 +603,10 @@ export function GroupSettingsModal({
             <button
               type="button"
               onClick={() => setTab('add')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium text-start whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-link font-medium text-link whitespace-nowrap transition-colors ${
                 tab === 'add'
-                  ? 'bg-slate-200 dark:bg-[#404249] text-slate-950 dark:text-white'
-                  : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                  ? 'bg-hover dark:bg-hover text-text dark:text-text'
+                  : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
               }`}
             >
               <UserPlus className="w-3.5 h-3.5 shrink-0" />
@@ -627,7 +627,7 @@ export function GroupSettingsModal({
                         name={name || displayName}
                         size="lg"
                       />
-                      <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                      <div className="absolute inset-0 rounded-full bg-rail/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-text transition-opacity">
                         <Upload className="w-4 h-4" />
                       </div>
                       <input
@@ -644,7 +644,7 @@ export function GroupSettingsModal({
                       />
                     </label>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-semibold mb-1">
+                      <div className="text-link font-semibold mb-1">
                         {t(language, 'groupIconOptional')}
                       </div>
                       {iconPreview && (
@@ -655,7 +655,7 @@ export function GroupSettingsModal({
                             setIconUrl('');
                             setIconPreview('');
                           }}
-                          className="text-xs text-rose-600 dark:text-rose-400 hover:underline"
+                          className="text-link text-danger dark:text-danger hover:underline"
                         >
                           {t(language, 'removeIcon')}
                         </button>
@@ -664,7 +664,7 @@ export function GroupSettingsModal({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">
+                    <label className="block text-link font-semibold mb-1">
                       {t(language, 'groupNameOptional')}
                     </label>
                     <input
@@ -673,25 +673,25 @@ export function GroupSettingsModal({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t(language, 'groupNamePlaceholder')}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                      className="w-full px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={saving}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
                   >
                     {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     <span>{t(language, 'save')}</span>
                   </button>
                 </form>
               ) : (
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#2B2D31] border border-slate-200 dark:border-white/10 flex items-center gap-3">
+                <div className="p-3.5 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border flex items-center gap-3">
                   <GroupAvatar src={group.iconUrl} name={displayName} size="md" />
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold truncate">{displayName}</div>
-                    <div className="text-xs text-slate-500 dark:text-zinc-400">
+                    <div className="text-link font-semibold truncate">{displayName}</div>
+                    <div className="text-link text-text-muted dark:text-text-muted">
                       {t(language, 'roleOwner')}:{' '}
                       {usersById[group.ownerId]?.displayName || group.ownerId.slice(0, 8)}
                     </div>
@@ -700,24 +700,24 @@ export function GroupSettingsModal({
               )}
 
               {/* Notification Mute Toggle */}
-              <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+              <div className="pt-4 border-accent border-border dark:border-border flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   {isMuted ? (
-                    <BellOff className="w-4 h-4 text-amber-500 shrink-0" />
+                    <BellOff className="w-4 h-4 text-warning shrink-0" />
                   ) : (
-                    <Bell className="w-4 h-4 text-nexus shrink-0" />
+                    <Bell className="w-4 h-4 text-link shrink-0" />
                   )}
-                  <span className="text-sm font-medium truncate">
+                  <span className="text-link font-medium truncate">
                     {isMuted ? t(language, 'unmuteGroup') : t(language, 'muteGroup')}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={onToggleMute}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-link font-semibold transition-colors ${
                     isMuted
-                      ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25'
-                      : 'bg-slate-100 dark:bg-[#1E1F22] hover:bg-slate-200 dark:hover:bg-white/10'
+                      ? 'bg-warning/15 text-warning dark:text-warning hover:bg-warning/25'
+                      : 'bg-main dark:bg-main hover:bg-hover dark:hover:bg-hover'
                   }`}
                 >
                   {isMuted ? t(language, 'unmuteGroup') : t(language, 'muteGroup')}
@@ -725,23 +725,23 @@ export function GroupSettingsModal({
               </div>
 
               {/* Leave Group Section */}
-              <div className="pt-4 border-t border-slate-200 dark:border-white/10 space-y-2.5">
+              <div className="pt-4 border-accent border-border dark:border-border space-y-2.5">
                 {!confirmLeave ? (
                   <button
                     type="button"
                     onClick={() => setConfirmLeave(true)}
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-semibold transition-colors"
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-danger/10 text-danger dark:text-danger hover:bg-danger hover:text-text text-link font-semibold transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>{t(language, 'leaveGroup')}</span>
                   </button>
                 ) : (
-                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 space-y-2.5">
-                    <p className="text-xs font-medium text-rose-700 dark:text-rose-300">
+                  <div className="p-3 rounded-xl bg-danger/10 border border-danger space-y-2.5">
+                    <p className="text-link font-medium text-danger dark:text-danger">
                       {t(language, 'leaveGroupConfirm')}
                     </p>
                     {isOwner && group.memberIds.length > 1 && (
-                      <p className="text-[11px] text-rose-600/90 dark:text-rose-300/80">
+                      <p className="text-[11px] text-danger/90 dark:text-danger/90">
                         {t(language, 'leaveGroupOwnerNotice')}
                       </p>
                     )}
@@ -750,14 +750,14 @@ export function GroupSettingsModal({
                         type="button"
                         disabled={saving}
                         onClick={handleLeave}
-                        className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-danger hover:bg-danger text-text text-link font-semibold transition-colors"
                       >
                         {t(language, 'leaveGroup')}
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmLeave(false)}
-                        className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-semibold"
+                        className="px-3 py-1.5 rounded-lg border border-border dark:border-border text-link font-semibold"
                       >
                         {t(language, 'cancel')}
                       </button>
@@ -783,7 +783,7 @@ export function GroupSettingsModal({
                 return (
                   <div
                     key={memberId}
-                    className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-[#2B2D31] border border-slate-200/70 dark:border-white/5"
+                    className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-elevated dark:bg-elevated border border-border dark:border-border"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <UserAvatar
@@ -795,14 +795,14 @@ export function GroupSettingsModal({
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium truncate">
+                          <span className="text-link font-medium truncate">
                             {user?.displayName || memberId.slice(0, 8)}
                           </span>
                           {isMemberOwner && (
-                            <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            <Crown className="w-3.5 h-3.5 text-warning shrink-0" />
                           )}
                         </div>
-                        <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                        <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
                           @{user?.username || memberId.slice(0, 6)}
                         </div>
                       </div>
@@ -815,14 +815,14 @@ export function GroupSettingsModal({
                             <button
                               type="button"
                               onClick={() => handleTransfer(memberId)}
-                              className="px-2 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold"
+                              className="px-2 py-1 rounded bg-warning hover:bg-warning text-text text-[11px] font-semibold"
                             >
                               {t(language, 'accept')}
                             </button>
                             <button
                               type="button"
                               onClick={() => setConfirmTransferUid(null)}
-                              className="px-2 py-1 rounded border border-slate-200 dark:border-white/10 text-[11px]"
+                              className="px-2 py-1 rounded border border-border dark:border-border text-[11px]"
                             >
                               {t(language, 'cancel')}
                             </button>
@@ -833,7 +833,7 @@ export function GroupSettingsModal({
                               type="button"
                               onClick={() => setConfirmTransferUid(memberId)}
                               title={t(language, 'transferOwnership')}
-                              className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors"
+                              className="p-1.5 rounded-lg bg-warning/10 text-warning dark:text-warning hover:bg-warning/20 transition-colors"
                             >
                               <Crown className="w-3.5 h-3.5" />
                             </button>
@@ -841,7 +841,7 @@ export function GroupSettingsModal({
                               type="button"
                               onClick={() => handleKick(memberId)}
                               title={t(language, 'kickFromGroup')}
-                              className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors"
+                              className="p-1.5 rounded-lg bg-danger/10 text-danger dark:text-danger hover:bg-danger/20 transition-colors"
                             >
                               <UserMinus className="w-3.5 h-3.5" />
                             </button>
@@ -857,24 +857,24 @@ export function GroupSettingsModal({
 
           {tab === 'add' && isOwner && (
             <div className="space-y-3">
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
+              <p className="text-link text-text-muted dark:text-text-muted">
                 {t(language, 'groupFullLimit')} ({group.memberIds.length}/{LIMITS.GROUP_MEMBERS_MAX})
               </p>
 
               <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="w-4 h-4 text-text-muted absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={addSearch}
                   onChange={(e) => setAddSearch(e.target.value)}
                   placeholder={t(language, 'searchFriendsPlaceholder')}
-                  className="w-full ps-9 pe-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                  className="w-full ps-9 pe-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
                 />
               </div>
 
               <div className="space-y-1 max-h-56 overflow-y-auto">
                 {availableFriendsToAdd.length === 0 ? (
-                  <p className="py-6 text-center text-xs text-slate-500 dark:text-zinc-400">
+                  <p className="py-6 text-link text-link text-text-muted dark:text-text-muted">
                     {t(language, 'noFriendsAvailableToAdd')}
                   </p>
                 ) : (
@@ -893,17 +893,17 @@ export function GroupSettingsModal({
                               : [...prev, friend.uid]
                           )
                         }
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-start transition-colors ${
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-link transition-colors ${
                           checked
-                            ? 'bg-nexus/15 border border-nexus/40'
-                            : 'hover:bg-slate-100 dark:hover:bg-[#2B2D31] border border-transparent'
+                            ? 'bg-accent/15 border border-accent'
+                            : 'hover:bg-main dark:hover:bg-main border border-accent'
                         } disabled:opacity-45`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <UserAvatar src={friend.avatarUrl} name={friend.displayName} size="sm" />
                           <div className="min-w-0">
-                            <div className="text-sm font-medium truncate">{friend.displayName}</div>
-                            <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                            <div className="text-link font-medium truncate">{friend.displayName}</div>
+                            <div className="text-link text-text-muted dark:text-text-muted truncate">
                               @{friend.username}
                             </div>
                           </div>
@@ -911,8 +911,8 @@ export function GroupSettingsModal({
                         <div
                           className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${
                             checked
-                              ? 'bg-nexus border-nexus text-white'
-                              : 'border-slate-300 dark:border-zinc-600'
+                              ? 'bg-accent border-accent text-text'
+                              : 'border-border dark:border-border'
                           }`}
                         >
                           {checked && <Check className="w-3.5 h-3.5" />}
@@ -927,7 +927,7 @@ export function GroupSettingsModal({
                 type="button"
                 disabled={saving || selectedToAdd.length === 0}
                 onClick={handleAddMembers}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors"
               >
                 {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <UserPlus className="w-4 h-4" />

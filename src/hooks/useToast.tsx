@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import type { ToastItem } from '../types/nexus';
+import type { ToastItem } from '../types/majlis';
 
 interface ToastContextValue {
   toasts: ToastItem[];

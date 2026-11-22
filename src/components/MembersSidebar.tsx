@@ -16,8 +16,8 @@ import { usePersistentCollapseMap } from '../hooks/useCollapsibleState';
 import { useToast } from '../hooks/useToast';
 import { useUserSettings } from '../hooks/useUserSettings';
 import { t } from '../i18n/translations';
-import { blockUser, unblockUser } from '../services/nexusService';
-import type { PublicUser, Role, ServerMember } from '../types/nexus';
+import { blockUser, unblockUser } from '../services/majlisService';
+import type { PublicUser, Role, ServerMember } from '../types/majlis';
 import {
   getActiveCustomStatus,
   getEffectiveUserStatus,
@@ -26,7 +26,7 @@ import {
   isUserEffectivelyOnline,
 } from '../utils/validation';
 import { CollapseChevron, CollapsibleBody } from './CollapsibleSection';
-import { StatusIndicator, UserAvatar } from './NexusLogo';
+import { StatusIndicator, UserAvatar } from './MajlisLogo';
 import { ProfileBanner } from './ProfileBanner';
 
 interface MembersSidebarProps {
@@ -62,7 +62,7 @@ export function MembersSidebar({
   const [selectedMember, setSelectedMember] = useState<ServerMember | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const { isCollapsed: isGroupCollapsed, toggleSection: toggleGroup } =
-    usePersistentCollapseMap(`nexus_collapsed_members_${serverId}`);
+    usePersistentCollapseMap(`majlis_collapsed_members_${serverId}`);
 
   const rawTerm = searchQuery.trim().toLowerCase();
   const normalizedTerm = rawTerm.startsWith('@') ? rawTerm.slice(1) : rawTerm;
@@ -118,7 +118,7 @@ export function MembersSidebar({
         key={m.uid}
         type="button"
         onClick={() => setSelectedMember(selectedMember?.uid === m.uid ? null : m)}
-        className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-start hover:bg-slate-200/70 dark:hover:bg-[#35373C] transition-colors ${
+        className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-link hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors ${
           isOffline ? 'opacity-50 hover:opacity-100' : ''
         }`}
       >
@@ -131,32 +131,32 @@ export function MembersSidebar({
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className={`text-sm font-medium truncate ${getRoleColorClass(m.role)}`}>
+            <span className={`text-link font-medium truncate ${getRoleColorClass(m.role)}`}>
               {displayName}
             </span>
             {m.role === 'owner' && (
-              <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <Crown className="w-3.5 h-3.5 text-warning shrink-0" />
             )}
             {(m.role === 'admin' || m.role === 'moderator') && (
-              <Shield className="w-3 h-3 text-emerald-500 shrink-0" />
+              <Shield className="w-3 h-3 text-success shrink-0" />
             )}
           </div>
           {normalizedTerm ? (
-            <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+            <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
               @{username}
             </div>
           ) : (() => {
             const custom = getActiveCustomStatus(pub, presenceNowMs);
             if (custom && !isOffline) {
               return (
-                <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
                   {custom.emoji} {custom.text}
                 </div>
               );
             }
             if (pub?.bio && !isOffline) {
               return (
-                <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
                   {pub.bio}
                 </div>
               );
@@ -193,11 +193,11 @@ export function MembersSidebar({
   const offlineCollapsed = !normalizedTerm && isGroupCollapsed('offline');
 
   return (
-    <aside className="relative w-60 shrink-0 h-full bg-slate-100 dark:bg-[#2B2D31] border-s border-slate-200 dark:border-black/25 flex flex-col select-none">
+    <aside className="relative w-60 shrink-0 h-full bg-main dark:bg-main border-accent border-border dark:border-border flex flex-col select-none">
       {/* Member Search Bar & Panel Collapse Toggle */}
-      <div className="h-12 px-2.5 flex items-center gap-1.5 border-b border-slate-200 dark:border-black/25 shrink-0">
+      <div className="h-12 px-2.5 flex items-center gap-1.5 border-accent border-border dark:border-border shrink-0">
         <div className="relative flex-1 min-w-0">
-          <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-text-muted dark:text-text-muted absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
@@ -212,14 +212,14 @@ export function MembersSidebar({
             aria-label={t(language, 'searchMembers')}
             className={`w-full ps-8 ${
               searchQuery ? 'pe-7' : 'pe-2.5'
-            } py-1.5 rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] text-xs text-slate-900 dark:text-[#F2F3F5] placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-nexus transition-colors`}
+            } py-1.5 rounded-md border border-border dark:border-border bg-elevated dark:bg-elevated text-link text-text dark:text-text placeholder:text-text-muted dark:placeholder:text-text-muted focus:outline-accent focus:ring-2 focus:ring-accent transition-colors`}
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
               aria-label={t(language, 'clearSearch')}
-              className="absolute end-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="absolute end-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text dark:hover:text-text transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -231,7 +231,7 @@ export function MembersSidebar({
             onClick={onClosePanel}
             title={t(language, 'hideMembers')}
             aria-label={t(language, 'hideMembers')}
-            className="p-1.5 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-slate-200/70 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
+            className="p-1.5 rounded-md text-text-muted dark:text-text-muted hover:bg-hover/70 dark:hover:bg-hover/70 hover:text-text dark:hover:text-text transition-colors shrink-0"
           >
             <PanelRightClose className="w-4 h-4 rtl:rotate-180" />
           </button>
@@ -245,7 +245,7 @@ export function MembersSidebar({
               type="button"
               aria-expanded={!onlineCollapsed}
               onClick={() => toggleGroup('online')}
-              className="w-full px-2 py-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors tabular-nums text-start rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+              className="w-full px-2 py-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text transition-colors tabular-nums text-link rounded focus:outline-accent focus-visible:ring-2 focus-visible:ring-accent"
             >
               <CollapseChevron collapsed={onlineCollapsed} className="w-3 h-3" />
               <span>
@@ -266,7 +266,7 @@ export function MembersSidebar({
               type="button"
               aria-expanded={!offlineCollapsed}
               onClick={() => toggleGroup('offline')}
-              className="w-full px-2 py-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors tabular-nums text-start rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+              className="w-full px-2 py-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text transition-colors tabular-nums text-link rounded focus:outline-accent focus-visible:ring-2 focus-visible:ring-accent"
             >
               <CollapseChevron collapsed={offlineCollapsed} className="w-3 h-3" />
               <span>
@@ -282,15 +282,15 @@ export function MembersSidebar({
         )}
 
         {filteredMembers.length === 0 && (
-          <div className="py-10 px-3 text-center space-y-2">
-            <p className="text-xs text-slate-500 dark:text-zinc-400">
+          <div className="py-10 px-3 text-link space-y-2">
+            <p className="text-link text-text-muted dark:text-text-muted">
               {t(language, 'noMatchingMembers')}
             </p>
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="text-xs font-medium text-nexus hover:underline"
+                className="text-link font-medium text-link hover:underline"
               >
                 {t(language, 'clearSearch')}
               </button>
@@ -306,7 +306,7 @@ export function MembersSidebar({
             className="fixed inset-0 z-30"
             onClick={() => setSelectedMember(null)}
           />
-          <div className="fixed bottom-4 end-4 sm:absolute sm:top-4 sm:bottom-auto sm:end-64 z-40 w-68 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] shadow-2xl overflow-hidden">
+          <div className="fixed bottom-4 end-4 sm:absolute sm:top-4 sm:bottom-auto sm:end-64 z-40 w-68 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl overflow-hidden">
             {selectedPub?.profileVisible !== false && (
               <ProfileBanner
                 bannerUrl={selectedPub?.bannerUrl}
@@ -316,7 +316,7 @@ export function MembersSidebar({
             )}
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end justify-between">
-                <div className="rounded-full bg-transparent">
+                <div className="rounded-full bg-accent">
                   <UserAvatar
                     src={selectedPub?.avatarUrl ?? selectedMember.avatarUrl}
                     name={selectedPub?.displayName || selectedMember.displayName}
@@ -328,10 +328,10 @@ export function MembersSidebar({
               </div>
 
               <div className="min-w-0">
-                <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">
+                <div className="font-semibold text-link text-text dark:text-text truncate">
                   {selectedPub?.displayName || selectedMember.displayName}
                 </div>
-                <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                <div className="text-link text-text-muted dark:text-text-muted truncate">
                   @{selectedPub?.username || selectedMember.username} ·{' '}
                   <span className={getRoleColorClass(selectedMember.role)}>
                     {selectedMember.role === 'owner'
@@ -343,7 +343,7 @@ export function MembersSidebar({
                       : t(language, 'roleMember')}
                   </span>
                 </div>
-                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-text-muted dark:text-text-muted">
                   <StatusIndicator status={selectedStatus} className="w-2 h-2 shrink-0" />
                   <span>
                     {selectedStatus === 'online'
@@ -360,7 +360,7 @@ export function MembersSidebar({
                   const custom = getActiveCustomStatus(selectedPub, presenceNowMs);
                   if (!custom) return null;
                   return (
-                    <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-700 dark:text-zinc-200 flex items-center gap-1.5">
+                    <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-main dark:bg-main text-link text-text dark:text-text flex items-center gap-1.5">
                       {custom.emoji && <span>{custom.emoji}</span>}
                       <span className="truncate">{custom.text}</span>
                     </div>
@@ -369,13 +369,13 @@ export function MembersSidebar({
               </div>
 
             {selectedPub?.profileVisible !== false && selectedPub?.bio && (
-              <p className="text-xs text-slate-600 dark:text-zinc-300 break-words">
+              <p className="text-link text-text dark:text-text break-words">
                 {selectedPub.bio}
               </p>
             )}
 
             {selectedMember.uid !== myUid && (
-              <div className="space-y-1.5 pt-1 border-t border-slate-200 dark:border-white/10">
+              <div className="space-y-1.5 pt-1 border-accent border-border dark:border-border">
                 <div className="grid grid-cols-2 gap-1.5">
                   <button
                     type="button"
@@ -383,7 +383,7 @@ export function MembersSidebar({
                       onStartDm(selectedMember.uid);
                       setSelectedMember(null);
                     }}
-                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md bg-nexus hover:bg-nexus-hover text-white text-xs font-medium transition-colors"
+                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md bg-accent hover:bg-majlis-hover text-text text-link font-medium transition-colors"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     <span>{t(language, 'messageUser')}</span>
@@ -394,7 +394,7 @@ export function MembersSidebar({
                       onAddFriend(selectedPub?.username || selectedMember.username);
                       setSelectedMember(null);
                     }}
-                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs font-medium transition-colors"
+                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md border border-border dark:border-border hover:bg-main dark:hover:bg-main text-link font-medium transition-colors"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>{t(language, 'addFriend')}</span>
@@ -425,10 +425,10 @@ export function MembersSidebar({
                         }
                         setSelectedMember(null);
                       }}
-                      className={`w-full flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-medium transition-colors ${
+                      className={`w-full flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-link font-medium transition-colors ${
                         isBlocked
-                          ? 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-zinc-200'
-                          : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20'
+                          ? 'bg-main dark:bg-main text-text dark:text-text'
+                          : 'bg-danger/10 text-danger dark:text-danger hover:bg-danger/20'
                       }`}
                     >
                       <ShieldOff className="w-3.5 h-3.5" />
@@ -439,7 +439,7 @@ export function MembersSidebar({
 
                 {canActOnTarget && canManageRoles && (
                   <div className="pt-1.5">
-                    <label className="block text-[11px] font-medium text-slate-500 dark:text-zinc-400 mb-1">
+                    <label className="block text-[11px] font-medium text-text-muted dark:text-text-muted mb-1">
                       {t(language, 'roles')}
                     </label>
                     <select
@@ -451,7 +451,7 @@ export function MembersSidebar({
                         );
                         setSelectedMember(null);
                       }}
-                      className="w-full px-2 py-1.5 rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-xs"
+                      className="w-full px-2 py-1.5 rounded-md border border-border dark:border-border bg-elevated dark:bg-elevated text-link"
                     >
                       {myRole === 'owner' && <option value="admin">{t(language, 'roleAdmin')}</option>}
                       <option value="moderator">{t(language, 'roleModerator')}</option>
@@ -469,7 +469,7 @@ export function MembersSidebar({
                           onKickMember(selectedMember);
                           setSelectedMember(null);
                         }}
-                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 text-xs font-medium transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md bg-warning/15 text-warning dark:text-warning hover:bg-warning/25 text-link font-medium transition-colors"
                       >
                         <UserMinus className="w-3.5 h-3.5" />
                         <span>{t(language, 'kick')}</span>
@@ -482,7 +482,7 @@ export function MembersSidebar({
                           onBanMember(selectedMember);
                           setSelectedMember(null);
                         }}
-                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 hover:bg-rose-500/25 text-xs font-medium transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md bg-danger/15 text-danger dark:text-danger hover:bg-danger/25 text-link font-medium transition-colors"
                       >
                         <Ban className="w-3.5 h-3.5" />
                         <span>{t(language, 'ban')}</span>

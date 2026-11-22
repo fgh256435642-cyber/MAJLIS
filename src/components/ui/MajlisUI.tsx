@@ -3,7 +3,7 @@ import * as PopoverPrimitive from '@radix-ui/react-popover';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { useAuth } from '../../hooks/useAuth';
 
-export function NexusTooltipProvider({ children }: { children: ReactNode }) {
+export function MajlisTooltipProvider({ children }: { children: ReactNode }) {
   return (
     <TooltipPrimitive.Provider delayDuration={220} skipDelayDuration={120}>
       {children}
@@ -11,7 +11,7 @@ export function NexusTooltipProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function NexusTooltip({
+export function MajlisTooltip({
   content,
   side = 'top',
   align = 'center',
@@ -39,21 +39,21 @@ export function NexusTooltip({
           sideOffset={sideOffset}
           collisionPadding={8}
           dir={isRtl ? 'rtl' : 'ltr'}
-          className="nexus-floating-motion z-[70] max-w-xs rounded-lg border border-slate-200/80 dark:border-white/10 bg-slate-900 dark:bg-[#111214] px-2.5 py-1.5 text-xs font-medium text-white shadow-xl select-none pointer-events-none"
+          className="majlis-floating-motion z-[70] max-w-xs rounded-lg border border-border bg-elevated px-2.5 py-1.5 text-text shadow-xl select-none pointer-events-none"
         >
           {content}
-          <TooltipPrimitive.Arrow className="fill-slate-900 dark:fill-[#111214]" />
+          <TooltipPrimitive.Arrow className="fill-elevated" />
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Portal>
     </TooltipPrimitive.Root>
   );
 }
 
-export const NexusPopover = PopoverPrimitive.Root;
-export const NexusPopoverTrigger = PopoverPrimitive.Trigger;
-export const NexusPopoverAnchor = PopoverPrimitive.Anchor;
+export const MajlisPopover = PopoverPrimitive.Root;
+export const MajlisPopoverTrigger = PopoverPrimitive.Trigger;
+export const MajlisPopoverAnchor = PopoverPrimitive.Anchor;
 
-export function NexusPopoverContent({
+export function MajlisPopoverContent({
   children,
   side = 'bottom',
   align = 'start',
@@ -82,7 +82,7 @@ export function NexusPopoverContent({
         collisionPadding={collisionPadding}
         onOpenAutoFocus={onOpenAutoFocus}
         dir={isRtl ? 'rtl' : 'ltr'}
-        className={`nexus-floating-motion z-[60] outline-none ${className}`}
+        className={`majlis-floating-motion z-[60] outline-accent ${className}`}
       >
         {children}
       </PopoverPrimitive.Content>

@@ -48,7 +48,7 @@ import type {
   Role,
   ServerMember,
   TypingUser,
-} from '../types/nexus';
+} from '../types/majlis';
 import { formatMessageTimestamp, formatShortDate, formatTimeOnly } from '../utils/dateFormat';
 import { LinkEmbedCard, RichMessageContent } from '../utils/markdown';
 import {
@@ -60,7 +60,7 @@ import {
   hasPermission,
   LIMITS,
 } from '../utils/validation';
-import { GroupAvatar, StatusIndicator, UserAvatar } from './NexusLogo';
+import { GroupAvatar, StatusIndicator, UserAvatar } from './MajlisLogo';
 import { ProfileBanner } from './ProfileBanner';
 import { VoiceNotePlayer } from './VoiceNotePlayer';
 
@@ -354,7 +354,10 @@ export function ChatArea({
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
+    input.value = '';
+    composerRef.current?.focus();
     if (!file) return;
     if (file.size > 15 * 1024 * 1024) {
       pushToast({
@@ -371,7 +374,6 @@ export function ChatArea({
     } else {
       setPendingPreviewUrl(null);
     }
-    e.target.value = '';
   };
 
   const clearPendingFile = () => {
@@ -487,7 +489,8 @@ export function ChatArea({
         attachmentUrl = await uploadFileToStorage(
           `attachments/${storageScopeId}/${channelOrDmId}`,
           pendingFile,
-          (pct) => setUploadProgress(pct)
+          (pct) => setUploadProgress(pct),
+          { maxWidth: 1600, maxHeight: 1600, maxDataUrlLength: 199_000 }
         );
         attachmentName = pendingFile.name;
         attachmentType = pendingFile.type || 'application/octet-stream';
@@ -611,14 +614,14 @@ export function ChatArea({
   };
 
   return (
-    <div className="flex-1 min-w-0 h-full flex flex-col bg-white dark:bg-[#313338] relative">
+    <div className="flex-1 min-w-0 h-full flex flex-col bg-elevated dark:bg-elevated relative">
       {/* Top Bar */}
-      <header className="h-12 px-3 sm:px-4 border-b border-slate-200 dark:border-black/25 flex items-center justify-between gap-3 shrink-0">
+      <header className="h-12 px-3 sm:px-4 border-accent border-border dark:border-border flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             type="button"
             onClick={onOpenMobileSidebar}
-            className="md:hidden p-1.5 rounded-md text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10"
+            className="md:hidden p-1.5 rounded-md text-text dark:text-text hover:bg-main dark:hover:bg-main"
             aria-label="Open navigation"
           >
             <Menu className="w-5 h-5" />
@@ -631,14 +634,14 @@ export function ChatArea({
               title={`${t(language, 'expandSidebar')} (Ctrl+B)`}
               aria-label={t(language, 'expandSidebar')}
               aria-keyshortcuts="Control+b"
-              className="hidden md:inline-flex p-1.5 rounded-md border border-slate-200/80 dark:border-white/10 bg-slate-100/80 dark:bg-[#2B2D31] text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
+              className="hidden md:inline-flex p-1.5 rounded-md border border-border dark:border-border bg-main/80 dark:bg-main/80 text-text dark:text-text hover:bg-hover dark:hover:bg-hover hover:text-text dark:hover:text-text transition-colors shrink-0"
             >
               <PanelLeftOpen className="w-4 h-4 rtl:rotate-180" />
             </button>
           )}
 
           {mode === 'channel' ? (
-            <Hash className="w-5 h-5 text-slate-400 dark:text-zinc-400 shrink-0" />
+            <Hash className="w-5 h-5 text-text-muted dark:text-text-muted shrink-0" />
           ) : mode === 'group' ? (
             <GroupAvatar src={group?.iconUrl} name={title} size="xs" />
           ) : dmRecipient ? (
@@ -646,7 +649,7 @@ export function ChatArea({
               type="button"
               onClick={() => setSelectedProfileUid(dmRecipient.uid)}
               aria-label={`${dmRecipient.displayName || title} profile`}
-              className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+              className="rounded-full focus:outline-accent focus-visible:ring-2 focus-visible:ring-accent"
             >
               <UserAvatar
                 src={dmRecipient.avatarUrl}
@@ -661,25 +664,25 @@ export function ChatArea({
               />
             </button>
           ) : (
-            <AtSign className="w-5 h-5 text-slate-400 dark:text-zinc-400 shrink-0" />
+            <AtSign className="w-5 h-5 text-text-muted dark:text-text-muted shrink-0" />
           )}
 
           {mode === 'dm' && dmRecipient ? (
             <button
               type="button"
               onClick={() => setSelectedProfileUid(dmRecipient.uid)}
-              className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate hover:text-nexus focus:outline-none"
+              className="font-semibold text-link sm:text-link text-text dark:text-text truncate hover:text-link focus:outline-accent"
             >
               {title}
             </button>
           ) : (
-            <h2 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">
+            <h2 className="font-semibold text-link sm:text-link text-text dark:text-text truncate">
               {title}
             </h2>
           )}
 
           {mode === 'group' && group && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-500 dark:text-zinc-400 shrink-0 tabular-nums">
+            <span className="hidden sm:inline-flex items-center gap-1 text-link text-text-muted dark:text-text-muted shrink-0 tabular-nums">
               <span>·</span>
               <span>
                 {group.memberIds.length} {t(language, 'members')}
@@ -703,11 +706,11 @@ export function ChatArea({
                 ? t(language, 'dnd')
                 : t(language, 'offline');
             return (
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400 shrink-0 max-w-[220px] truncate">
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-link text-text-muted dark:text-text-muted shrink-0 max-w-[220px] truncate">
                 <StatusIndicator status={recipientStatus} className="w-2 h-2 shrink-0" />
                 <span>{recipientStatusText}</span>
                 {custom && (
-                  <span className="text-slate-600 dark:text-zinc-300 truncate">
+                  <span className="text-text dark:text-text truncate">
                     · {custom.emoji} {custom.text}
                   </span>
                 )}
@@ -716,7 +719,7 @@ export function ChatArea({
           })()}
 
           {mode === 'channel' && (categoryName || typeof memberCount === 'number') && (
-            <span className="hidden md:inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400 shrink-0 tabular-nums">
+            <span className="hidden md:inline-flex items-center gap-1.5 text-link text-text-muted dark:text-text-muted shrink-0 tabular-nums">
               {categoryName && <span>{categoryName}</span>}
               {categoryName && typeof memberCount === 'number' && <span aria-hidden="true">·</span>}
               {typeof memberCount === 'number' && (
@@ -728,8 +731,8 @@ export function ChatArea({
           )}
 
           {subtitle && (
-            <span className="hidden xl:inline text-xs text-slate-500 dark:text-zinc-400 truncate border-s border-slate-200 dark:border-white/10 ps-3">
-              {subtitle}
+            <span className="hidden xl:inline text-link text-text-muted dark:text-text-muted truncate border-accent border-border dark:border-border ps-3">
+              <bdi dir={mode === 'dm' ? 'ltr' : undefined}>{subtitle}</bdi>
             </span>
           )}
         </div>
@@ -759,10 +762,10 @@ export function ChatArea({
             return (
               <>
                 <div
-                  className="fixed inset-0 z-40 bg-black/35 backdrop-blur-[1px]"
+                  className="fixed inset-0 z-40 bg-rail/35 backdrop-blur-[1px]"
                   onClick={() => setSelectedProfileUid(null)}
                 />
-                <div className="fixed z-50 inset-x-4 bottom-4 sm:inset-x-auto sm:start-1/2 sm:-translate-x-1/2 sm:bottom-auto sm:top-24 w-auto sm:w-72 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] shadow-2xl overflow-hidden">
+                <div className="fixed z-50 inset-x-4 bottom-4 sm:inset-x-auto sm:start-1/2 sm:-translate-x-1/2 sm:bottom-auto sm:top-24 w-auto sm:w-72 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl overflow-hidden">
                   {visible && (
                     <ProfileBanner
                       bannerUrl={profile.bannerUrl}
@@ -772,7 +775,7 @@ export function ChatArea({
                   )}
                   <div className="p-4 pt-0 space-y-3">
                     <div className="-mt-8 flex items-end">
-                      <div className="rounded-full bg-transparent">
+                      <div className="rounded-full bg-accent">
                         <UserAvatar
                           src={profile.avatarUrl}
                           name={profile.displayName || profile.username}
@@ -783,24 +786,24 @@ export function ChatArea({
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">
+                      <div className="font-semibold text-link text-text dark:text-text truncate">
                         {profile.displayName || profile.username}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
-                        @{profile.username}
+                      <div className="text-link text-text-muted dark:text-text-muted truncate">
+                        <bdi dir="ltr">@{profile.username}</bdi>
                       </div>
-                      <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                      <div className="mt-1 flex items-center gap-1.5 text-[11px] text-text-muted dark:text-text-muted">
                         <StatusIndicator status={status} className="w-2 h-2 shrink-0" />
                         <span>{statusText}</span>
                       </div>
                       {visible && custom && (
-                        <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-700 dark:text-zinc-200 flex items-center gap-1.5">
+                        <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-main dark:bg-main text-link text-text dark:text-text flex items-center gap-1.5">
                           {custom.emoji && <span>{custom.emoji}</span>}
                           <span className="truncate">{custom.text}</span>
                         </div>
                       )}
                       {visible && profile.bio && (
-                        <p className="mt-3 text-xs leading-relaxed text-slate-600 dark:text-zinc-300 break-words">
+                        <p className="mt-3 text-link leading-relaxed text-text dark:text-text break-words">
                           {profile.bio}
                         </p>
                       )}
@@ -808,7 +811,7 @@ export function ChatArea({
                     <button
                       type="button"
                       onClick={() => setSelectedProfileUid(null)}
-                      className="w-full py-2 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                      className="w-full py-2 rounded-lg border border-border dark:border-border text-link font-semibold text-text dark:text-text hover:bg-main dark:hover:bg-main transition-colors"
                     >
                       {t(language, 'cancel')}
                     </button>
@@ -827,7 +830,7 @@ export function ChatArea({
                 onClick={() => onStartDmCall('audio')}
                 title={t(language, 'startAudioCall')}
                 aria-label={t(language, 'startAudioCall')}
-                className="p-2 rounded-2xl text-slate-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                className="p-2 rounded-2xl text-text-muted dark:text-text-muted hover:text-success dark:hover:text-success hover:bg-main dark:hover:bg-main transition-colors"
               >
                 <Phone className="w-4 h-4" />
               </button>
@@ -836,7 +839,7 @@ export function ChatArea({
                 onClick={() => onStartDmCall('video')}
                 title={t(language, 'startVideoCall')}
                 aria-label={t(language, 'startVideoCall')}
-                className="p-2 rounded-2xl text-slate-500 dark:text-zinc-400 hover:text-nexus dark:hover:text-nexus hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                className="p-2 rounded-2xl text-text-muted dark:text-text-muted hover:text-link dark:hover:text-link hover:bg-main dark:hover:bg-main transition-colors"
               >
                 <Video className="w-4 h-4" />
               </button>
@@ -851,8 +854,8 @@ export function ChatArea({
               aria-label={isGroupMuted ? t(language, 'unmuteGroup') : t(language, 'muteGroup')}
               className={`p-1.5 rounded-md transition-colors ${
                 isGroupMuted
-                  ? 'text-amber-500 bg-amber-500/10 hover:bg-amber-500/20'
-                  : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
+                  ? 'text-warning bg-warning/10 hover:bg-warning/20'
+                  : 'text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text hover:bg-main dark:hover:bg-main'
               }`}
             >
               {isGroupMuted ? <BellOff className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
@@ -865,7 +868,7 @@ export function ChatArea({
               onClick={onOpenGroupSettings}
               title={t(language, 'groupSettings')}
               aria-label={t(language, 'groupSettings')}
-              className="p-1.5 rounded-md text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-md text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text hover:bg-main dark:hover:bg-main transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -888,15 +891,15 @@ export function ChatArea({
               }
               className={`p-1.5 rounded-md transition-colors ${
                 showMembersPanel
-                  ? 'text-slate-900 dark:text-white bg-slate-200/70 dark:bg-white/10'
-                  : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'text-text dark:text-text bg-hover/70 dark:bg-hover/70'
+                  : 'text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text'
               }`}
             >
               <Users className="w-5 h-5" />
             </button>
           )}
           <div className="relative flex items-center">
-            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 absolute start-2.5 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-text-muted dark:text-text-muted absolute start-2.5 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -906,7 +909,7 @@ export function ChatArea({
                 setSearchOpen(true);
               }}
               placeholder={t(language, 'searchMessages')}
-              className="w-28 sm:w-40 lg:w-48 focus:lg:w-56 transition-all ps-8 pe-7 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs text-slate-900 dark:text-zinc-100 placeholder:text-slate-500 dark:placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-nexus"
+              className="w-28 sm:w-40 lg:w-48 focus:lg:w-56 transition-all ps-8 pe-7 py-1.5 rounded-lg bg-main dark:bg-main text-link text-text dark:text-text placeholder:text-text-muted dark:placeholder:text-text-muted focus:outline-accent focus:ring-1 focus:ring-accent"
             />
             {searchQuery && (
               <button
@@ -915,7 +918,7 @@ export function ChatArea({
                   setSearchQuery('');
                   setSearchOpen(false);
                 }}
-                className="absolute end-2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                className="absolute end-2 text-text-muted hover:text-text dark:hover:text-text"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -939,7 +942,7 @@ export function ChatArea({
                   type="button"
                   disabled={loadingMore}
                   onClick={onLoadOlder}
-                  className="px-3 py-1.5 rounded-md text-xs font-medium bg-slate-100 dark:bg-[#2B2D31] hover:bg-slate-200 dark:hover:bg-[#35373C] text-slate-600 dark:text-zinc-300 transition-colors disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-md text-link font-medium bg-main dark:bg-main hover:bg-hover dark:hover:bg-hover text-text dark:text-text transition-colors disabled:opacity-50"
                 >
                   {loadingMore ? t(language, 'loadingMessages') : t(language, 'loadOlder')}
                 </button>
@@ -950,22 +953,22 @@ export function ChatArea({
               <div className="space-y-4 py-4">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex items-start gap-3 animate-pulse">
-                    <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-[#2B2D31] shrink-0" />
+                    <div className="w-9 h-9 rounded-full bg-hover dark:bg-hover shrink-0" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3.5 w-32 rounded bg-slate-200 dark:bg-[#2B2D31]" />
-                      <div className="h-3.5 w-3/4 rounded bg-slate-200 dark:bg-[#2B2D31]" />
+                      <div className="h-3.5 w-32 rounded bg-hover dark:bg-hover" />
+                      <div className="h-3.5 w-3/4 rounded bg-hover dark:bg-hover" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : messages.length === 0 ? (
-              <div className="py-12 px-2 space-y-2 border-b border-slate-200 dark:border-white/5 mb-4">
+              <div className="py-12 px-2 space-y-2 border-accent border-border dark:border-border mb-4">
                 {mode === 'group' ? (
                   <div className="mb-3">
                     <GroupAvatar src={group?.iconUrl} name={title} size="lg" />
                   </div>
                 ) : (
-                  <div className="w-14 h-14 rounded-2xl bg-nexus/15 text-nexus flex items-center justify-center mb-3">
+                  <div className="w-14 h-14 rounded-2xl bg-accent/15 text-link flex items-center justify-center mb-3">
                     {mode === 'channel' ? (
                       <Hash className="w-7 h-7" />
                     ) : (
@@ -973,10 +976,10 @@ export function ChatArea({
                     )}
                   </div>
                 )}
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h3 className="text-2xl font-bold text-text dark:text-text">
                   {t(language, 'welcomeChannelTitle')} {mode === 'channel' ? `#${title}` : title}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-zinc-400 max-w-lg">
+                <p className="text-link text-text dark:text-text max-w-lg">
                   {mode === 'group' ? t(language, 'welcomeGroupDesc') : t(language, 'welcomeChannelDesc')}
                 </p>
               </div>
@@ -1016,7 +1019,7 @@ export function ChatArea({
                           ) : (
                             <span
                               key={reader.uid}
-                              className="w-4 h-4 rounded-full bg-nexus text-[9px] font-bold text-white flex items-center justify-center shadow-xs uppercase"
+                              className="w-4 h-4 rounded-full bg-accent text-[9px] font-bold text-text flex items-center justify-center shadow-xs uppercase"
                             >
                               {reader.displayName.charAt(0)}
                             </span>
@@ -1024,7 +1027,7 @@ export function ChatArea({
                         )}
                       </div>
                       {extraCount > 0 && (
-                        <span className="text-[10px] font-semibold text-slate-500 dark:text-zinc-400 tabular-nums">
+                        <span className="text-[10px] font-semibold text-text-muted dark:text-text-muted tabular-nums">
                           +{extraCount}
                         </span>
                       )}
@@ -1045,21 +1048,21 @@ export function ChatArea({
                       : Info;
                   const iconColor =
                     msg.systemAction === 'added_member' || msg.systemAction === 'created'
-                      ? 'text-emerald-500'
+                      ? 'text-success'
                       : msg.systemAction === 'removed_member' || msg.systemAction === 'left_group'
-                      ? 'text-rose-500'
+                      ? 'text-danger'
                       : msg.systemAction === 'transferred_owner'
-                      ? 'text-amber-500'
-                      : 'text-nexus';
+                      ? 'text-warning'
+                      : 'text-link';
 
                   return (
                     <div key={msg.id} id={`msg-${msg.id}`} className="my-1.5">
-                      <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-slate-50/80 dark:bg-[#2B2D31]/60 text-xs text-slate-600 dark:text-zinc-300">
+                      <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-elevated/80 dark:bg-elevated/80 text-link text-text dark:text-text">
                         <SysIcon className={`w-3.5 h-3.5 shrink-0 ${iconColor}`} />
                         <span className="flex-1 min-w-0 font-medium">
                           {renderSystemText(msg, authorName)}
                         </span>
-                        <span className="text-[10px] text-slate-400 dark:text-zinc-500 tabular-nums shrink-0">
+                        <span className="text-[10px] text-text-muted dark:text-text-muted tabular-nums shrink-0">
                           {formatTimestamp(currMs)}
                         </span>
                       </div>
@@ -1076,7 +1079,7 @@ export function ChatArea({
                     <div
                       key={msg.id}
                       id={`msg-${msg.id}`}
-                      className="my-1 px-3 py-1.5 rounded-lg bg-slate-100/70 dark:bg-[#2B2D31]/50 border border-slate-200/70 dark:border-white/5 flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-zinc-400"
+                      className="my-1 px-3 py-1.5 rounded-lg bg-main/70 dark:bg-main/70 border border-border dark:border-border flex items-center justify-between gap-2 text-link text-text-muted dark:text-text-muted"
                     >
                       <span className="flex items-center gap-1.5 truncate">
                         <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
@@ -1087,7 +1090,7 @@ export function ChatArea({
                         onClick={() =>
                           setRevealedBlockedIds((prev) => ({ ...prev, [msg.id]: true }))
                         }
-                        className="inline-flex items-center gap-1 text-nexus hover:underline shrink-0 font-medium"
+                        className="inline-flex items-center gap-1 text-link hover:underline shrink-0 font-medium"
                       >
                         <Eye className="w-3 h-3" />
                         <span>{t(language, 'showBlockedMessage')}</span>
@@ -1128,10 +1131,10 @@ export function ChatArea({
                   <div
                     key={msg.id}
                     id={`msg-${msg.id}`}
-                    className={`group relative rounded-lg px-2 nexus-chat-msg transition-colors ${
+                    className={`group relative rounded-lg px-2 majlis-chat-msg transition-colors ${
                       highlightedMsgId === msg.id
-                        ? 'bg-nexus/20'
-                        : 'hover:bg-slate-100/70 dark:hover:bg-[#2E3035]/70'
+                        ? 'bg-accent/20'
+                        : 'hover:bg-main/70 dark:hover:bg-main/70'
                     } ${
                       isCompact
                         ? 'py-0.5 mt-0.5'
@@ -1145,7 +1148,7 @@ export function ChatArea({
                       <button
                         type="button"
                         onClick={() => scrollToMessage(msg.replyToId!)}
-                        className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white mb-1 ps-11 max-w-full truncate"
+                        className="flex items-center gap-1.5 text-link text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text mb-1 ps-11 max-w-full truncate"
                       >
                         <CornerUpLeft className="w-3 h-3 shrink-0" />
                         <span className="font-medium shrink-0">{msg.replyToAuthor}:</span>
@@ -1155,12 +1158,12 @@ export function ChatArea({
 
                     <div className={`flex items-start ${isCompact ? 'gap-2' : 'gap-3'}`}>
                       {isCompact ? (
-                        <span className="w-12 shrink-0 text-[10px] text-slate-400 dark:text-zinc-500 tabular-nums pt-1 text-end">
+                        <span className="w-12 shrink-0 text-[10px] text-text-muted dark:text-text-muted tabular-nums pt-1 text-link">
                           {formatTimeOnly(currMs, dateOpts)}
                         </span>
                       ) : isGrouped ? (
                         <div className="w-9 shrink-0 flex items-center justify-end pe-0.5">
-                          <span className="hidden group-hover:inline text-[10px] text-slate-400 dark:text-zinc-500 tabular-nums">
+                          <span className="hidden group-hover:inline text-[10px] text-text-muted dark:text-text-muted tabular-nums">
                             {formatTimeOnly(currMs, dateOpts)}
                           </span>
                         </div>
@@ -1170,7 +1173,7 @@ export function ChatArea({
                             type="button"
                             onClick={() => setSelectedProfileUid(msg.authorId)}
                             aria-label={`${authorName} profile`}
-                            className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-nexus"
+                            className="rounded-full focus:outline-accent focus-visible:ring-2 focus-visible:ring-accent"
                           >
                             <UserAvatar
                               src={authorAvatar}
@@ -1187,15 +1190,15 @@ export function ChatArea({
                             <button
                               type="button"
                               onClick={() => setSelectedProfileUid(msg.authorId)}
-                              className={`text-sm font-semibold hover:underline ${
+                              className={`text-link font-semibold hover:underline ${
                                 mode === 'channel'
                                   ? getRoleColorClass(memberRole)
-                                  : 'text-slate-900 dark:text-white'
+                                  : 'text-text dark:text-text'
                               }`}
                             >
                               {authorName}
                             </button>
-                            <span className="text-[11px] text-slate-500 dark:text-zinc-400 tabular-nums">
+                            <span className="text-[11px] text-text-muted dark:text-text-muted tabular-nums">
                               {formatTimestamp(currMs)}
                             </span>
                             {isMySentMessage && (
@@ -1212,8 +1215,8 @@ export function ChatArea({
                                 }
                                 className={`inline-flex items-center ${
                                   isReadByAnyone
-                                    ? 'text-emerald-500'
-                                    : 'text-slate-400 dark:text-zinc-500'
+                                    ? 'text-success'
+                                    : 'text-text-muted dark:text-text-muted'
                                 }`}
                               >
                                 {isReadByAnyone ? (
@@ -1241,14 +1244,14 @@ export function ChatArea({
                                   handleSaveEdit(msg.id);
                                 }
                               }}
-                              className="w-full px-3 py-1.5 rounded-md border border-nexus bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none"
+                              className="w-full px-3 py-1.5 rounded-md border border-accent bg-elevated dark:bg-elevated text-link focus:outline-accent"
                             />
-                            <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-zinc-400">
+                            <div className="flex items-center gap-2 text-[11px] text-text-muted dark:text-text-muted">
                               <span>{t(language, 'editingMessage')}</span>
                               <button
                                 type="button"
                                 onClick={() => handleSaveEdit(msg.id)}
-                                className="text-nexus font-medium hover:underline"
+                                className="text-link font-medium hover:underline"
                               >
                                 {t(language, 'save')}
                               </button>
@@ -1262,13 +1265,13 @@ export function ChatArea({
                             </div>
                           </div>
                         ) : (
-                          <div className="text-sm text-slate-800 dark:text-[#DBDEE1] leading-relaxed">
+                          <div className="text-link text-text dark:text-text leading-relaxed">
                             {isCompact && (
                               <span
                                 className={`font-semibold me-1.5 ${
                                   mode === 'channel'
                                     ? getRoleColorClass(memberRole)
-                                    : 'text-slate-900 dark:text-white'
+                                    : 'text-text dark:text-text'
                                 }`}
                               >
                                 {authorName}:
@@ -1280,7 +1283,7 @@ export function ChatArea({
                               onExternalLinkClick={externalHandler}
                             />
                             {msg.edited && (
-                              <span className="text-[10px] text-slate-400 dark:text-zinc-500 ms-1">
+                              <span className="text-[10px] text-text-muted dark:text-text-muted ms-1">
                                 {t(language, 'edited')}
                               </span>
                             )}
@@ -1298,8 +1301,8 @@ export function ChatArea({
                                 }
                                 className={`ms-1.5 inline-flex items-center align-middle ${
                                   isReadByAnyone
-                                    ? 'text-emerald-500'
-                                    : 'text-slate-400 dark:text-zinc-500'
+                                    ? 'text-success'
+                                    : 'text-text-muted dark:text-text-muted'
                                 }`}
                               >
                                 {isReadByAnyone ? (
@@ -1327,13 +1330,13 @@ export function ChatArea({
                                 <button
                                   type="button"
                                   onClick={() => setLightboxUrl(msg.attachmentUrl!)}
-                                  className="block rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 max-w-sm max-h-72 hover:opacity-95 transition-opacity"
+                                  className="block rounded-lg overflow-hidden border border-border dark:border-border max-w-sm max-h-72 hover:opacity-95 transition-opacity"
                                 >
                                   <img
                                     src={msg.attachmentUrl}
                                     alt={msg.attachmentName || 'Attachment'}
                                     referrerPolicy="no-referrer"
-                                    className="max-h-72 w-auto object-contain bg-slate-100 dark:bg-[#1E1F22]"
+                                    className="max-h-72 w-auto object-contain bg-main dark:bg-main"
                                   />
                                 </button>
                               ) : (
@@ -1342,7 +1345,7 @@ export function ChatArea({
                                   onClick={() =>
                                     setRevealedImageIds((prev) => ({ ...prev, [msg.id]: true }))
                                   }
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] text-xs font-medium text-nexus hover:bg-slate-100 dark:hover:bg-[#35373C]"
+                                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link font-medium text-link hover:bg-main dark:hover:bg-main"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
                                   <span>{msg.attachmentName || t(language, 'showImagePreview')}</span>
@@ -1351,15 +1354,20 @@ export function ChatArea({
                             ) : (
                               <a
                                 href={msg.attachmentUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#2B2D31] hover:bg-slate-100 dark:hover:bg-[#35373C] text-sm transition-colors"
+                                target={msg.attachmentUrl.startsWith('data:') ? undefined : '_blank'}
+                                rel={msg.attachmentUrl.startsWith('data:') ? undefined : 'noopener noreferrer'}
+                                download={
+                                  msg.attachmentUrl.startsWith('data:')
+                                    ? msg.attachmentName || 'attachment'
+                                    : undefined
+                                }
+                                className="inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated hover:bg-main dark:hover:bg-main text-link transition-colors"
                               >
-                                <FileText className="w-5 h-5 text-nexus shrink-0" />
-                                <span className="truncate max-w-[220px] font-medium text-[#006CE7] dark:text-[#00A8FC]">
+                                <FileText className="w-5 h-5 text-link shrink-0" />
+                                <span className="truncate max-w-[220px] font-medium text-link dark:text-link">
                                   {msg.attachmentName || 'Download file'}
                                 </span>
-                                <Download className="w-4 h-4 text-slate-400 shrink-0" />
+                                <Download className="w-4 h-4 text-text-muted shrink-0" />
                               </a>
                             )}
                           </div>
@@ -1375,10 +1383,10 @@ export function ChatArea({
                                 onClick={() =>
                                   onToggleReaction(msg.id, r.emoji, r.reactedByMe)
                                 }
-                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs border transition-colors tabular-nums ${
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-link border transition-colors tabular-nums ${
                                   r.reactedByMe
-                                    ? 'bg-nexus/15 border-nexus/50 text-nexus'
-                                    : 'bg-slate-100 dark:bg-[#2B2D31] border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-[#35373C]'
+                                    ? 'bg-accent/15 border-accent text-link'
+                                    : 'bg-main dark:bg-main border-border dark:border-border text-text dark:text-text hover:bg-hover dark:hover:bg-hover'
                                 }`}
                               >
                                 <span>{r.emoji}</span>
@@ -1394,7 +1402,7 @@ export function ChatArea({
 
                     {/* Hover Action Toolbar */}
                     {(settings.showQuickReply || canEdit || canDelete) && (
-                      <div className="hidden group-hover:flex items-center gap-0.5 absolute -top-3 end-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] shadow-md px-1 py-0.5 z-10">
+                      <div className="hidden group-hover:flex items-center gap-0.5 absolute -top-3 end-3 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-md px-1 py-0.5 z-10">
                         {settings.showQuickReply && (
                           <>
                             <button
@@ -1403,7 +1411,7 @@ export function ChatArea({
                                 setEmojiPickerForId(emojiPickerForId === msg.id ? null : msg.id)
                               }
                               title={t(language, 'react')}
-                              className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-zinc-300"
+                              className="p-1.5 rounded hover:bg-main dark:hover:bg-main text-text dark:text-text"
                             >
                               <SmilePlus className="w-4 h-4" />
                             </button>
@@ -1414,7 +1422,7 @@ export function ChatArea({
                                 composerRef.current?.focus();
                               }}
                               title={t(language, 'reply')}
-                              className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-zinc-300"
+                              className="p-1.5 rounded hover:bg-main dark:hover:bg-main text-text dark:text-text"
                             >
                               <CornerUpLeft className="w-4 h-4" />
                             </button>
@@ -1428,7 +1436,7 @@ export function ChatArea({
                               setEditingText(msg.content);
                             }}
                             title={t(language, 'edit')}
-                            className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-zinc-300"
+                            className="p-1.5 rounded hover:bg-main dark:hover:bg-main text-text dark:text-text"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
@@ -1438,7 +1446,7 @@ export function ChatArea({
                             type="button"
                             onClick={() => onDeleteMessage(msg.id)}
                             title={t(language, 'delete')}
-                            className="p-1.5 rounded hover:bg-rose-500/15 text-slate-600 dark:text-zinc-300 hover:text-rose-500"
+                            className="p-1.5 rounded hover:bg-danger/15 text-text dark:text-text hover:text-danger"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1448,7 +1456,7 @@ export function ChatArea({
 
                     {/* Quick Emoji Picker Popover */}
                     {emojiPickerForId === msg.id && (
-                      <div className="absolute top-6 end-3 z-20 flex items-center gap-1 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111214] shadow-xl px-2 py-1.5">
+                      <div className="absolute top-6 end-3 z-20 flex items-center gap-1 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated shadow-xl px-2 py-1.5">
                         {QUICK_EMOJIS.map((em) => {
                           const existing = msgReactions.find((r) => r.emoji === em);
                           return (
@@ -1459,7 +1467,7 @@ export function ChatArea({
                                 onToggleReaction(msg.id, em, Boolean(existing?.reactedByMe));
                                 setEmojiPickerForId(null);
                               }}
-                              className="p-1 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-base transition-transform hover:scale-110"
+                              className="p-1 rounded hover:bg-main dark:hover:bg-main text-link transition-transform hover:scale-110"
                             >
                               {em}
                             </button>
@@ -1478,20 +1486,20 @@ export function ChatArea({
           <div className="px-3 sm:px-5 pb-4 pt-1 shrink-0 relative">
             {/* @Mention Autocomplete */}
             {mentionCandidates.length > 0 && (
-              <div className="mb-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] shadow-xl overflow-hidden max-w-sm">
+              <div className="mb-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated shadow-xl overflow-hidden max-w-sm">
                 {mentionCandidates.map((m) => (
                   <button
                     key={m.uid}
                     type="button"
                     onClick={() => insertMention(m.username)}
-                    className="w-full px-3 py-2 flex items-center gap-2.5 text-start hover:bg-slate-100 dark:hover:bg-[#404249] transition-colors"
+                    className="w-full px-3 py-2 flex items-center gap-2.5 text-link hover:bg-main dark:hover:bg-main transition-colors"
                   >
                     <UserAvatar src={m.avatarUrl} name={m.displayName} size="xs" />
-                    <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                    <span className="text-link font-medium text-text dark:text-text truncate">
                       {m.displayName}
                     </span>
-                    <span className="text-xs text-slate-500 dark:text-zinc-400 truncate">
-                      @{m.username}
+                    <span className="text-link text-text-muted dark:text-text-muted truncate">
+                      <bdi dir="ltr">@{m.username}</bdi>
                     </span>
                   </button>
                 ))}
@@ -1500,15 +1508,15 @@ export function ChatArea({
 
             {/* Reply Banner */}
             {replyTo && (
-              <div className="flex items-center justify-between px-3 py-1.5 rounded-t-lg bg-slate-100 dark:bg-[#2B2D31] border-b border-slate-200 dark:border-white/10 text-xs">
-                <span className="text-slate-600 dark:text-zinc-300 truncate">
+              <div className="flex items-center justify-between px-3 py-1.5 rounded-t-lg bg-main dark:bg-main border-accent border-border dark:border-border text-link">
+                <span className="text-text dark:text-text truncate">
                   {t(language, 'replyingTo')}{' '}
-                  <strong className="text-slate-900 dark:text-white">{replyTo.authorName}</strong>
+                  <strong className="text-text dark:text-text">{replyTo.authorName}</strong>
                 </span>
                 <button
                   type="button"
                   onClick={() => setReplyTo(null)}
-                  className="text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                  className="text-text-muted hover:text-text dark:hover:text-text"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1517,7 +1525,7 @@ export function ChatArea({
 
             {/* Pending File Preview */}
             {pendingFile && (
-              <div className="flex items-center justify-between gap-3 px-3 py-2 bg-slate-100 dark:bg-[#2B2D31] border-b border-slate-200 dark:border-white/10 rounded-t-lg">
+              <div className="flex items-center justify-between gap-3 px-3 py-2 bg-main dark:bg-main border-accent border-border dark:border-border rounded-t-lg">
                 <div className="flex items-center gap-3 min-w-0">
                   {pendingPreviewUrl ? (
                     <img
@@ -1526,13 +1534,13 @@ export function ChatArea({
                       className="w-12 h-12 rounded-md object-cover shrink-0"
                     />
                   ) : (
-                    <FileText className="w-8 h-8 text-nexus shrink-0" />
+                    <FileText className="w-8 h-8 text-link shrink-0" />
                   )}
                   <div className="min-w-0">
-                    <div className="text-xs font-medium text-slate-900 dark:text-white truncate">
+                    <div className="text-link font-medium text-text dark:text-text truncate">
                       {pendingFile.name}
                     </div>
-                    <div className="text-[11px] text-slate-500 dark:text-zinc-400 tabular-nums">
+                    <div className="text-[11px] text-text-muted dark:text-text-muted tabular-nums">
                       {(pendingFile.size / 1024).toFixed(1)} KB
                       {uploadProgress !== null ? ` · ${uploadProgress}%` : ''}
                     </div>
@@ -1541,7 +1549,7 @@ export function ChatArea({
                 <button
                   type="button"
                   onClick={clearPendingFile}
-                  className="p-1 rounded text-slate-400 hover:text-rose-500"
+                  className="p-1 rounded text-text-muted hover:text-danger"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1550,10 +1558,10 @@ export function ChatArea({
 
             {/* Composer Box */}
             {isRecordingVoice ? (
-              <div className="flex items-center justify-between gap-3 px-4 py-3 bg-rose-500/10 border border-rose-500/30 rounded-xl">
+              <div className="flex items-center justify-between gap-3 px-4 py-3 bg-danger/10 border border-danger rounded-xl">
                 <div className="flex items-center gap-3">
-                  <span className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
-                  <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 tabular-nums">
+                  <span className="w-3 h-3 rounded-full bg-danger animate-ping" />
+                  <span className="text-link font-semibold text-danger dark:text-danger tabular-nums">
                     {t(language, 'recordingVoiceNote')} (
                     {Math.floor(recordingSeconds / 60)}:
                     {(recordingSeconds % 60).toString().padStart(2, '0')})
@@ -1563,23 +1571,23 @@ export function ChatArea({
                   <button
                     type="button"
                     onClick={cancelVoiceRecording}
-                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                    className="px-3 py-1.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link font-semibold hover:bg-main dark:hover:bg-main transition-colors"
                   >
                     {t(language, 'cancelRecording')}
                   </button>
                   <button
                     type="button"
                     onClick={stopVoiceRecording}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-success hover:bg-success text-text text-link font-semibold transition-colors"
                   >
-                    <Square className="w-3.5 h-3.5 fill-current" />
+                    <Square className="w-3.5 h-3.5 fill-accent" />
                     <span>{t(language, 'sendVoiceNote')}</span>
                   </button>
                 </div>
               </div>
             ) : (
               <div
-                className={`flex items-end gap-2 px-3 py-2 bg-slate-100 dark:bg-[#383A40] ${
+                className={`flex items-end gap-2 px-3 py-2 bg-main dark:bg-main ${
                   replyTo || pendingFile ? 'rounded-b-lg' : 'rounded-lg'
                 }`}
               >
@@ -1594,7 +1602,7 @@ export function ChatArea({
                   onClick={() => fileInputRef.current?.click()}
                   title={t(language, 'attachFile')}
                   aria-label={t(language, 'attachFile')}
-                  className="p-1.5 rounded-full text-slate-500 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors shrink-0 mb-0.5"
+                  className="p-1.5 rounded-full text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text hover:bg-hover dark:hover:bg-hover transition-colors shrink-0 mb-0.5"
                 >
                   <Paperclip className="w-5 h-5" />
                 </button>
@@ -1604,7 +1612,7 @@ export function ChatArea({
                   onClick={startVoiceRecording}
                   title={t(language, 'voiceNote')}
                   aria-label={t(language, 'voiceNote')}
-                  className="p-1.5 rounded-full text-slate-500 dark:text-zinc-300 hover:text-nexus hover:bg-slate-200 dark:hover:bg-white/10 transition-colors shrink-0 mb-0.5"
+                  className="p-1.5 rounded-full text-text-muted dark:text-text-muted hover:text-link hover:bg-hover dark:hover:bg-hover transition-colors shrink-0 mb-0.5"
                 >
                   <Mic className="w-5 h-5" />
                 </button>
@@ -1616,9 +1624,9 @@ export function ChatArea({
                   onChange={(e) => handleDraftChange(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={`${t(language, 'typeMessage')} ${
-                    mode === 'channel' ? `#${title}` : mode === 'group' ? title : `@${title}`
+                    mode === 'channel' ? `#${title}` : mode === 'group' ? title : `\u2066@${title}\u2069`
                   }`}
-                  className="flex-1 bg-transparent resize-none max-h-36 py-1.5 text-sm text-slate-900 dark:text-[#F2F3F5] placeholder:text-slate-500 dark:placeholder:text-zinc-400 focus:outline-none"
+                  className="min-w-0 flex-1 bg-transparent resize-none max-h-36 px-2 py-1.5 text-text placeholder:text-text-muted focus:outline-accent"
                 />
 
                 <div className="relative shrink-0 mb-0.5">
@@ -1626,7 +1634,7 @@ export function ChatArea({
                     type="button"
                     onClick={() => setComposerEmojiOpen((v) => !v)}
                     title={t(language, 'react')}
-                    className="p-1.5 rounded-full text-slate-500 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+                    className="p-1.5 rounded-full text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text hover:bg-hover dark:hover:bg-hover transition-colors"
                     aria-label="Insert emoji"
                   >
                     <Smile className="w-5 h-5" />
@@ -1638,7 +1646,7 @@ export function ChatArea({
                         className="fixed inset-0 z-20"
                         onClick={() => setComposerEmojiOpen(false)}
                       />
-                      <div className="absolute bottom-11 end-0 z-30 w-64 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] shadow-2xl p-2.5 grid grid-cols-8 gap-1">
+                      <div className="absolute bottom-11 end-0 z-30 w-64 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl p-2.5 grid grid-cols-8 gap-1">
                         {COMPOSER_EMOJIS.map((em) => (
                           <button
                             key={em}
@@ -1654,7 +1662,7 @@ export function ChatArea({
                               setComposerEmojiOpen(false);
                               composerRef.current?.focus();
                             }}
-                            className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 text-lg transition-transform hover:scale-110 flex items-center justify-center"
+                            className="p-1 rounded-md hover:bg-main dark:hover:bg-main text-link transition-transform hover:scale-110 flex items-center justify-center"
                           >
                             {em}
                           </button>
@@ -1668,7 +1676,7 @@ export function ChatArea({
                   type="button"
                   disabled={sending || (!draft.trim() && !pendingFile)}
                   onClick={handleSubmit}
-                  className="p-1.5 rounded-md bg-nexus hover:bg-nexus-hover disabled:opacity-40 text-white transition-colors shrink-0 mb-0.5"
+                  className="p-1.5 rounded-md bg-accent hover:bg-majlis-hover disabled:opacity-40 text-text transition-colors shrink-0 mb-0.5"
                   aria-label="Send message"
                 >
                   {sending ? (
@@ -1681,10 +1689,10 @@ export function ChatArea({
             )}
 
             {/* Typing Indicator */}
-            <div className="h-4 mt-1 px-1 text-[11px] text-slate-500 dark:text-zinc-400 flex items-center">
+            <div className="h-4 mt-1 px-1 text-[11px] text-text-muted dark:text-text-muted flex items-center">
               {activeTypers.length === 1 && (
                 <span>
-                  <strong className="font-medium text-slate-700 dark:text-zinc-200">
+                  <strong className="font-medium text-text dark:text-text">
                     {activeTypers[0].displayName}
                   </strong>{' '}
                   {t(language, 'isTyping')}
@@ -1692,7 +1700,7 @@ export function ChatArea({
               )}
               {activeTypers.length > 1 && (
                 <span>
-                  <strong className="font-medium text-slate-700 dark:text-zinc-200">
+                  <strong className="font-medium text-text dark:text-text">
                     {activeTypers.map((u) => u.displayName).join(', ')}
                   </strong>{' '}
                   {t(language, 'areTyping')}
@@ -1704,22 +1712,22 @@ export function ChatArea({
 
         {/* Search Results Drawer */}
         {searchOpen && searchQuery.trim() && (
-          <aside className="w-72 shrink-0 border-s border-slate-200 dark:border-black/25 bg-slate-50 dark:bg-[#2B2D31] flex flex-col">
-            <div className="h-11 px-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-700 dark:text-zinc-200 tabular-nums">
+          <aside className="w-72 shrink-0 border-accent border-border dark:border-border bg-elevated dark:bg-elevated flex flex-col">
+            <div className="h-11 px-3 border-accent border-border dark:border-border flex items-center justify-between">
+              <span className="text-link font-semibold text-text dark:text-text tabular-nums">
                 {t(language, 'searchResults')} ({searchResults.length})
               </span>
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="p-1 rounded text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                className="p-1 rounded text-text-muted hover:text-text dark:hover:text-text"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-2">
               {searchResults.length === 0 ? (
-                <p className="p-4 text-center text-xs text-slate-500 dark:text-zinc-400">
+                <p className="p-4 text-link text-link text-text-muted dark:text-text-muted">
                   {t(language, 'noSearchResults')}
                 </p>
               ) : (
@@ -1728,19 +1736,19 @@ export function ChatArea({
                     key={m.id}
                     type="button"
                     onClick={() => scrollToMessage(m.id)}
-                    className="w-full text-start p-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#313338] hover:border-nexus transition-colors space-y-1"
+                    className="w-full text-link p-2.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated hover:border-accent transition-colors space-y-1"
                   >
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span className="font-semibold text-slate-900 dark:text-white truncate">
+                    <div className="flex items-center justify-between gap-2 text-link">
+                      <span className="font-semibold text-text dark:text-text truncate">
                         {m.authorName}
                       </span>
-                      <span className="text-[10px] text-slate-400 tabular-nums shrink-0">
+                      <span className="text-[10px] text-text-muted tabular-nums shrink-0">
                         {m.createdAt?.toMillis
                           ? formatShortDate(m.createdAt.toMillis(), dateOpts)
                           : ''}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-zinc-300 line-clamp-3">
+                    <p className="text-link text-text dark:text-text line-clamp-3">
                       {m.content || m.attachmentName}
                     </p>
                   </button>
@@ -1755,22 +1763,22 @@ export function ChatArea({
       {pendingExternalUrl && (
         <div
           onClick={() => setPendingExternalUrl(null)}
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-rail/70 flex items-center justify-center p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#2B2D31] shadow-2xl p-5 space-y-4"
+            className="w-full max-w-md rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl p-5 space-y-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-warning/15 text-warning dark:text-warning flex items-center justify-center shrink-0">
                   <ExternalLink className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-link font-bold text-text dark:text-text">
                     {t(language, 'externalLinkWarningTitle')}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400">
+                  <p className="text-link text-text-muted dark:text-text-muted">
                     {t(language, 'externalLinkWarningDesc')}
                   </p>
                 </div>
@@ -1778,19 +1786,19 @@ export function ChatArea({
               <button
                 type="button"
                 onClick={() => setPendingExternalUrl(null)}
-                className="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                className="p-1 rounded-md text-text-muted hover:text-text dark:hover:text-text"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-3 rounded-lg bg-slate-100 dark:bg-[#1E1F22] text-xs font-mono text-slate-700 dark:text-zinc-200 break-all">
+            <div className="p-3 rounded-lg bg-main dark:bg-main text-link font-mono text-text dark:text-text break-all">
               {pendingExternalUrl}
             </div>
             <div className="flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setPendingExternalUrl(null)}
-                className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-white/10"
+                className="px-3.5 py-2 rounded-lg border border-border dark:border-border text-link font-semibold hover:bg-main dark:hover:bg-main"
               >
                 {t(language, 'cancel')}
               </button>
@@ -1799,7 +1807,7 @@ export function ChatArea({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setPendingExternalUrl(null)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent hover:bg-majlis-hover text-text text-link font-semibold"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>{t(language, 'visitExternalSite')}</span>
@@ -1813,12 +1821,12 @@ export function ChatArea({
       {lightboxUrl && (
         <div
           onClick={() => setLightboxUrl(null)}
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-rail/80 flex items-center justify-center p-4"
         >
           <button
             type="button"
             onClick={() => setLightboxUrl(null)}
-            className="absolute top-4 end-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/80"
+            className="absolute top-4 end-4 p-2 rounded-full bg-rail/50 text-text hover:bg-rail/80"
           >
             <X className="w-5 h-5" />
           </button>

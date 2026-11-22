@@ -21,7 +21,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import type { VoiceDiagnosticPeer } from '../../hooks/useVoiceRTC';
 import { t, type TranslationKey } from '../../i18n/translations';
-import type { JoinedServerRef, SettingsCategoryId } from '../../types/nexus';
+import type { JoinedServerRef, SettingsCategoryId } from '../../types/majlis';
 import { AccountSection, type UnsavedBarState } from './AccountSection';
 import {
   AccessibilitySection,
@@ -197,7 +197,7 @@ export function FullScreenSettingsModal({
     if (items.length === 0) return null;
     return (
       <div key={group} className="space-y-0.5">
-        <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+        <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
           {t(language, titleKey)}
         </div>
         {items.map((cat) => {
@@ -208,10 +208,10 @@ export function FullScreenSettingsModal({
               key={cat.id}
               type="button"
               onClick={() => selectCategory(cat.id)}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-start transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-link font-medium text-link transition-colors ${
                 isActive
-                  ? 'bg-slate-200 dark:bg-[#404249] text-slate-950 dark:text-white font-semibold'
-                  : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-200/60 dark:hover:bg-[#35373C] hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-hover dark:bg-hover text-text dark:text-text font-semibold'
+                  : 'text-text dark:text-text hover:bg-hover/60 dark:hover:bg-hover/60 hover:text-text dark:hover:text-text'
               }`}
             >
               <Icon className="w-4 h-4 shrink-0 opacity-80" />
@@ -231,23 +231,23 @@ export function FullScreenSettingsModal({
       role="dialog"
       aria-modal="true"
       aria-label={t(language, 'userSettings')}
-      className="fixed inset-0 z-50 bg-slate-100 dark:bg-[#313338] text-slate-900 dark:text-[#F2F3F5] flex flex-col md:flex-row overflow-hidden"
+      className="fixed inset-0 z-50 bg-main dark:bg-main text-text dark:text-text flex flex-col md:flex-row overflow-hidden"
     >
       {/* Navigation Sidebar (Desktop: fixed start column; Mobile: full-width list screen) */}
       <aside
         className={`${
           mobileShowDetail ? 'hidden md:flex' : 'flex'
-        } w-full md:w-72 lg:w-80 shrink-0 h-full bg-slate-200/75 dark:bg-[#2B2D31] border-e border-slate-200 dark:border-black/25 flex-col md:items-end`}
+        } w-full md:w-72 lg:w-80 shrink-0 h-full bg-hover/75 dark:bg-hover/75 border-accent border-border dark:border-border flex-col md:items-end`}
       >
         <div className="w-full md:w-64 h-full flex flex-col p-4 overflow-y-auto">
           {/* Mobile Top Header */}
           <div className="flex md:hidden items-center justify-between mb-3">
-            <h1 className="text-base font-bold">{t(language, 'settings')}</h1>
+            <h1 className="text-link font-bold">{t(language, 'settings')}</h1>
             <button
               type="button"
               onClick={onClose}
               aria-label={t(language, 'closeSettings')}
-              className="p-2 rounded-full bg-slate-300/60 dark:bg-white/10"
+              className="p-2 rounded-full bg-hover/60 dark:bg-hover/60"
             >
               <X className="w-5 h-5" />
             </button>
@@ -255,13 +255,13 @@ export function FullScreenSettingsModal({
 
           {/* Search Bar */}
           <div className="relative mb-2 shrink-0">
-            <Search className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-text-muted absolute start-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t(language, 'searchSettingsPlaceholder')}
-              className="w-full ps-9 pe-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1F22] text-xs focus:outline-none focus:ring-2 focus:ring-nexus"
+              className="w-full ps-9 pe-3 py-2 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
             />
           </div>
 
@@ -271,21 +271,21 @@ export function FullScreenSettingsModal({
             {renderNavGroup('app', 'settingsGroupApp')}
             {renderNavGroup('info', 'settingsGroupInfo')}
             {filteredCategories.length === 0 && (
-              <p className="px-3 py-6 text-xs text-slate-500 dark:text-zinc-400 text-center">
+              <p className="px-3 py-6 text-link text-text-muted dark:text-text-muted text-link">
                 {t(language, 'noSettingsMatch')}
               </p>
             )}
           </nav>
 
           {/* Sign Out */}
-          <div className="pt-3 mt-3 border-t border-slate-300/70 dark:border-white/10">
+          <div className="pt-3 mt-3 border-accent border-border dark:border-border">
             <button
               type="button"
               onClick={() => {
                 onClose();
                 void logout();
               }}
-              className="w-full px-3 py-2 rounded-lg text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center justify-between transition-colors"
+              className="w-full px-3 py-2 rounded-lg text-link font-semibold text-danger dark:text-danger hover:bg-danger/10 flex items-center justify-between transition-colors"
             >
               <span>{t(language, 'signOut')}</span>
               <LogOut className="w-4 h-4" />
@@ -301,23 +301,23 @@ export function FullScreenSettingsModal({
         } flex-1 min-w-0 h-full flex-col relative overflow-hidden`}
       >
         {/* Mobile Detail Header with Back Button */}
-        <div className="md:hidden h-12 px-3 border-b border-slate-200 dark:border-black/25 bg-white dark:bg-[#2B2D31] flex items-center justify-between gap-2 shrink-0">
+        <div className="md:hidden h-12 px-3 border-accent border-border dark:border-border bg-elevated dark:bg-elevated flex items-center justify-between gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setMobileShowDetail(false)}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 dark:text-zinc-200"
+            className="inline-flex items-center gap-1.5 text-link font-semibold text-text dark:text-text"
           >
             <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
             <span>{t(language, 'backLabel')}</span>
           </button>
-          <span className="text-sm font-bold truncate">
+          <span className="text-link font-bold truncate">
             {t(language, activeCategoryMeta.labelKey)}
           </span>
           <button
             type="button"
             onClick={onClose}
             aria-label={t(language, 'closeSettings')}
-            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white"
+            className="p-1.5 rounded-lg text-text-muted hover:text-text dark:hover:text-text"
           >
             <X className="w-5 h-5" />
           </button>
@@ -361,11 +361,11 @@ export function FullScreenSettingsModal({
                 type="button"
                 onClick={onClose}
                 aria-label={t(language, 'closeSettings')}
-                className="w-9 h-9 rounded-full border-2 border-slate-400/70 dark:border-zinc-500 text-slate-600 dark:text-zinc-300 hover:border-slate-900 dark:hover:border-white hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-full border-2 border-border dark:border-border text-text dark:text-text hover:border-border dark:hover:border-border hover:text-text dark:hover:text-text flex items-center justify-center transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted dark:text-text-muted">
                 ESC
               </span>
             </div>
@@ -375,8 +375,8 @@ export function FullScreenSettingsModal({
         {/* Sticky Unsaved Changes Bar */}
         {dirtyState?.dirty && (
           <div className="absolute bottom-4 inset-x-4 sm:inset-x-8 z-30 flex justify-center pointer-events-none">
-            <div className="pointer-events-auto w-full max-w-2xl rounded-xl border border-slate-300 dark:border-white/15 bg-slate-900 text-white px-4 py-2.5 shadow-2xl flex flex-wrap items-center justify-between gap-3">
-              <span className="text-xs sm:text-sm font-medium">
+            <div className="pointer-events-auto w-full max-w-2xl rounded-xl border border-border dark:border-border bg-rail text-text px-4 py-2.5 shadow-2xl flex flex-wrap items-center justify-between gap-3">
+              <span className="text-link sm:text-link font-medium">
                 {t(language, 'unsavedChangesNotice')}
               </span>
               <div className="flex items-center gap-2">
@@ -384,7 +384,7 @@ export function FullScreenSettingsModal({
                   type="button"
                   disabled={dirtyState.saving}
                   onClick={dirtyState.onReset}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-link font-semibold text-text-muted hover:text-text hover:bg-text/10 transition-colors"
                 >
                   {t(language, 'resetChanges')}
                 </button>
@@ -392,7 +392,7 @@ export function FullScreenSettingsModal({
                   type="button"
                   disabled={dirtyState.saving}
                   onClick={dirtyState.onSave}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-success hover:bg-success disabled:opacity-50 text-text text-link font-semibold transition-colors"
                 >
                   {dirtyState.saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{t(language, 'save')}</span>

@@ -8,16 +8,16 @@ import {
   removeFriendship,
   respondFriendRequest,
   sendFriendRequest,
-} from '../services/nexusService';
-import type { Friendship, PublicUser } from '../types/nexus';
+} from '../services/majlisService';
+import type { Friendship, PublicUser } from '../types/majlis';
 import {
   getActiveCustomStatus,
   getEffectiveUserStatus,
   isUserEffectivelyOnline,
 } from '../utils/validation';
 import { CollapseChevron, CollapsibleBody } from './CollapsibleSection';
-import { UserAvatar } from './NexusLogo';
-import { NexusTooltip } from './ui/NexusUI';
+import { UserAvatar } from './MajlisLogo';
+import { MajlisTooltip } from './ui/MajlisUI';
 
 interface FriendsDashboardProps {
   myUid: string;
@@ -46,7 +46,7 @@ export function FriendsDashboard({
   const [usernameInput, setUsernameInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { isCollapsed, toggleSection } = usePersistentCollapseMap(
-    'nexus_collapsed_friends_groups'
+    'majlis_collapsed_friends_groups'
   );
 
   const accepted = friendships.filter((f) => f.status === 'accepted');
@@ -150,11 +150,11 @@ export function FriendsDashboard({
     return (
       <div
         key={f.id}
-        className={`py-3 flex items-center justify-between gap-3 ${
+        className={`w-full px-4 py-3 flex items-center justify-start gap-3 border-b border-border/70 last:border-b-0 ${
           f.status === 'accepted' && !effectiveOnline ? 'opacity-75' : ''
         }`}
       >
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0 max-w-[70%]">
           <UserAvatar
             src={otherUser?.avatarUrl}
             name={otherUser?.displayName || 'User'}
@@ -163,10 +163,10 @@ export function FriendsDashboard({
             showStatus
           />
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+            <div className="text-link font-semibold text-text dark:text-text truncate">
               {otherUser?.displayName || 'User'}
             </div>
-            <div className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+            <div className="text-link text-text-muted dark:text-text-muted truncate">
               @{otherUser?.username || otherUid.slice(0, 8)}
               {f.status === 'accepted' && ` · ${friendStatusLabel}`}
               {f.status === 'pending' &&
@@ -180,7 +180,7 @@ export function FriendsDashboard({
               const cs = getActiveCustomStatus(otherUser, presenceNowMs);
               if (!cs || f.status !== 'accepted') return null;
               return (
-                <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                <div className="text-[11px] text-text-muted dark:text-text-muted truncate">
                   {cs.emoji ? `${cs.emoji} ` : ''}
                   {cs.text}
                 </div>
@@ -193,61 +193,61 @@ export function FriendsDashboard({
         <div className="flex items-center gap-2 shrink-0">
           {f.status === 'accepted' ? (
             <>
-              <NexusTooltip content={t(language, 'messageUser')} side="top">
+              <MajlisTooltip content={t(language, 'messageUser')} side="top">
                 <button
                   type="button"
                   onClick={() => onStartDm(otherUid)}
                   aria-label={t(language, 'messageUser')}
-                  className="p-2 rounded-lg bg-slate-100 dark:bg-[#2B2D31] hover:bg-nexus hover:text-white text-slate-700 dark:text-zinc-200 transition-colors"
+                  className="p-2 rounded-lg bg-main dark:bg-main hover:bg-accent-hover hover:text-text text-text dark:text-text transition-colors"
                 >
                   <MessageSquare className="w-4 h-4" />
                 </button>
-              </NexusTooltip>
-              <NexusTooltip content={t(language, 'removeFriend')} side="top">
+              </MajlisTooltip>
+              <MajlisTooltip content={t(language, 'removeFriend')} side="top">
                 <button
                   type="button"
                   onClick={() => handleRemove(f.id)}
                   aria-label={t(language, 'removeFriend')}
-                  className="p-2 rounded-lg bg-slate-100 dark:bg-[#2B2D31] hover:bg-rose-600 hover:text-white text-slate-700 dark:text-zinc-200 transition-colors"
+                  className="p-2 rounded-lg bg-main dark:bg-main hover:bg-danger hover:text-text text-text dark:text-text transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-              </NexusTooltip>
+              </MajlisTooltip>
             </>
           ) : isIncoming ? (
             <>
-              <NexusTooltip content={t(language, 'accept')} side="top">
+              <MajlisTooltip content={t(language, 'accept')} side="top">
                 <button
                   type="button"
                   onClick={() => handleRespond(f.id, true)}
                   aria-label={t(language, 'accept')}
-                  className="p-2 rounded-lg bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
+                  className="p-2 rounded-lg bg-success/15 text-success dark:text-success hover:bg-success hover:text-text transition-colors"
                 >
                   <Check className="w-4 h-4" />
                 </button>
-              </NexusTooltip>
-              <NexusTooltip content={t(language, 'decline')} side="top">
+              </MajlisTooltip>
+              <MajlisTooltip content={t(language, 'decline')} side="top">
                 <button
                   type="button"
                   onClick={() => handleRespond(f.id, false)}
                   aria-label={t(language, 'decline')}
-                  className="p-2 rounded-lg bg-rose-600/15 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-colors"
+                  className="p-2 rounded-lg bg-danger/15 text-danger dark:text-danger hover:bg-danger hover:text-text transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
-              </NexusTooltip>
+              </MajlisTooltip>
             </>
           ) : (
-            <NexusTooltip content={t(language, 'cancel')} side="top">
+            <MajlisTooltip content={t(language, 'cancel')} side="top">
               <button
                 type="button"
                 onClick={() => handleRemove(f.id)}
                 aria-label={t(language, 'cancel')}
-                className="p-2 rounded-lg bg-slate-100 dark:bg-[#2B2D31] hover:bg-rose-600 hover:text-white text-slate-700 dark:text-zinc-200 transition-colors"
+                className="p-2 rounded-lg bg-main dark:bg-main hover:bg-danger hover:text-text text-text dark:text-text transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
-            </NexusTooltip>
+            </MajlisTooltip>
           )}
         </div>
 
@@ -256,13 +256,13 @@ export function FriendsDashboard({
   };
 
   return (
-    <div className="flex-1 min-w-0 h-full flex flex-col bg-white dark:bg-[#313338]">
+    <div className="flex-1 min-w-0 h-full flex flex-col bg-elevated dark:bg-elevated">
       {/* Top Bar */}
-      <header className="h-12 px-4 border-b border-slate-200 dark:border-black/25 flex items-center gap-3 overflow-x-auto no-scrollbar shrink-0">
+      <header className="h-12 px-4 border-accent border-border dark:border-border flex items-center gap-3 overflow-x-auto no-scrollbar shrink-0">
         <button
           type="button"
           onClick={onOpenMobileSidebar}
-          className="md:hidden p-1.5 rounded-md text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 shrink-0"
+          className="md:hidden p-1.5 rounded-md text-text dark:text-text hover:bg-main dark:hover:bg-main shrink-0"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -273,17 +273,17 @@ export function FriendsDashboard({
             title={`${t(language, 'expandSidebar')} (Ctrl+B)`}
             aria-label={t(language, 'expandSidebar')}
             aria-keyshortcuts="Control+b"
-            className="hidden md:inline-flex p-1.5 rounded-md border border-slate-200/80 dark:border-white/10 bg-slate-100/80 dark:bg-[#2B2D31] text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
+            className="hidden md:inline-flex p-1.5 rounded-md border border-border dark:border-border bg-main/80 dark:bg-main/80 text-text dark:text-text hover:bg-hover dark:hover:bg-hover hover:text-text dark:hover:text-text transition-colors shrink-0"
           >
             <PanelLeftOpen className="w-4 h-4 rtl:rotate-180" />
           </button>
         )}
-        <div className="flex items-center gap-2 font-semibold text-sm text-slate-900 dark:text-white shrink-0">
-          <Users className="w-4 h-4 text-slate-500 dark:text-zinc-400" />
+        <div className="flex items-center gap-2 font-semibold text-link text-text dark:text-text shrink-0">
+          <Users className="w-4 h-4 text-text-muted dark:text-text-muted" />
           <span>{t(language, 'friends')}</span>
         </div>
 
-        <div className="h-4 w-px bg-slate-200 dark:bg-white/10 shrink-0" />
+        <div className="h-4 w-px bg-hover dark:bg-hover shrink-0" />
 
         <div className="flex items-center gap-1.5 shrink-0">
           {(['online', 'all', 'pending'] as const).map((key) => {
@@ -299,15 +299,15 @@ export function FriendsDashboard({
                 key={key}
                 type="button"
                 onClick={() => setTab(key)}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-link font-medium whitespace-nowrap transition-colors ${
                   tab === key
-                    ? 'bg-slate-200 dark:bg-[#404249] text-slate-950 dark:text-white'
-                    : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-[#35373C]'
+                    ? 'bg-hover dark:bg-hover text-text dark:text-text'
+                    : 'text-text dark:text-text hover:bg-main dark:hover:bg-main'
                 }`}
               >
                 <span>{label}</span>
                 {key === 'pending' && pending.length > 0 && (
-                  <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-rose-500 text-white text-[10px] font-bold inline-flex items-center justify-center tabular-nums">
+                  <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-danger text-text text-[10px] font-bold inline-flex items-center justify-center tabular-nums">
                     {pending.length}
                   </span>
                 )}
@@ -318,10 +318,10 @@ export function FriendsDashboard({
           <button
             type="button"
             onClick={() => setTab('add')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-link font-semibold whitespace-nowrap transition-colors ${
               tab === 'add'
-                ? 'bg-nexus text-white'
-                : 'bg-nexus hover:bg-nexus-hover text-white'
+                ? 'bg-accent text-text'
+                : 'bg-accent hover:bg-majlis-hover text-text'
             }`}
           >
             <UserPlus className="w-3.5 h-3.5" />
@@ -329,16 +329,16 @@ export function FriendsDashboard({
           </button>
 
           {onOpenCreateGroup && (
-            <NexusTooltip content={t(language, 'createGroup')} side="bottom">
+            <MajlisTooltip content={t(language, 'createGroup')} side="bottom">
               <button
                 type="button"
                 onClick={onOpenCreateGroup}
                 aria-label={t(language, 'createGroup')}
-                className="w-8 h-8 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 dark:text-zinc-400 hover:bg-nexus/10 hover:text-nexus flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg border border-border dark:border-border text-text-muted dark:text-text-muted hover:bg-accent/10 hover:text-link flex items-center justify-center transition-colors"
               >
                 <Users className="w-4 h-4" />
               </button>
-            </NexusTooltip>
+            </MajlisTooltip>
           )}
         </div>
       </header>
@@ -349,10 +349,10 @@ export function FriendsDashboard({
         {tab === 'add' ? (
           <form onSubmit={handleSendRequest} className="space-y-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              <h3 className="text-link font-bold text-text dark:text-text">
                 {t(language, 'addFriend')}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+              <p className="text-link text-text-muted dark:text-text-muted mt-1">
                 {t(language, 'addFriendPlaceholder')}
               </p>
             </div>
@@ -362,12 +362,12 @@ export function FriendsDashboard({
                 value={usernameInput}
                 onChange={(e) => setUsernameInput(e.target.value)}
                 placeholder={t(language, 'addFriendPlaceholder')}
-                className="flex-1 px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1F22] text-sm focus:outline-none focus:ring-2 focus:ring-nexus"
+                className="flex-1 px-3.5 py-2.5 rounded-lg border border-border dark:border-border bg-elevated dark:bg-elevated text-link focus:outline-accent focus:ring-2 focus:ring-accent"
               />
               <button
                 type="submit"
                 disabled={submitting || !usernameInput.trim()}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-nexus hover:bg-nexus-hover disabled:opacity-50 text-white text-sm font-semibold transition-colors whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-accent hover:bg-majlis-hover disabled:opacity-50 text-text text-link font-semibold transition-colors whitespace-nowrap"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>{t(language, 'sendFriendRequest')}</span>
@@ -375,8 +375,8 @@ export function FriendsDashboard({
             </div>
           </form>
         ) : listToRender.length === 0 ? (
-          <div className="py-16 px-4 text-center space-y-3 max-w-md mx-auto">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-nexus/10 text-nexus flex items-center justify-center">
+          <div className="py-16 px-4 space-y-3 max-w-md mx-auto text-center">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-accent-soft text-accent flex items-center justify-center">
               {tab === 'pending' ? (
                 <Clock className="w-7 h-7" />
               ) : tab === 'all' || accepted.length === 0 ? (
@@ -386,7 +386,7 @@ export function FriendsDashboard({
               )}
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              <h3 className="font-bold text-text">
                 {tab === 'online'
                   ? accepted.length === 0
                     ? t(language, 'noFriendsAllTitle')
@@ -395,7 +395,7 @@ export function FriendsDashboard({
                   ? t(language, 'noFriendsAllTitle')
                   : t(language, 'noPendingRequestsTitle')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-zinc-400">
+              <p className="text-text-muted">
                 {tab === 'online'
                   ? accepted.length === 0
                     ? t(language, 'noFriendsAll')
@@ -410,7 +410,7 @@ export function FriendsDashboard({
                 <button
                   type="button"
                   onClick={() => setTab('all')}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-accent-contrast font-semibold transition-colors"
                 >
                   <Users className="w-4 h-4" />
                   <span>{t(language, 'viewAllFriends')}</span>
@@ -419,7 +419,7 @@ export function FriendsDashboard({
                 <button
                   type="button"
                   onClick={() => setTab('add')}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nexus hover:bg-nexus-hover text-white text-xs font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-accent-contrast font-semibold transition-colors"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>
@@ -432,10 +432,10 @@ export function FriendsDashboard({
             </div>
           </div>
         ) : tab === 'all' ? (
-          <div className="space-y-6">
+          <div className="mx-auto w-full max-w-3xl max-h-[70vh] overflow-y-auto rounded-xl border border-border dark:border-border bg-main/50 dark:bg-main/50 p-3 space-y-4">
             {onlineAccepted.length > 0 && (
               <div>
-                <NexusTooltip
+                <MajlisTooltip
                   content={
                     isCollapsed('online')
                       ? t(language, 'expandSection')
@@ -448,16 +448,16 @@ export function FriendsDashboard({
                     type="button"
                     aria-expanded={!isCollapsed('online')}
                     onClick={() => toggleSection('online')}
-                    className="w-full pb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexus transition-colors tabular-nums"
+                    className="w-full pb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text rounded focus-visible:outline-accent focus-visible:ring-2 focus-visible:ring-accent transition-colors tabular-nums"
                   >
                     <CollapseChevron collapsed={isCollapsed('online')} />
                     <span>
                       {t(language, 'online')} — {onlineAccepted.length}
                     </span>
                   </button>
-                </NexusTooltip>
+                </MajlisTooltip>
                 <CollapsibleBody isOpen={!isCollapsed('online')}>
-                  <div className="divide-y divide-slate-200 dark:divide-white/10">
+                  <div className="divide-accent border-border dark:border-border">
                     {onlineAccepted.map(renderFriendshipRow)}
                   </div>
                 </CollapsibleBody>
@@ -465,7 +465,7 @@ export function FriendsDashboard({
             )}
             {offlineAccepted.length > 0 && (
               <div>
-                <NexusTooltip
+                <MajlisTooltip
                   content={
                     isCollapsed('offline')
                       ? t(language, 'expandSection')
@@ -478,16 +478,16 @@ export function FriendsDashboard({
                     type="button"
                     aria-expanded={!isCollapsed('offline')}
                     onClick={() => toggleSection('offline')}
-                    className="w-full pb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexus transition-colors tabular-nums"
+                    className="w-full pb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted hover:text-text dark:hover:text-text rounded focus-visible:outline-accent focus-visible:ring-2 focus-visible:ring-accent transition-colors tabular-nums"
                   >
                     <CollapseChevron collapsed={isCollapsed('offline')} />
                     <span>
                       {t(language, 'offline')} — {offlineAccepted.length}
                     </span>
                   </button>
-                </NexusTooltip>
+                </MajlisTooltip>
                 <CollapsibleBody isOpen={!isCollapsed('offline')}>
-                  <div className="divide-y divide-slate-200 dark:divide-white/10">
+                  <div className="divide-accent border-border dark:border-border">
                     {offlineAccepted.map(renderFriendshipRow)}
                   </div>
                 </CollapsibleBody>
@@ -495,17 +495,17 @@ export function FriendsDashboard({
             )}
           </div>
         ) : (
-          <div className="divide-y divide-slate-200 dark:divide-white/10">
+          <div className="mx-auto w-full max-w-3xl max-h-[70vh] overflow-y-auto rounded-xl border border-border dark:border-border bg-main/50 dark:bg-main/50">
             {listToRender.map(renderFriendshipRow)}
           </div>
         )}
       </div>
 
-      <aside className="hidden lg:flex w-64 shrink-0 h-full flex-col border-s border-slate-200 dark:border-black/25 bg-slate-50/70 dark:bg-[#2B2D31] px-3 py-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 px-1 mb-3">
-          {language === 'ar' ? 'نشط الآن' : 'Active Now'}
-        </h3>
-        {onlineAccepted.length > 0 ? (
+      {onlineAccepted.length > 0 && (
+        <aside className="hidden lg:flex w-64 shrink-0 h-full flex-col border-accent border-border dark:border-border bg-elevated/70 dark:bg-elevated/70 px-3 py-4">
+          <h3 className="text-link font-bold uppercase tracking-wider text-text-muted dark:text-text-muted px-1 mb-3">
+            {language === 'ar' ? 'نشط الآن' : 'Active Now'}
+          </h3>
           <div className="space-y-1">
             {onlineAccepted.map((friendship) => {
               const uid = friendship.participants.find((id) => id !== myUid) || '';
@@ -528,7 +528,7 @@ export function FriendsDashboard({
                   key={friendship.id}
                   type="button"
                   onClick={() => onStartDm(uid)}
-                  className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-start hover:bg-slate-200/70 dark:hover:bg-[#35373C] transition-colors"
+                  className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-link hover:bg-hover/70 dark:hover:bg-hover/70 transition-colors"
                 >
                   <UserAvatar
                     src={friend?.avatarUrl}
@@ -538,10 +538,10 @@ export function FriendsDashboard({
                     showStatus
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                    <div className="text-link font-semibold text-text dark:text-text truncate">
                       {friend?.displayName || 'User'}
                     </div>
-                    <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                    <div className="text-[10px] text-text-muted dark:text-text-muted truncate">
                       {statusLabel}
                     </div>
                   </div>
@@ -549,12 +549,8 @@ export function FriendsDashboard({
               );
             })}
           </div>
-        ) : (
-          <p className="px-2 py-6 text-xs leading-relaxed text-center text-slate-500 dark:text-zinc-400">
-            {language === 'ar' ? 'لا يوجد أحد نشطاً الآن.' : 'Nobody is active right now.'}
-          </p>
-        )}
-      </aside>
+        </aside>
+      )}
       </div>
     </div>
   );

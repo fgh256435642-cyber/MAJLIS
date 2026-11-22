@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { UserStatus } from '../types/nexus';
+import type { UserStatus } from '../types/majlis';
 import { getStatusDotClass } from '../utils/validation';
 
 export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string }) {
@@ -11,21 +11,13 @@ export function MajlisBrandIcon({ className = 'w-6 h-6' }: { className?: string 
       className={className}
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient id="majlis-circle-grad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#A78BFA" />
-          <stop offset="0.5" stopColor="#5865F2" />
-          <stop offset="1" stopColor="#2F3FA8" />
-        </linearGradient>
-      </defs>
-      <circle cx="32" cy="32" r="29" fill="url(#majlis-circle-grad)" />
-      <circle cx="32" cy="32" r="18" fill="#FFFFFF" stroke="#4F46A5" strokeWidth="1.8" />
-      <path d="M14 30V26C14 16.1 22.1 8 32 8C41.9 8 50 16.1 50 26V30" stroke="#DDD6FE" strokeWidth="4.5" strokeLinecap="round" />
-      <rect x="8.5" y="24" width="11" height="16" rx="5.5" fill="#E8E5FF" stroke="#4F46A5" strokeWidth="2" />
-      <rect x="44.5" y="24" width="11" height="16" rx="5.5" fill="#E8E5FF" stroke="#4F46A5" strokeWidth="2" />
-      <circle cx="26" cy="31" r="1.6" fill="#4F46A5" />
-      <circle cx="38" cy="31" r="1.6" fill="#4F46A5" />
-      <path d="M27.5 38C29.5 40 34.5 40 36.5 38" stroke="#4F46A5" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="32" cy="32" r="18" fill="#F8FAFC" stroke="var(--accent)" strokeWidth="1.8" />
+      <path d="M14 30V26C14 16.1 22.1 8 32 8C41.9 8 50 16.1 50 26V30" stroke="var(--accent)" strokeWidth="4.5" strokeLinecap="round" />
+      <rect x="8.5" y="24" width="11" height="16" rx="5.5" fill="var(--accent)" stroke="var(--accent-contrast)" strokeWidth="2" />
+      <rect x="44.5" y="24" width="11" height="16" rx="5.5" fill="var(--accent)" stroke="var(--accent-contrast)" strokeWidth="2" />
+      <circle cx="26" cy="31" r="1.6" fill="#1F2937" />
+      <circle cx="38" cy="31" r="1.6" fill="#1F2937" />
+      <path d="M27.5 38C29.5 40 34.5 40 36.5 38" stroke="#1F2937" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -52,19 +44,19 @@ export function MajlisLogo({
     <div className={`inline-flex items-center gap-3.5 select-none ${className}`}>
       <MajlisBrandIcon className={`${iconClass} shrink-0`} />
       {showSubtitle ? (
-        <div className="flex flex-col items-start text-start leading-none justify-center">
-          <span className="text-2xl sm:text-[26px] font-black tracking-tight text-slate-900 dark:text-white">
+        <div className="flex flex-col items-start text-link leading-none justify-center">
+          <span className="text-2xl sm:text-[26px] font-black tracking-tight text-text dark:text-text">
             مجلس
           </span>
           <span
             dir="ltr"
-            className="text-[11px] sm:text-xs font-bold tracking-[0.3em] text-indigo-600 dark:text-sky-300 mt-1.5 uppercase"
+            className="text-[11px] sm:text-link font-bold tracking-[0.3em] text-link dark:text-link mt-1.5 uppercase"
           >
             MAJLIS
           </span>
         </div>
       ) : (
-        <span className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">
+        <span className="text-link font-extrabold tracking-tight text-text dark:text-text leading-none">
           {language === 'ar' ? 'مجلس' : 'MAJLIS'}
         </span>
       )}
@@ -72,18 +64,13 @@ export function MajlisLogo({
   );
 }
 
-// Keep backward-compatible alias for NexusBrandIcon so any leftover imports don't break
-export function NexusBrandIcon({ className = 'w-6 h-6' }: { className?: string }) {
-  return <MajlisBrandIcon className={className} />;
-}
-
 const AVATAR_PALETTES = [
-  'bg-gradient-to-br from-indigo-500 to-violet-600',
-  'bg-gradient-to-br from-emerald-500 to-teal-600',
-  'bg-gradient-to-br from-amber-500 to-orange-600',
-  'bg-gradient-to-br from-rose-500 to-pink-600',
-  'bg-gradient-to-br from-sky-500 to-blue-600',
-  'bg-gradient-to-br from-violet-500 to-purple-600',
+  'bg-gradient-to-br from-accent to-accent',
+  'bg-gradient-to-br from-success to-success',
+  'bg-gradient-to-br from-warning to-warning',
+  'bg-gradient-to-br from-danger to-accent',
+  'bg-gradient-to-br from-accent to-accent',
+  'bg-gradient-to-br from-accent to-accent',
 ];
 
 function getPaletteForName(name: string): string {
@@ -112,7 +99,7 @@ export function StatusIndicator({
         <svg viewBox="0 0 12 12" className="w-[70%] h-[70%]" fill="none">
           <path
             d="M7.5 1.5A4.8 4.8 0 0 0 10.5 8.5A4.8 4.8 0 1 1 7.5 1.5Z"
-            className="fill-white dark:fill-[#232428]"
+            className="fill-main"
           />
         </svg>
       </span>
@@ -127,7 +114,7 @@ export function StatusIndicator({
           'dnd'
         )} ${className}`}
       >
-        <span className="w-[58%] h-[22%] rounded-full bg-white dark:bg-[#232428]" />
+        <span className="w-[58%] h-[22%] rounded-full bg-elevated dark:bg-elevated" />
       </span>
     );
   }
@@ -165,9 +152,9 @@ export function UserAvatar({
 
   const sizeClass = {
     xs: 'w-6 h-6 text-[11px]',
-    sm: 'w-8 h-8 text-sm',
-    md: 'w-9 h-9 text-sm',
-    lg: 'w-12 h-12 text-lg',
+    sm: 'w-8 h-8 text-link',
+    md: 'w-9 h-9 text-link',
+    lg: 'w-12 h-12 text-link',
     xl: 'w-20 h-20 text-3xl',
   }[size];
 
@@ -183,7 +170,7 @@ export function UserAvatar({
 
   return (
     <div
-      className={`relative shrink-0 inline-flex items-center justify-center rounded-full nexus-avatar-shape select-none transition-all duration-150 ${
+      className={`relative shrink-0 inline-flex items-center justify-center rounded-full majlis-avatar-shape select-none transition-all duration-150 ${
         speaking ? 'brightness-105' : ''
       }`}
     >
@@ -193,28 +180,28 @@ export function UserAvatar({
           alt={name}
           referrerPolicy="no-referrer"
           onError={() => setImgError(true)}
-          className={`${sizeClass} ${className} rounded-full nexus-avatar-shape object-cover bg-slate-200 dark:bg-[#1E1F22]`}
+          className={`${sizeClass} ${className} rounded-full majlis-avatar-shape object-cover bg-hover dark:bg-hover`}
         />
       ) : (
         <div
-          className={`${sizeClass} ${className} rounded-full nexus-avatar-shape ${getPaletteForName(
+          className={`${sizeClass} ${className} rounded-full majlis-avatar-shape ${getPaletteForName(
             name || 'Majlis'
-          )} text-white font-bold flex items-center justify-center shadow-inner`}
+          )} text-text font-bold flex items-center justify-center shadow-inner`}
         >
           {firstChar}
         </div>
       )}
       {showStatus && status && (
         <span
-          className={`absolute -bottom-0.5 -end-0.5 ${dotClass} rounded-full border-white dark:border-[#232428] inline-flex items-center justify-center overflow-hidden ${getStatusDotClass(
+          className={`absolute -bottom-0.5 -end-0.5 ${dotClass} rounded-full border-border dark:border-border inline-flex items-center justify-center overflow-hidden ${getStatusDotClass(
             status
           )}`}
         >
           {status === 'idle' && (
-            <span className="w-[46%] h-[46%] rounded-full bg-white dark:bg-[#232428] -translate-x-[18%] -translate-y-[18%]" />
+            <span className="w-[46%] h-[46%] rounded-full bg-elevated dark:bg-elevated -translate-x-[18%] -translate-y-[18%]" />
           )}
           {status === 'dnd' && (
-            <span className="w-[62%] h-[22%] rounded-full bg-white" />
+            <span className="w-[62%] h-[22%] rounded-full bg-elevated" />
           )}
         </span>
       )}
@@ -236,9 +223,9 @@ export function ServerIcon({
   const [imgError, setImgError] = useState(false);
 
   const sizeClass = {
-    sm: 'w-9 h-9 text-xs',
-    md: 'w-12 h-12 text-base',
-    lg: 'w-16 h-16 text-xl',
+    sm: 'w-9 h-9 text-link',
+    md: 'w-12 h-12 text-link',
+    lg: 'w-16 h-16 text-link',
   }[size];
 
   const initials = (name || 'S')
@@ -256,14 +243,14 @@ export function ServerIcon({
         alt={name}
         referrerPolicy="no-referrer"
         onError={() => setImgError(true)}
-        className={`${sizeClass} ${rounded} object-cover bg-slate-200 dark:bg-[#1E1F22] shrink-0`}
+        className={`${sizeClass} ${rounded} object-cover bg-hover dark:bg-hover shrink-0`}
       />
     );
   }
 
   return (
     <div
-      className={`${sizeClass} ${rounded} bg-nexus text-white font-semibold flex items-center justify-center shrink-0 select-none shadow-inner`}
+      className={`${sizeClass} ${rounded} bg-accent text-text font-semibold flex items-center justify-center shrink-0 select-none shadow-inner`}
     >
       {initials}
     </div>
@@ -289,9 +276,9 @@ export function GroupAvatar({
 
   const sizeClass = {
     xs: 'w-6 h-6 text-[10px]',
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-9 h-9 text-sm',
-    lg: 'w-12 h-12 text-base',
+    sm: 'w-8 h-8 text-link',
+    md: 'w-9 h-9 text-link',
+    lg: 'w-12 h-12 text-link',
     xl: 'w-20 h-20 text-2xl',
   }[size];
 
@@ -310,16 +297,16 @@ export function GroupAvatar({
         alt={name}
         referrerPolicy="no-referrer"
         onError={() => setImgError(true)}
-        className={`${sizeClass} ${className} rounded-full nexus-avatar-shape object-cover bg-slate-200 dark:bg-[#1E1F22] shrink-0`}
+        className={`${sizeClass} ${className} rounded-full majlis-avatar-shape object-cover bg-hover dark:bg-hover shrink-0`}
       />
     );
   }
 
   return (
     <div
-      className={`${sizeClass} ${className} rounded-full nexus-avatar-shape ${getPaletteForName(
+      className={`${sizeClass} ${className} rounded-full majlis-avatar-shape ${getPaletteForName(
         name || 'Group'
-      )} text-white font-bold flex items-center justify-center shrink-0 shadow-inner select-none`}
+      )} text-text font-bold flex items-center justify-center shrink-0 shadow-inner select-none`}
     >
       <svg
         viewBox="0 0 24 24"
