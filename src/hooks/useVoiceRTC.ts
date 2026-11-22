@@ -475,14 +475,14 @@ export function useVoiceRTC(
       };
 
       pc.ontrack = (event) => {
-        const [stream] = event.streams;
-        if (!stream) return;
+        const stream = event.streams[0] ?? new MediaStream([event.track]);
 
         if (event.track.kind === 'audio') {
           let audioEl = remoteAudioElsRef.current.get(remoteUid);
           if (!audioEl) {
             audioEl = document.createElement('audio');
             audioEl.autoplay = true;
+            audioEl.setAttribute('playsinline', '');
             audioEl.style.display = 'none';
             document.body.appendChild(audioEl);
             remoteAudioElsRef.current.set(remoteUid, audioEl);
@@ -499,6 +499,9 @@ export function useVoiceRTC(
             };
             sinkEl.setSinkId?.(sinkId).catch(() => {});
           }
+          void audioEl.play().catch((err) => {
+            console.warn('[VoiceRTC] Remote audio playback failed:', remoteUid, err);
+          });
 
           if (audioCtxRef.current && !remoteTimersRef.current.has(remoteUid)) {
             try {
