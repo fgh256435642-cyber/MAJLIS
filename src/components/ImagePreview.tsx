@@ -1,4 +1,12 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 interface ImagePreviewState {
@@ -6,31 +14,51 @@ interface ImagePreviewState {
   alt: string;
 }
 
+interface ImagePreviewContextValue {
+  openPreview: (src: string, alt: string) => void;
+}
+
+const ImagePreviewContext = createContext<ImagePreviewContextValue | null>(null);
+
+export function ImagePreviewTrigger({
+  src,
+  alt,
+  className = '',
+  children,
+}: {
+  src?: string;
+  alt: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  const context = useContext(ImagePreviewContext);
+  if (!context) {
+    throw new Error('ImagePreviewTrigger must be used within ImagePreviewProvider.');
+  }
+  if (!src) return <>{children}</>;
+
+  return (
+    <button
+      type="button"
+      aria-label={`Preview ${alt}`}
+      title={`Preview ${alt}`}
+      className={`cursor-zoom-in ${className}`}
+      onClick={() => context.openPreview(src, alt)}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function ImagePreviewProvider({ children }: { children: ReactNode }) {
   const [preview, setPreview] = useState<ImagePreviewState | null>(null);
   const [zoom, setZoom] = useState(1);
 
-  useEffect(() => {
-    const handleImageClick = (event: MouseEvent) => {
-      if (event.button !== 0) return;
-
-      const target = event.target;
-      if (!(target instanceof HTMLImageElement)) return;
-      if (!target.dataset.imagePreview) return;
-      if (target.closest('[data-image-preview-modal="true"]')) return;
-
-      const src = target.currentSrc || target.src;
-      if (!src) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      setZoom(1);
-      setPreview({ src, alt: target.alt || 'Image preview' });
-    };
-
-    document.addEventListener('click', handleImageClick, true);
-    return () => document.removeEventListener('click', handleImageClick, true);
+  const openPreview = useCallback((src: string, alt: string) => {
+    setZoom(1);
+    setPreview({ src, alt });
   }, []);
+  const contextValue = useMemo(() => ({ openPreview }), [openPreview]);
 
   useEffect(() => {
     if (!preview) return;
@@ -59,14 +87,12 @@ export function ImagePreviewProvider({ children }: { children: ReactNode }) {
     if (!preview) setZoom(1);
   }, [preview]);
 
-  if (!preview) return <>{children}</>;
-
   return (
-    <>
+    <ImagePreviewContext.Provider value={contextValue}>
       {children}
-      {createPortal(
+      {preview &&
+        createPortal(
         <div
-          data-image-preview-modal="true"
           role="dialog"
           aria-modal="true"
           aria-label={preview.alt}
@@ -80,7 +106,6 @@ export function ImagePreviewProvider({ children }: { children: ReactNode }) {
             <img
               src={preview.src}
               alt={preview.alt}
-              data-image-preview-modal="true"
               referrerPolicy="no-referrer"
               className="max-h-[82vh] max-w-[92vw] rounded-lg object-contain shadow-2xl transition-transform duration-150"
               style={{ transform: `scale(${zoom})` }}
@@ -132,6 +157,6 @@ export function ImagePreviewProvider({ children }: { children: ReactNode }) {
         </div>,
         document.body
       )}
-    </>
+    </ImagePreviewContext.Provider>
   );
 }

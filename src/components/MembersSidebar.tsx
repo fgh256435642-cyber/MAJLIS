@@ -26,6 +26,7 @@ import {
   isUserEffectivelyOnline,
 } from '../utils/validation';
 import { CollapseChevron, CollapsibleBody } from './CollapsibleSection';
+import { ImagePreviewTrigger } from './ImagePreview';
 import { StatusIndicator, UserAvatar } from './MajlisLogo';
 import { ProfileBanner } from './ProfileBanner';
 
@@ -308,21 +309,33 @@ export function MembersSidebar({
           />
           <div className="fixed bottom-4 end-4 sm:absolute sm:top-4 sm:bottom-auto sm:end-64 z-40 w-68 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl overflow-hidden">
             {selectedPub?.profileVisible !== false && (
-              <ProfileBanner
-                bannerUrl={selectedPub?.bannerUrl}
-                profileColor={selectedPub?.profileColor}
-                className="h-14"
-              />
+              <ImagePreviewTrigger
+                src={selectedPub?.bannerUrl}
+                alt={`${selectedPub?.displayName || selectedMember.displayName} banner`}
+                className="block w-full"
+              >
+                <ProfileBanner
+                  bannerUrl={selectedPub?.bannerUrl}
+                  profileColor={selectedPub?.profileColor}
+                  className="h-14"
+                />
+              </ImagePreviewTrigger>
             )}
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end justify-between">
-                <UserAvatar
+                <ImagePreviewTrigger
                   src={selectedPub?.avatarUrl ?? selectedMember.avatarUrl}
-                  name={selectedPub?.displayName || selectedMember.displayName}
-                  status={selectedStatus}
-                  size="lg"
-                  showStatus
-                />
+                  alt={`${selectedPub?.displayName || selectedMember.displayName} profile photo`}
+                  className="rounded-full"
+                >
+                  <UserAvatar
+                    src={selectedPub?.avatarUrl ?? selectedMember.avatarUrl}
+                    name={selectedPub?.displayName || selectedMember.displayName}
+                    status={selectedStatus}
+                    size="lg"
+                    showStatus
+                  />
+                </ImagePreviewTrigger>
               </div>
 
               <div className="min-w-0">

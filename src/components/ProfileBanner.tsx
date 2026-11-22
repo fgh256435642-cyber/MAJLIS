@@ -31,7 +31,6 @@ export function ProfileBanner({
         <img
           src={bannerUrl}
           alt=""
-          data-image-preview="true"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover"
         />

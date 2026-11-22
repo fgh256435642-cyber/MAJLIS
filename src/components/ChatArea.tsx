@@ -61,6 +61,7 @@ import {
   LIMITS,
 } from '../utils/validation';
 import { GroupAvatar, StatusIndicator, UserAvatar } from './MajlisLogo';
+import { ImagePreviewTrigger } from './ImagePreview';
 import { ProfileBanner } from './ProfileBanner';
 import { VoiceNotePlayer } from './VoiceNotePlayer';
 
@@ -767,21 +768,33 @@ export function ChatArea({
                 />
                 <div className="fixed z-50 inset-x-4 bottom-4 sm:inset-x-auto sm:start-1/2 sm:-translate-x-1/2 sm:bottom-auto sm:top-24 w-auto sm:w-72 rounded-2xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl overflow-hidden">
                   {visible && (
-                    <ProfileBanner
-                      bannerUrl={profile.bannerUrl}
-                      profileColor={profile.profileColor}
-                      className="h-20"
-                    />
+                    <ImagePreviewTrigger
+                      src={profile.bannerUrl}
+                      alt={`${profile.displayName || profile.username} banner`}
+                      className="block w-full"
+                    >
+                      <ProfileBanner
+                        bannerUrl={profile.bannerUrl}
+                        profileColor={profile.profileColor}
+                        className="h-20"
+                      />
+                    </ImagePreviewTrigger>
                   )}
                   <div className="p-4 pt-0 space-y-3">
                     <div className="-mt-8 flex items-end">
-                      <UserAvatar
+                      <ImagePreviewTrigger
                         src={profile.avatarUrl}
-                        name={profile.displayName || profile.username}
-                        status={status}
-                        size="lg"
-                        showStatus
-                      />
+                        alt={`${profile.displayName || profile.username} profile photo`}
+                        className="rounded-full"
+                      >
+                        <UserAvatar
+                          src={profile.avatarUrl}
+                          name={profile.displayName || profile.username}
+                          status={status}
+                          size="lg"
+                          showStatus
+                        />
+                      </ImagePreviewTrigger>
                     </div>
                     <div className="min-w-0">
                       <div className="font-semibold text-link text-text dark:text-text truncate">

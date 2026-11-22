@@ -24,6 +24,7 @@ import {
   isUserEffectivelyOnline,
 } from '../utils/validation';
 import { CollapseChevron, CollapsibleBody } from './CollapsibleSection';
+import { ImagePreviewTrigger } from './ImagePreview';
 import { StatusIndicator, UserAvatar } from './MajlisLogo';
 import { ProfileBanner } from './ProfileBanner';
 
@@ -364,21 +365,33 @@ export function GroupMembersSidebar({
           />
           <div className="fixed bottom-4 end-4 sm:absolute sm:top-4 sm:bottom-auto sm:end-64 z-40 w-68 rounded-xl border border-border dark:border-border bg-elevated dark:bg-elevated shadow-2xl overflow-hidden">
             {selectedPub?.profileVisible !== false && (
-              <ProfileBanner
-                bannerUrl={selectedPub?.bannerUrl}
-                profileColor={selectedPub?.profileColor}
-                className="h-14"
-              />
+              <ImagePreviewTrigger
+                src={selectedPub?.bannerUrl}
+                alt={`${selectedPub?.displayName || selectedUid} banner`}
+                className="block w-full"
+              >
+                <ProfileBanner
+                  bannerUrl={selectedPub?.bannerUrl}
+                  profileColor={selectedPub?.profileColor}
+                  className="h-14"
+                />
+              </ImagePreviewTrigger>
             )}
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end">
-                <UserAvatar
+                <ImagePreviewTrigger
                   src={selectedPub?.avatarUrl}
-                  name={selectedPub?.displayName || selectedUid.slice(0, 8)}
-                  status={selectedStatus}
-                  size="lg"
-                  showStatus
-                />
+                  alt={`${selectedPub?.displayName || selectedUid} profile photo`}
+                  className="rounded-full"
+                >
+                  <UserAvatar
+                    src={selectedPub?.avatarUrl}
+                    name={selectedPub?.displayName || selectedUid.slice(0, 8)}
+                    status={selectedStatus}
+                    size="lg"
+                    showStatus
+                  />
+                </ImagePreviewTrigger>
               </div>
               <div className="min-w-0">
                 <div className="font-semibold text-link text-text dark:text-text truncate">
