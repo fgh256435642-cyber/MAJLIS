@@ -118,6 +118,24 @@ service cloud.firestore {
         request.auth.uid in get(/databases/$(database)/documents/calls/$(callId)).data.participants;
     }
 
+    function isActiveCallParticipant(callId, userId) {
+      return isSignedIn()
+        && isValidId(callId)
+        && isValidId(userId)
+        && exists(/databases/$(database)/documents/calls/$(callId))
+        && userId in get(/databases/$(database)/documents/calls/$(callId)).data.participants
+        && exists(/databases/$(database)/documents/calls/$(callId)/participants/$(userId));
+    }
+
+    function isVoiceChannelParticipant(serverId, channelId, userId) {
+      return isSignedIn()
+        && isValidId(serverId)
+        && isValidId(channelId)
+        && isValidId(userId)
+        && exists(memberPath(serverId, userId))
+        && exists(/databases/$(database)/documents/servers/$(serverId)/channels/$(channelId)/voiceParticipants/$(userId));
+    }
+
     function isGroupMember(groupId) {
       return isSignedIn() &&
         exists(/databases/$(database)/documents/groups/$(groupId)) &&
@@ -927,16 +945,21 @@ service cloud.firestore {
         match /voiceSignals/{signalId} {
           allow get: if isValidId(serverId) && isValidId(channelId) && isValidId(signalId) && isSignedIn()
             && isServerMember(serverId)
+            && isVoiceChannelParticipant(serverId, channelId, request.auth.uid)
             && (existing().toUid == request.auth.uid || existing().fromUid == request.auth.uid);
           allow list: if isSignedIn() && isServerMember(serverId)
+            && isVoiceChannelParticipant(serverId, channelId, request.auth.uid)
             && (resource.data.toUid == request.auth.uid || resource.data.fromUid == request.auth.uid);
           allow create: if isValidId(serverId) && isValidId(channelId) && isValidId(signalId) && isVerified()
             && isServerMember(serverId)
+            && isVoiceChannelParticipant(serverId, channelId, request.auth.uid)
+            && isVoiceChannelParticipant(serverId, channelId, incoming().toUid)
             && isValidVoiceSignal(incoming(), signalId)
             && incoming().fromUid == request.auth.uid;
           allow update: if false;
           allow delete: if isValidId(serverId) && isValidId(channelId) && isValidId(signalId) && isVerified()
             && isServerMember(serverId)
+            && isVoiceChannelParticipant(serverId, channelId, request.auth.uid)
             && (existing().toUid == request.auth.uid || existing().fromUid == request.auth.uid);
         }
       }
@@ -1201,17 +1224,18 @@ service cloud.firestore {
 
       match /signals/{signalId} {
         allow get: if isValidId(callId) && isValidId(signalId) && isSignedIn()
-          && isCallParticipant(callId)
+          && isActiveCallParticipant(callId, request.auth.uid)
           && (existing().toUid == request.auth.uid || existing().fromUid == request.auth.uid);
-        allow list: if isSignedIn() && isCallParticipant(callId)
+        allow list: if isSignedIn() && isActiveCallParticipant(callId, request.auth.uid)
           && (resource.data.toUid == request.auth.uid || resource.data.fromUid == request.auth.uid);
         allow create: if isValidId(callId) && isValidId(signalId) && isVerified()
-          && isCallParticipant(callId)
+          && isActiveCallParticipant(callId, request.auth.uid)
+          && isActiveCallParticipant(callId, incoming().toUid)
           && isValidVoiceSignal(incoming(), signalId)
           && incoming().fromUid == request.auth.uid;
         allow update: if false;
         allow delete: if isValidId(callId) && isValidId(signalId) && isVerified()
-          && isCallParticipant(callId)
+          && isActiveCallParticipant(callId, request.auth.uid)
           && (existing().toUid == request.auth.uid || existing().fromUid == request.auth.uid);
       }
     }

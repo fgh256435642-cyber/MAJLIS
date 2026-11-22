@@ -29,6 +29,51 @@ const DEFAULT_ICE_SERVERS: RTCConfiguration = {
   ],
 };
 
+function getConfiguredTurnServers(): RTCIceServer[] {
+  const urls = (import.meta.env.VITE_TURN_URL || '')
+    .split(',')
+    .map((url: string) => url.trim())
+    .filter((url: string) => /^turns?:/i.test(url));
+  const username = import.meta.env.VITE_TURN_USERNAME || '';
+  const credential = import.meta.env.VITE_TURN_CREDENTIAL || '';
+
+  if (urls.length === 0) return [];
+  if (!username || !credential) {
+    console.warn(
+      '[VoiceRTC] VITE_TURN_URL is set, but VITE_TURN_USERNAME or VITE_TURN_CREDENTIAL is missing.'
+    );
+    return [];
+  }
+
+  return [{ urls, username, credential }];
+}
+
+function hasTurnServer(iceServers: RTCIceServer[]): boolean {
+  return iceServers.some((server) => {
+    const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
+    return urls.some((url) => /^turns?:/i.test(url));
+  });
+}
+
+function addTurnFallback(iceServers: RTCIceServer[]): RTCIceServer[] {
+  if (hasTurnServer(iceServers)) return iceServers;
+  const turnServers = getConfiguredTurnServers();
+  if (turnServers.length === 0) {
+    console.warn(
+      '[VoiceRTC] No TURN server configured; using STUN only. Configure VITE_TURN_URL, VITE_TURN_USERNAME, and VITE_TURN_CREDENTIAL.'
+    );
+  }
+  return [...iceServers, ...turnServers];
+}
+
+function getLocalAudioTrackDiagnostics(stream: MediaStream | null) {
+  return (stream?.getAudioTracks() ?? []).map((track) => ({
+    enabled: track.enabled,
+    muted: track.muted,
+    readyState: track.readyState,
+  }));
+}
+
 const RECONNECT_BACKOFF_MS = [1200, 2500, 4000, 6000, 8000, 10000];
 const MAX_RECONNECT_ATTEMPTS = RECONNECT_BACKOFF_MS.length;
 
@@ -206,6 +251,18 @@ function applyMaxBitrate(sender: RTCRtpSender, maxBitrate: number) {
   }
 }
 
+function addLocalStreamTracks(pc: RTCPeerConnection, stream: MediaStream) {
+  const senderTracks = pc.getSenders().map((sender) => sender.track);
+  stream.getTracks().forEach((track) => {
+    if (senderTracks.includes(track)) return;
+    const sender = pc.addTrack(track, stream);
+    senderTracks.push(track);
+    if (track.kind === 'video') {
+      applyMaxBitrate(sender, 2000000);
+    }
+  });
+}
+
 export function useVoiceRTC(
   currentUser: PublicUser | null,
   soundEnabled: boolean,
@@ -230,9 +287,11 @@ export function useVoiceRTC(
   const videoStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<Map<string, RTCPeerConnection>>(new Map());
+  const peerCreationsRef = useRef<Map<string, Promise<RTCPeerConnection>>>(new Map());
   const remoteAudioElsRef = useRef<Map<string, HTMLAudioElement>>(new Map());
   const remoteGainNodesRef = useRef<Map<string, GainNode>>(new Map());
   const remoteTimersRef = useRef<Map<string, number>>(new Map());
+  const peerDiagnosticsTimersRef = useRef<Map<string, number>>(new Map());
   const pendingIceRef = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
   const makingOfferRef = useRef<Map<string, boolean>>(new Map());
   const ignoreOfferRef = useRef<Map<string, boolean>>(new Map());
@@ -270,6 +329,61 @@ export function useVoiceRTC(
   const currentUid = currentUser?.uid ?? null;
   const sessionKey = getSessionKey(activeSession);
 
+  const logPeerDiagnostics = useCallback(
+    (remoteUid: string, pc: RTCPeerConnection, event: string) => {
+      const senders = pc.getSenders();
+      console.info('[VoiceRTC Diagnostic]', {
+        event,
+        peerUid: remoteUid,
+        iceConnectionState: pc.iceConnectionState,
+        connectionState: pc.connectionState,
+        signalingState: pc.signalingState,
+        localAudioTracks: getLocalAudioTrackDiagnostics(localStreamRef.current),
+        senderCount: senders.length,
+        senders: senders.map((sender) => ({
+          kind: sender.track?.kind ?? 'none',
+          enabled: sender.track?.enabled ?? false,
+          muted: sender.track?.muted ?? false,
+          readyState: sender.track?.readyState ?? 'ended',
+        })),
+      });
+
+      void pc
+        .getStats()
+        .then((stats) => {
+          const outboundRtp: Array<{ kind: string; bytesSent: number }> = [];
+          stats.forEach((report) => {
+            if (report.type !== 'outbound-rtp') return;
+            const rtp = report as RTCStats & {
+              kind?: string;
+              mediaType?: string;
+              bytesSent?: number;
+            };
+            outboundRtp.push({
+              kind: rtp.kind ?? rtp.mediaType ?? 'unknown',
+              bytesSent: rtp.bytesSent ?? 0,
+            });
+          });
+          console.info('[VoiceRTC Diagnostic] outbound-rtp', {
+            peerUid: remoteUid,
+            outboundRtp,
+          });
+        })
+        .catch((err) => {
+          console.warn('[VoiceRTC Diagnostic] getStats failed:', remoteUid, err);
+        });
+    },
+    []
+  );
+
+  const clearPeerDiagnosticsTimer = useCallback((remoteUid: string) => {
+    const timer = peerDiagnosticsTimersRef.current.get(remoteUid);
+    if (timer !== undefined) {
+      window.clearInterval(timer);
+      peerDiagnosticsTimersRef.current.delete(remoteUid);
+    }
+  }, []);
+
   const fetchIceConfiguration = async (): Promise<RTCConfiguration> => {
     if (iceConfigCacheRef.current) return iceConfigCacheRef.current;
     try {
@@ -280,15 +394,23 @@ export function useVoiceRTC(
       if (res.ok) {
         const data = (await res.json()) as { iceServers: RTCIceServer[] };
         if (data && Array.isArray(data.iceServers) && data.iceServers.length > 0) {
-          iceConfigCacheRef.current = { iceServers: data.iceServers };
-          console.info('[VoiceRTC] Fetched Metered ICE servers configuration successfully:', data.iceServers);
+          const iceServers = addTurnFallback(data.iceServers);
+          iceConfigCacheRef.current = { iceServers };
+          console.info('[VoiceRTC] ICE server configuration loaded:', {
+            urls: iceServers.flatMap((server) =>
+              Array.isArray(server.urls) ? server.urls : [server.urls]
+            ),
+            hasTurnServer: hasTurnServer(iceServers),
+          });
           return iceConfigCacheRef.current;
         }
       }
     } catch (err) {
       console.warn('[VoiceRTC] Could not fetch dynamic ICE servers, falling back to STUN:', err);
     }
-    return DEFAULT_ICE_SERVERS;
+    const iceServers = addTurnFallback(DEFAULT_ICE_SERVERS.iceServers ?? []);
+    iceConfigCacheRef.current = { iceServers };
+    return iceConfigCacheRef.current;
   };
 
   const syncConnectionStatus = useCallback(() => {
@@ -358,7 +480,20 @@ export function useVoiceRTC(
       options?: { iceRestart?: boolean }
     ) => {
       try {
+        const localStream = localStreamRef.current;
+        const liveAudioTrack = localStream
+          ?.getAudioTracks()
+          .find((track) => track.readyState === 'live');
+        if (!localStream || !liveAudioTrack) {
+          console.error('[VoiceRTC] Refusing to create an offer without a live local audio track:', {
+            peerUid: remoteUid,
+            localAudioTracks: getLocalAudioTrackDiagnostics(localStream),
+          });
+          return;
+        }
+        addLocalStreamTracks(pc, localStream);
         makingOfferRef.current.set(remoteUid, true);
+        logPeerDiagnostics(remoteUid, pc, 'before-create-offer');
         const offer = await pc.createOffer(
           options?.iceRestart ? { iceRestart: true } : undefined
         );
@@ -372,7 +507,7 @@ export function useVoiceRTC(
         makingOfferRef.current.set(remoteUid, false);
       }
     },
-    [sendSignal]
+    [logPeerDiagnostics, sendSignal]
   );
 
   const closePeer = useCallback(
@@ -383,6 +518,7 @@ export function useVoiceRTC(
         remoteTimersRef.current.delete(remoteUid);
       }
       clearPeerReconnect(remoteUid);
+      clearPeerDiagnosticsTimer(remoteUid);
       makingOfferRef.current.delete(remoteUid);
       ignoreOfferRef.current.delete(remoteUid);
       setRemoteSpeaking((prev) => {
@@ -411,6 +547,7 @@ export function useVoiceRTC(
         pc.onconnectionstatechange = null;
         pc.oniceconnectionstatechange = null;
         pc.onicegatheringstatechange = null;
+        pc.onsignalingstatechange = null;
         pc.onicecandidate = null;
         pc.ontrack = null;
         pc.close();
@@ -425,7 +562,7 @@ export function useVoiceRTC(
       remoteGainNodesRef.current.delete(remoteUid);
       pendingIceRef.current.delete(remoteUid);
     },
-    [clearPeerReconnect]
+    [clearPeerDiagnosticsTimer, clearPeerReconnect]
   );
 
   const scheduleReconnectRef = useRef<
@@ -433,175 +570,188 @@ export function useVoiceRTC(
   >(() => {});
 
   const createPeerConnection = useCallback(
-    async (session: ActiveVoiceSession, remoteUid: string): Promise<RTCPeerConnection> => {
+    (session: ActiveVoiceSession, remoteUid: string): Promise<RTCPeerConnection> => {
       const existing = peersRef.current.get(remoteUid);
       if (existing && existing.connectionState !== 'closed') {
-        return existing;
+        return Promise.resolve(existing);
       }
+      const pending = peerCreationsRef.current.get(remoteUid);
+      if (pending) return pending;
 
-      const baseCfg = await fetchIceConfiguration();
-      const vpnMode = Boolean(voiceConfigRef.current.vpnCompatibilityMode);
-      const iceTransportPolicy: RTCIceTransportPolicy = vpnMode ? 'relay' : 'all';
+      const creation = fetchIceConfiguration().then((baseCfg) => {
+        const vpnMode = Boolean(voiceConfigRef.current.vpnCompatibilityMode);
+        const iceTransportPolicy: RTCIceTransportPolicy = vpnMode ? 'relay' : 'all';
 
-      const pc = new RTCPeerConnection({
-        ...baseCfg,
-        iceTransportPolicy,
-      });
-      peersRef.current.set(remoteUid, pc);
-
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track) => {
-          const sender = pc.addTrack(track, localStreamRef.current!);
-          if (track.kind === 'video') {
-            applyMaxBitrate(sender, 2000000);
-          }
+        const pc = new RTCPeerConnection({
+          ...baseCfg,
+          iceTransportPolicy,
         });
-      }
+        peersRef.current.set(remoteUid, pc);
 
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          const cType = event.candidate.type || 'unknown';
-          console.info(`[VoiceRTC Candidate] Type: ${cType.toUpperCase()} | Protocol: ${event.candidate.protocol} | Address: ${event.candidate.address}:${event.candidate.port} | Peer: ${remoteUid}`);
-          void sendSignal(session, remoteUid, 'candidate', event.candidate.toJSON());
+        if (localStreamRef.current) {
+          addLocalStreamTracks(pc, localStreamRef.current);
         }
-      };
 
-      pc.onicegatheringstatechange = () => {
-        console.info('[VoiceRTC Diagnostic]', {
-          event: 'ice-gathering-state-change',
-          peerUid: remoteUid,
-          iceGatheringState: pc.iceGatheringState,
-        });
-      };
-
-      pc.ontrack = (event) => {
-        const stream = event.streams[0] ?? new MediaStream([event.track]);
-
-        if (event.track.kind === 'audio') {
-          let audioEl = remoteAudioElsRef.current.get(remoteUid);
-          if (!audioEl) {
-            audioEl = document.createElement('audio');
-            audioEl.autoplay = true;
-            audioEl.setAttribute('playsinline', '');
-            audioEl.style.display = 'none';
-            document.body.appendChild(audioEl);
-            remoteAudioElsRef.current.set(remoteUid, audioEl);
+        pc.onicecandidate = (event) => {
+          if (event.candidate) {
+            const cType = event.candidate.type || 'unknown';
+            console.info(
+              `[VoiceRTC Candidate] Type: ${cType.toUpperCase()} | Protocol: ${event.candidate.protocol} | Peer: ${remoteUid}`
+            );
+            void sendSignal(session, remoteUid, 'candidate', event.candidate.toJSON());
           }
-          audioEl.srcObject = stream;
-          const volRatio = Math.max(0, Math.min(2, (voiceConfigRef.current.outputVolume ?? 100) / 100));
-          audioEl.volume = Math.min(1, volRatio);
-          audioEl.muted = deafenedRef.current;
+        };
 
-          const sinkId = voiceConfigRef.current.audioOutputId;
-          if (sinkId && sinkId !== 'default') {
-            const sinkEl = audioEl as HTMLAudioElement & {
-              setSinkId?: (id: string) => Promise<void>;
-            };
-            sinkEl.setSinkId?.(sinkId).catch(() => {});
-          }
-          void audioEl.play().catch((err) => {
-            console.warn('[VoiceRTC] Remote audio playback failed:', remoteUid, err);
+        pc.onicegatheringstatechange = () => {
+          console.info('[VoiceRTC Diagnostic]', {
+            event: 'ice-gathering-state-change',
+            peerUid: remoteUid,
+            iceGatheringState: pc.iceGatheringState,
           });
+        };
 
-          if (audioCtxRef.current && !remoteTimersRef.current.has(remoteUid)) {
-            try {
-              const rSource = audioCtxRef.current.createMediaStreamSource(stream);
-              const rAnalyser = audioCtxRef.current.createAnalyser();
-              rAnalyser.fftSize = 256;
-              rSource.connect(rAnalyser);
+        pc.ontrack = (event) => {
+          const stream = event.streams[0] ?? new MediaStream([event.track]);
 
-              const boostGain = audioCtxRef.current.createGain();
-              boostGain.gain.value = volRatio > 1 ? volRatio - 1 : 0;
-              rSource.connect(boostGain);
-              boostGain.connect(audioCtxRef.current.destination);
-              remoteGainNodesRef.current.set(remoteUid, boostGain);
+          if (event.track.kind === 'audio') {
+            let audioEl = remoteAudioElsRef.current.get(remoteUid);
+            if (!audioEl) {
+              audioEl = document.createElement('audio');
+              audioEl.autoplay = true;
+              audioEl.setAttribute('playsinline', '');
+              audioEl.style.display = 'none';
+              document.body.appendChild(audioEl);
+              remoteAudioElsRef.current.set(remoteUid, audioEl);
+            }
+            audioEl.srcObject = stream;
+            const volRatio = Math.max(
+              0,
+              Math.min(2, (voiceConfigRef.current.outputVolume ?? 100) / 100)
+            );
+            audioEl.volume = Math.min(1, volRatio);
+            audioEl.muted = deafenedRef.current;
 
-              const rData = new Uint8Array(rAnalyser.frequencyBinCount);
-              const timerId = window.setInterval(() => {
-                rAnalyser.getByteFrequencyData(rData);
-                let sum = 0;
-                for (let i = 0; i < rData.length; i++) sum += rData[i];
-                const isRemoteNow = sum / rData.length > 14;
-                setRemoteSpeaking((prev) =>
-                  prev[remoteUid] === isRemoteNow ? prev : { ...prev, [remoteUid]: isRemoteNow }
-                );
-              }, 140);
-              remoteTimersRef.current.set(remoteUid, timerId);
-            } catch {
-              // Ignore remote stream analyser errors
+            const sinkId = voiceConfigRef.current.audioOutputId;
+            if (sinkId && sinkId !== 'default') {
+              const sinkEl = audioEl as HTMLAudioElement & {
+                setSinkId?: (id: string) => Promise<void>;
+              };
+              sinkEl.setSinkId?.(sinkId).catch(() => {});
+            }
+            void audioEl.play().catch((err) => {
+              console.warn('[VoiceRTC] Remote audio playback failed:', remoteUid, err);
+            });
+
+            if (audioCtxRef.current && !remoteTimersRef.current.has(remoteUid)) {
+              try {
+                const rSource = audioCtxRef.current.createMediaStreamSource(stream);
+                const rAnalyser = audioCtxRef.current.createAnalyser();
+                rAnalyser.fftSize = 256;
+                rSource.connect(rAnalyser);
+
+                const boostGain = audioCtxRef.current.createGain();
+                boostGain.gain.value = volRatio > 1 ? volRatio - 1 : 0;
+                rSource.connect(boostGain);
+                boostGain.connect(audioCtxRef.current.destination);
+                remoteGainNodesRef.current.set(remoteUid, boostGain);
+
+                const rData = new Uint8Array(rAnalyser.frequencyBinCount);
+                const timerId = window.setInterval(() => {
+                  rAnalyser.getByteFrequencyData(rData);
+                  let sum = 0;
+                  for (let i = 0; i < rData.length; i++) sum += rData[i];
+                  const isRemoteNow = sum / rData.length > 14;
+                  setRemoteSpeaking((prev) =>
+                    prev[remoteUid] === isRemoteNow ? prev : { ...prev, [remoteUid]: isRemoteNow }
+                  );
+                }, 140);
+                remoteTimersRef.current.set(remoteUid, timerId);
+              } catch {
+                // Ignore remote stream analyser errors
+              }
+            }
+          } else if (event.track.kind === 'video') {
+            setRemoteVideoStreams((prev) => ({ ...prev, [remoteUid]: stream }));
+          }
+        };
+
+        const handleStateTransition = (source: 'ice' | 'connection') => {
+          if (leavingRef.current || peersRef.current.get(remoteUid) !== pc) return;
+          const connState = pc.connectionState;
+          const iceState = pc.iceConnectionState;
+
+          logPeerDiagnostics(remoteUid, pc, `${source}-state-change`);
+
+          if (connState === 'connected' || iceState === 'connected' || iceState === 'completed') {
+            clearPeerReconnect(remoteUid);
+            return;
+          }
+
+          if (connState === 'disconnected' || iceState === 'disconnected') {
+            scheduleReconnectRef.current(session, remoteUid, 'ice-disconnected');
+            return;
+          }
+
+          if (connState === 'failed' || iceState === 'failed' || connState === 'closed') {
+            const disconnectReason =
+              connState === 'closed'
+                ? 'peer-connection-closed'
+                : iceState === 'failed'
+                ? 'ice-failed'
+                : 'peer-connection-failed';
+
+            const stillInRoom =
+              Boolean(activeSessionRef.current) &&
+              getSessionKey(activeSessionRef.current) === getSessionKey(session) &&
+              participantsRef.current.some((p) => p.userId === remoteUid);
+
+            if (stillInRoom) {
+              scheduleReconnectRef.current(session, remoteUid, disconnectReason);
+            } else {
+              closePeer(remoteUid, disconnectReason);
             }
           }
-        } else if (event.track.kind === 'video') {
-          setRemoteVideoStreams((prev) => ({ ...prev, [remoteUid]: stream }));
-        }
-      };
+        };
 
-      const handleStateTransition = (source: 'ice' | 'connection') => {
-        if (leavingRef.current || peersRef.current.get(remoteUid) !== pc) return;
-        const connState = pc.connectionState;
-        const iceState = pc.iceConnectionState;
-
-        console.info('[VoiceRTC Diagnostic]', {
-          event: 'state-transition',
-          source,
-          peerUid: remoteUid,
-          connectionState: connState,
-          iceConnectionState: iceState,
-          iceGatheringState: pc.iceGatheringState,
-        });
-
-        if (connState === 'connected' || iceState === 'connected' || iceState === 'completed') {
-          clearPeerReconnect(remoteUid);
-          return;
-        }
-
-        if (connState === 'disconnected' || iceState === 'disconnected') {
-          scheduleReconnectRef.current(session, remoteUid, 'ice-disconnected');
-          return;
-        }
-
-        if (connState === 'failed' || iceState === 'failed' || connState === 'closed') {
-          const disconnectReason =
-            connState === 'closed'
-              ? 'peer-connection-closed'
-              : iceState === 'failed'
-              ? 'ice-failed'
-              : 'peer-connection-failed';
-
-          const stillInRoom =
-            Boolean(activeSessionRef.current) &&
-            getSessionKey(activeSessionRef.current) === getSessionKey(session) &&
-            participantsRef.current.some((p) => p.userId === remoteUid);
-
-          if (stillInRoom) {
-            scheduleReconnectRef.current(session, remoteUid, disconnectReason);
-          } else {
-            closePeer(remoteUid, disconnectReason);
+        pc.oniceconnectionstatechange = () => handleStateTransition('ice');
+        pc.onconnectionstatechange = () => handleStateTransition('connection');
+        pc.onsignalingstatechange = () =>
+          logPeerDiagnostics(remoteUid, pc, 'signaling-state-change');
+        logPeerDiagnostics(remoteUid, pc, 'peer-created');
+        const diagnosticsTimer = window.setInterval(() => {
+          if (peersRef.current.get(remoteUid) === pc) {
+            logPeerDiagnostics(remoteUid, pc, 'periodic');
           }
+        }, 5000);
+        peerDiagnosticsTimersRef.current.set(remoteUid, diagnosticsTimer);
+
+        window.setTimeout(() => {
+          if (
+            peersRef.current.get(remoteUid) === pc &&
+            pc.connectionState !== 'connected' &&
+            pc.connectionState !== 'failed' &&
+            pc.connectionState !== 'closed'
+          ) {
+            console.warn(
+              '[VoiceRTC Diagnostic] ICE connection timeout (8s), restarting with relay/TCP fallback',
+              { peerUid: remoteUid }
+            );
+            scheduleReconnectRef.current(session, remoteUid, 'ice-timeout-fallback-relay');
+          }
+        }, 8000);
+
+        return pc;
+      });
+      let trackedCreation: Promise<RTCPeerConnection>;
+      trackedCreation = creation.finally(() => {
+        if (peerCreationsRef.current.get(remoteUid) === trackedCreation) {
+          peerCreationsRef.current.delete(remoteUid);
         }
-      };
-
-      pc.oniceconnectionstatechange = () => handleStateTransition('ice');
-      pc.onconnectionstatechange = () => handleStateTransition('connection');
-
-      // 8-second connection timeout fallback to relay if stuck in connecting
-      window.setTimeout(() => {
-        if (
-          peersRef.current.get(remoteUid) === pc &&
-          pc.connectionState !== 'connected' &&
-          pc.connectionState !== 'failed' &&
-          pc.connectionState !== 'closed'
-        ) {
-          console.warn('[VoiceRTC Diagnostic] ICE connection timeout (8s), restarting with relay/TCP fallback', {
-            peerUid: remoteUid,
-          });
-          scheduleReconnectRef.current(session, remoteUid, 'ice-timeout-fallback-relay');
-        }
-      }, 8000);
-
-      return pc;
+      });
+      peerCreationsRef.current.set(remoteUid, trackedCreation);
+      return trackedCreation;
     },
-    [clearPeerReconnect, closePeer, sendSignal]
+    [clearPeerReconnect, closePeer, logPeerDiagnostics, sendSignal]
   );
 
   const scheduleReconnect = useCallback(
@@ -653,10 +803,12 @@ export function useVoiceRTC(
         const canInitiate = Boolean(me && (me.uid < remoteUid || attempt >= 1));
 
         const oldPc = peersRef.current.get(remoteUid);
+        clearPeerDiagnosticsTimer(remoteUid);
         if (oldPc) {
           oldPc.onconnectionstatechange = null;
           oldPc.oniceconnectionstatechange = null;
           oldPc.onicegatheringstatechange = null;
+          oldPc.onsignalingstatechange = null;
           oldPc.onicecandidate = null;
           oldPc.ontrack = null;
           oldPc.close();
@@ -674,7 +826,7 @@ export function useVoiceRTC(
 
       reconnectTimersRef.current.set(remoteUid, timerId);
     },
-    [createPeerConnection, syncConnectionStatus, triggerRenegotiation]
+    [clearPeerDiagnosticsTimer, createPeerConnection, syncConnectionStatus, triggerRenegotiation]
   );
 
   scheduleReconnectRef.current = scheduleReconnect;
@@ -824,6 +976,10 @@ export function useVoiceRTC(
           (!cfg.pushToTalkEnabled || pttTransmittingRef.current);
         stream.getAudioTracks().forEach((track) => {
           track.enabled = canTransmitInitially;
+        });
+        console.info('[VoiceRTC Diagnostic]', {
+          event: 'local-microphone-captured',
+          localAudioTracks: getLocalAudioTrackDiagnostics(stream),
         });
 
         const AudioCtx =
@@ -1107,6 +1263,19 @@ export function useVoiceRTC(
     const session = activeSessionRef.current;
     if (!sessionKey || !session || !currentUid) return;
     const { participantsCol, signalsCol } = getVoicePaths(session);
+    const applyPendingIceCandidates = async (pc: RTCPeerConnection, remoteUid: string) => {
+      const queued = pendingIceRef.current.get(remoteUid) || [];
+      pendingIceRef.current.delete(remoteUid);
+      if (queued.length > 0) {
+        console.info('[VoiceRTC Diagnostic] Applying queued ICE candidates:', {
+          peerUid: remoteUid,
+          count: queued.length,
+        });
+      }
+      for (const candidate of queued) {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    };
 
     const unsubParticipants = onSnapshot(
       participantsCol,
@@ -1160,24 +1329,17 @@ export function useVoiceRTC(
               }
 
               await pc.setRemoteDescription(new RTCSessionDescription(data));
+              await applyPendingIceCandidates(pc, sig.fromUid);
+
               const answer = await pc.createAnswer();
               await pc.setLocalDescription(answer);
               if (pc.localDescription) {
                 await sendSignal(session, sig.fromUid, 'answer', pc.localDescription.toJSON());
               }
-              const queued = pendingIceRef.current.get(sig.fromUid) || [];
-              for (const cand of queued) {
-                await pc.addIceCandidate(new RTCIceCandidate(cand));
-              }
-              pendingIceRef.current.delete(sig.fromUid);
             } else if (sig.type === 'answer') {
               if (pc.signalingState === 'have-local-offer') {
                 await pc.setRemoteDescription(new RTCSessionDescription(data));
-                const queued = pendingIceRef.current.get(sig.fromUid) || [];
-                for (const cand of queued) {
-                  await pc.addIceCandidate(new RTCIceCandidate(cand));
-                }
-                pendingIceRef.current.delete(sig.fromUid);
+                await applyPendingIceCandidates(pc, sig.fromUid);
               }
             } else if (sig.type === 'candidate') {
               if (ignoreOfferRef.current.get(sig.fromUid)) {
@@ -1185,10 +1347,15 @@ export function useVoiceRTC(
               }
               if (pc.remoteDescription) {
                 await pc.addIceCandidate(new RTCIceCandidate(data));
+                console.info('[VoiceRTC Diagnostic] Added ICE candidate:', sig.fromUid);
               } else {
                 const list = pendingIceRef.current.get(sig.fromUid) || [];
                 list.push(data);
                 pendingIceRef.current.set(sig.fromUid, list);
+                console.info('[VoiceRTC Diagnostic] Queued ICE candidate before remote description:', {
+                  peerUid: sig.fromUid,
+                  queuedCount: list.length,
+                });
               }
             }
           } catch (err) {
