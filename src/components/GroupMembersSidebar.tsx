@@ -372,15 +372,13 @@ export function GroupMembersSidebar({
             )}
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end">
-                <div className="rounded-full bg-accent">
-                  <UserAvatar
-                    src={selectedPub?.avatarUrl}
-                    name={selectedPub?.displayName || selectedUid.slice(0, 8)}
-                    status={selectedStatus}
-                    size="lg"
-                    showStatus
-                  />
-                </div>
+                <UserAvatar
+                  src={selectedPub?.avatarUrl}
+                  name={selectedPub?.displayName || selectedUid.slice(0, 8)}
+                  status={selectedStatus}
+                  size="lg"
+                  showStatus
+                />
               </div>
               <div className="min-w-0">
                 <div className="font-semibold text-link text-text dark:text-text truncate">

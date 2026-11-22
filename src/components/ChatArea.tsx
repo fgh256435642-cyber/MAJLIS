@@ -775,15 +775,13 @@ export function ChatArea({
                   )}
                   <div className="p-4 pt-0 space-y-3">
                     <div className="-mt-8 flex items-end">
-                      <div className="rounded-full bg-accent">
-                        <UserAvatar
-                          src={profile.avatarUrl}
-                          name={profile.displayName || profile.username}
-                          status={status}
-                          size="lg"
-                          showStatus
-                        />
-                      </div>
+                      <UserAvatar
+                        src={profile.avatarUrl}
+                        name={profile.displayName || profile.username}
+                        status={status}
+                        size="lg"
+                        showStatus
+                      />
                     </div>
                     <div className="min-w-0">
                       <div className="font-semibold text-link text-text dark:text-text truncate">

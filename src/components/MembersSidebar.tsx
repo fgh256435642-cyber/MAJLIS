@@ -316,15 +316,13 @@ export function MembersSidebar({
             )}
             <div className="p-4 pt-0 space-y-3">
               <div className="-mt-7 flex items-end justify-between">
-                <div className="rounded-full bg-accent">
-                  <UserAvatar
-                    src={selectedPub?.avatarUrl ?? selectedMember.avatarUrl}
-                    name={selectedPub?.displayName || selectedMember.displayName}
-                    status={selectedStatus}
-                    size="lg"
-                    showStatus
-                  />
-                </div>
+                <UserAvatar
+                  src={selectedPub?.avatarUrl ?? selectedMember.avatarUrl}
+                  name={selectedPub?.displayName || selectedMember.displayName}
+                  status={selectedStatus}
+                  size="lg"
+                  showStatus
+                />
               </div>
 
               <div className="min-w-0">
