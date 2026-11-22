@@ -16,8 +16,8 @@ export function ImagePreviewProvider({ children }: { children: ReactNode }) {
 
       const target = event.target;
       if (!(target instanceof HTMLImageElement)) return;
+      if (!target.dataset.imagePreview) return;
       if (target.closest('[data-image-preview-modal="true"]')) return;
-      if (target.closest('[data-image-preview-disabled="true"]')) return;
 
       const src = target.currentSrc || target.src;
       if (!src) return;

@@ -28,7 +28,7 @@
     transition: background-color 180ms ease, color 180ms ease;
   }
 
-  img[src]:not([data-image-preview-modal="true"]) {
+  [data-image-preview="true"] {
     cursor: zoom-in;
   }
 

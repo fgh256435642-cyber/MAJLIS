@@ -170,6 +170,7 @@ export function UserAvatar({
         <img
           src={src}
           alt={name}
+          data-image-preview="true"
           referrerPolicy="no-referrer"
           onError={() => setImgError(true)}
           className={`${sizeClass} ${className} rounded-full majlis-avatar-shape object-cover bg-hover dark:bg-hover`}
